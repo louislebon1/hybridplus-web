@@ -219,7 +219,7 @@ export function Sheet({ visible, onClose, title, children }: SheetProps) {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-            className="no-radius fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-bg max-h-[92dvh]"
+            className="fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-bg rounded-t-3xl max-h-[92dvh]"
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">

@@ -22,7 +22,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
       </main>
 
       <nav
-        className="no-radius flex-shrink-0 border-t border-border bg-bg"
+        className="flex-shrink-0 border-t border-border bg-bg"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="flex">

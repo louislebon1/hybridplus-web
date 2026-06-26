@@ -262,7 +262,7 @@ export default function SessionPage() {
       </div>
 
       {/* Add exercise button */}
-      <div className="no-radius absolute bottom-0 left-0 right-0 px-5 pb-4 pt-2 bg-bg border-t border-border">
+      <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-2 bg-bg border-t border-border">
         <Button
           variant="secondary"
           size="lg"
