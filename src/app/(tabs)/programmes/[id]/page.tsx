@@ -364,20 +364,19 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             <p className="text-xs text-text truncate pr-1">{block.exerciseName}</p>
                             <input
                               type="number" min="1" max="20"
-                              value={block.targetSets}
-                              onChange={e => {
-                                const v = parseInt(e.target.value) || 1
-                                updateBlock(block.id, { targetSets: v })
-                              }}
+                              value={block.targetSets || ''}
+                              onChange={e => updateBlock(block.id, { targetSets: e.target.value === '' ? 0 : parseInt(e.target.value) })}
+                              onBlur={() => { if (!block.targetSets || block.targetSets < 1) updateBlock(block.id, { targetSets: 1 }) }}
                               className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular"
                             />
                             <input
                               type="number" min="1" max="100"
-                              value={block.targetRepsMin}
+                              value={block.targetRepsMin || ''}
                               onChange={e => {
-                                const v = parseInt(e.target.value) || 1
+                                const v = e.target.value === '' ? 0 : parseInt(e.target.value)
                                 updateBlock(block.id, { targetRepsMin: v, targetRepsMax: v })
                               }}
+                              onBlur={() => { if (!block.targetRepsMin || block.targetRepsMin < 1) updateBlock(block.id, { targetRepsMin: 1, targetRepsMax: 1 }) }}
                               className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular"
                             />
                             <input
