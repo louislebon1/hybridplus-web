@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0a0a0a;
+  --bg-element: rgba(255, 255, 255, 0.04);
+  --bg-hover: #282828;
+  --bg-selected: #282828;
+  --bg-subtle: #1A1A1A;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: #535353;
+  --text: #E0E0E0;
+  --text-secondary: #A7A7A7;
+  --text-tertiary: #A7A7A7;
+  --text-disabled: #535353;
+  --accent: #1DB954;
+  --accent-hover: #1ed760;
+  --accent-fg: #000000;
+  --success: #1DB954;
+  --success-subtle: #0d2e18;
+  --warning: #f59e0b;
+  --warning-subtle: #2d1f00;
+  --error: #F15E6C;
+  --error-subtle: #2d0a0e;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-bg-element: var(--bg-element);
+  --color-bg-hover: var(--bg-hover);
+  --color-bg-selected: var(--bg-selected);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .eyebrow {
+    font-family: var(--font-geist-mono);
+    font-size: 0.625rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+* { box-sizing: border-box; border-radius: 0.5rem !important; }
+.no-radius { border-radius: 0 !important; }
+
+h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
 }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 8px); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.tabular { font-variant-numeric: tabular-nums; }
