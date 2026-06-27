@@ -102,14 +102,9 @@ export default function HomePage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-12 pb-4 flex-shrink-0">
-        <div>
-          <p className="text-text-secondary text-sm">{getGreeting()}</p>
-          <h1 className="text-2xl font-normal text-text">Dashboard</h1>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
-          <span className="text-accent-fg font-normal text-sm">H</span>
-        </div>
+      <div className="px-5 pt-12 pb-4 flex-shrink-0">
+        <p className="text-text-secondary text-sm">{getGreeting()}</p>
+        <h1 className="text-2xl font-normal text-text">Dashboard</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-5">
