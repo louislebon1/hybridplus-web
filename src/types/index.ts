@@ -80,6 +80,7 @@ export interface Phase {
   orderIndex: number
   colorHex: string | null
   templateIds: string[]
+  templateDays: Record<string, number[]> // templateId → [0=Mon…6=Sun]
   overrides: PhaseTemplateOverride[]
   isActive: boolean
 }
@@ -89,6 +90,7 @@ export interface Programme {
   name: string
   description: string
   isActive: boolean
+  startDate: string | null
   createdAt: string
   updatedAt: string
   phases: Phase[]

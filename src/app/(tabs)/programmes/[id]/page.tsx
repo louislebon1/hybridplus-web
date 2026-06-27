@@ -20,7 +20,8 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   const {
     programmes, addTemplate, addPhase, deleteTemplate, deletePhase,
     addBlock, updateBlock, removeBlock, setActivePhase, addTemplateToPhase,
-    removeTemplateFromPhase, setExerciseOverride, removeExerciseOverride,
+    removeTemplateFromPhase, setTemplateDays, setExerciseOverride, removeExerciseOverride,
+    updateProgramme,
   } = useProgrammeStore()
 
   const programme = programmes.find((p) => p.id === id)
@@ -148,6 +149,15 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           <h1 className="text-xl text-text truncate">{programme.name}</h1>
           {programme.description && <p className="text-xs text-text-secondary truncate">{programme.description}</p>}
         </div>
+        <div className="flex flex-col items-end gap-0.5">
+          <p className="eyebrow">Start</p>
+          <input
+            type="date"
+            value={programme.startDate ?? ''}
+            onChange={e => updateProgramme(programme.id, { startDate: e.target.value || null })}
+            className="text-xs text-text bg-transparent border-none focus:outline-none text-right"
+          />
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-6">
@@ -235,21 +245,49 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                               return (
                                 <div key={template.id}>
                                   {/* Template header */}
-                                  <div className="flex items-center justify-between px-4 py-2.5 bg-bg-subtle">
-                                    <div className="flex items-center gap-2">
-                                      <p className="text-xs text-text">{template.name}</p>
-                                      {overriddenCount > 0 && (
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">
-                                          {overriddenCount} overridden
-                                        </span>
-                                      )}
+                                  <div className="px-4 py-2.5 bg-bg-subtle">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="flex items-center gap-2">
+                                        <p className="text-xs text-text">{template.name}</p>
+                                        {overriddenCount > 0 && (
+                                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">
+                                            {overriddenCount} overridden
+                                          </span>
+                                        )}
+                                      </div>
+                                      <button
+                                        onClick={() => removeTemplateFromPhase(programme.id, phase.id, template.id)}
+                                        className="text-xs text-error"
+                                      >
+                                        Remove
+                                      </button>
                                     </div>
-                                    <button
-                                      onClick={() => removeTemplateFromPhase(programme.id, phase.id, template.id)}
-                                      className="text-xs text-error"
-                                    >
-                                      Remove
-                                    </button>
+                                    {/* Day-of-week toggles */}
+                                    {(() => {
+                                      const days = phase.templateDays?.[template.id] ?? []
+                                      const DAYS = ['M','T','W','T','F','S','S']
+                                      return (
+                                        <div className="flex gap-1">
+                                          {DAYS.map((d, i) => (
+                                            <button
+                                              key={i}
+                                              onClick={() => {
+                                                const next = days.includes(i) ? days.filter(x => x !== i) : [...days, i]
+                                                setTemplateDays(programme.id, phase.id, template.id, next)
+                                              }}
+                                              className={[
+                                                'w-7 h-7 text-[10px] rounded-full flex items-center justify-center transition-colors',
+                                                days.includes(i)
+                                                  ? 'bg-accent text-accent-fg'
+                                                  : 'bg-bg-hover text-text-tertiary',
+                                              ].join(' ')}
+                                            >
+                                              {d}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )
+                                    })()}
                                   </div>
 
                                   {/* Per-exercise rows */}

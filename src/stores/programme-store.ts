@@ -16,8 +16,8 @@ interface ProgrammeStore {
   programmes: Programme[]
 
   // Programme CRUD
-  createProgramme(input: { name: string; description: string }): Programme
-  updateProgramme(id: string, updates: Partial<Pick<Programme, 'name' | 'description'>>): void
+  createProgramme(input: { name: string; description: string; startDate?: string | null }): Programme
+  updateProgramme(id: string, updates: Partial<Pick<Programme, 'name' | 'description' | 'startDate'>>): void
   deleteProgramme(id: string): void
   setActiveProgramme(id: string): void
 
@@ -43,6 +43,7 @@ interface ProgrammeStore {
   setActivePhase(programmeId: string, phaseId: string): void
   addTemplateToPhase(programmeId: string, phaseId: string, templateId: string): void
   removeTemplateFromPhase(programmeId: string, phaseId: string, templateId: string): void
+  setTemplateDays(programmeId: string, phaseId: string, templateId: string, days: number[]): void
 
   // Phase overrides (per exercise)
   setExerciseOverride(programmeId: string, phaseId: string, templateId: string, override: PhaseExerciseOverride): void
@@ -74,13 +75,14 @@ export const useProgrammeStore = create<ProgrammeStore>()(
 
       // ── Programme CRUD ──────────────────────────────────────────────────────
 
-      createProgramme({ name, description }) {
+      createProgramme({ name, description, startDate = null }) {
         const timestamp = now()
         const programme: Programme = {
           id: crypto.randomUUID(),
           name,
           description,
           isActive: false,
+          startDate: startDate ?? null,
           createdAt: timestamp,
           updatedAt: timestamp,
           phases: [],
@@ -316,6 +318,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           orderIndex: programme ? programme.phases.length : 0,
           colorHex: input.colorHex ?? null,
           templateIds: [],
+          templateDays: {},
           overrides: [],
           isActive: false,
         }
@@ -398,11 +401,31 @@ export const useProgrammeStore = create<ProgrammeStore>()(
             p.id !== programmeId ? p : {
               ...p,
               updatedAt: now(),
+              phases: p.phases.map(ph => {
+                if (ph.id !== phaseId) return ph
+                const { [templateId]: _, ...restDays } = ph.templateDays ?? {}
+                return {
+                  ...ph,
+                  templateIds: ph.templateIds.filter(id => id !== templateId),
+                  templateDays: restDays,
+                  overrides: ph.overrides.filter(o => o.templateId !== templateId),
+                }
+              }),
+            }
+          ),
+        }))
+      },
+
+      setTemplateDays(programmeId, phaseId, templateId, days) {
+        set(s => ({
+          programmes: s.programmes.map(p =>
+            p.id !== programmeId ? p : {
+              ...p,
+              updatedAt: now(),
               phases: p.phases.map(ph =>
                 ph.id !== phaseId ? ph : {
                   ...ph,
-                  templateIds: ph.templateIds.filter(id => id !== templateId),
-                  overrides: ph.overrides.filter(o => o.templateId !== templateId),
+                  templateDays: { ...(ph.templateDays ?? {}), [templateId]: days },
                 }
               ),
             }
@@ -543,7 +566,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 2,
+      version: 3,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -556,6 +579,16 @@ export const useProgrammeStore = create<ProgrammeStore>()(
               ...ph,
               overrides: [],
               isActive: (ph as Phase & { isActive?: boolean }).isActive ?? false,
+            })),
+          }))
+        }
+        if (version < 3) {
+          state.programmes = (state.programmes ?? []).map(p => ({
+            ...p,
+            startDate: (p as Programme & { startDate?: string | null }).startDate ?? null,
+            phases: (p.phases ?? []).map(ph => ({
+              ...ph,
+              templateDays: (ph as Phase & { templateDays?: Record<string, number[]> }).templateDays ?? {},
             })),
           }))
         }
