@@ -155,11 +155,6 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
         {/* ── PHASES ─────────────────────────────────────────────────────── */}
         <div className="px-5 pt-5">
-          <div className="flex items-center justify-between mb-3">
-            <p className="eyebrow">Phases</p>
-            <button onClick={() => setShowAddPhase(true)} className="text-accent text-xs">+ ADD</button>
-          </div>
-
           {/* Start date */}
           <div className="flex items-center gap-3 mb-4">
             <p className="text-xs text-text-secondary">Start date</p>
@@ -169,6 +164,11 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
               onChange={e => updateProgramme(programme.id, { startDate: e.target.value || null })}
               className="text-xs text-text bg-bg-element border border-border rounded-lg px-2 py-1 focus:outline-none focus:border-accent"
             />
+          </div>
+
+          <div className="flex items-center justify-between mb-3">
+            <p className="eyebrow">Phases</p>
+            <button onClick={() => setShowAddPhase(true)} className="text-accent text-xs">+ ADD</button>
           </div>
 
           {programme.phases.length === 0 ? (
