@@ -149,15 +149,6 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           <h1 className="text-xl text-text truncate">{programme.name}</h1>
           {programme.description && <p className="text-xs text-text-secondary truncate">{programme.description}</p>}
         </div>
-        <div className="flex flex-col items-end gap-0.5">
-          <p className="eyebrow">Start</p>
-          <input
-            type="date"
-            value={programme.startDate ?? ''}
-            onChange={e => updateProgramme(programme.id, { startDate: e.target.value || null })}
-            className="text-xs text-text bg-transparent border-none focus:outline-none text-right"
-          />
-        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-6">
@@ -167,6 +158,17 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           <div className="flex items-center justify-between mb-3">
             <p className="eyebrow">Phases</p>
             <button onClick={() => setShowAddPhase(true)} className="text-accent text-xs">+ ADD</button>
+          </div>
+
+          {/* Start date */}
+          <div className="flex items-center gap-3 mb-4">
+            <p className="text-xs text-text-secondary">Start date</p>
+            <input
+              type="date"
+              value={programme.startDate ?? ''}
+              onChange={e => updateProgramme(programme.id, { startDate: e.target.value || null })}
+              className="text-xs text-text bg-bg-element border border-border rounded-lg px-2 py-1 focus:outline-none focus:border-accent"
+            />
           </div>
 
           {programme.phases.length === 0 ? (
