@@ -7,6 +7,7 @@ import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { useProgrammeStore } from '@/stores/programme-store'
+import type { CalendarEventData, Programme } from '@/types'
 
 const DAY_LABELS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const DAY_SHORT  = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -49,6 +50,23 @@ function getWeekDays(): Date[] {
     d.setHours(0, 0, 0, 0)
     return d
   })
+}
+
+function getDurationRange(ev: CalendarEventData, programmes: Programme[]): string | null {
+  if (ev.eventType === 'strength' && ev.workoutTemplateId && ev.programmeId) {
+    const template = programmes
+      .find(p => p.id === ev.programmeId)
+      ?.templates.find(t => t.id === ev.workoutTemplateId)
+    if (template && template.exerciseBlocks.length > 0) {
+      const totalSets = template.exerciseBlocks.reduce((s, b) => s + b.targetSets, 0)
+      const estMin = totalSets * 3
+      const lo = Math.max(15, Math.round(estMin * 0.85 / 5) * 5)
+      const hi = Math.round(estMin * 1.15 / 5) * 5
+      return `${lo}M-${hi}M`
+    }
+  }
+  if (ev.durationMinutes) return `${ev.durationMinutes}M`
+  return null
 }
 
 function DayCheck({ done }: { done: boolean }) {
@@ -159,7 +177,7 @@ export default function HomePage() {
                     <span style={{
                       fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
                       lineHeight: '13px', textAlign: 'center', width: '32px',
-                      color: '#FFFFFF', opacity: isToday ? 1 : 0.4,
+                      color: '#FFFFFF', opacity: (isToday || isSelected) ? 1 : 0.4,
                     }}>{DAY_LABELS[i]}</span>
 
                     <div style={{
@@ -244,7 +262,7 @@ export default function HomePage() {
                 { value: avgSession, label: 'Avg Session', unit: 'min' },
               ] as const).map(({ value, label, unit }) => (
                 <div key={label} style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', height: '84px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline', gap: '4px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
                     <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '32px', fontWeight: 600, lineHeight: '42px', color: '#FFFFFF' }}>
                       {value.toLocaleString()}
                     </span>
@@ -270,6 +288,7 @@ export default function HomePage() {
                   const isStrength   = ev.eventType === 'strength'
                   const accentColor  = isStrength ? '#00BD44' : '#FFFFFF'
                   const templateName = getTemplateName(ev.workoutTemplateId, ev.programmeId)
+                  const duration     = getDurationRange(ev, programmes)
                   return (
                     <div key={ev.id} style={{ ...card, padding: '12px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', position: 'relative', overflow: 'hidden', minHeight: '68px' }}>
                       <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: accentColor }} />
@@ -277,9 +296,7 @@ export default function HomePage() {
                         <span style={{ ...mono8, color: '#0A0A0A', background: accentColor, padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>
                           {ev.eventType}
                         </span>
-                        {ev.durationMinutes && (
-                          <span style={{ ...mono8 }}>{ev.durationMinutes}M</span>
-                        )}
+                        {duration && <span style={{ ...mono8 }}>{duration}</span>}
                       </div>
                       <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 600, lineHeight: '20px', color: '#FFFFFF', display: 'block' }}>
                         {templateName ?? ev.name ?? ev.eventType}
