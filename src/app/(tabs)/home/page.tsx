@@ -166,7 +166,7 @@ export default function HomePage() {
           <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
             {/* Days row */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               {weekDays.map((d, i) => {
                 const ds         = isoDate(d)
                 const isToday    = ds === today
