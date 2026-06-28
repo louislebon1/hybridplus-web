@@ -14,8 +14,8 @@ const DAY_SHORT  = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const CARDIO_TYPES = new Set(['run', 'swim', 'cycle', 'walk', 'row'])
 
 const card: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.03)',
-  border: '1px solid rgba(255, 255, 255, 0.03)',
+  background: 'rgba(255, 255, 255, 0.04)',
+  border: '1px solid rgba(255, 255, 255, 0.06)',
   borderRadius: '8px',
 }
 
@@ -26,7 +26,7 @@ const mono8: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
   lineHeight: '10px',
-  color: 'rgba(255, 255, 255, 0.4)',
+  color: '#FFFFFF',
 }
 
 const mono10: React.CSSProperties = {
@@ -36,7 +36,7 @@ const mono10: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
   lineHeight: '13px',
-  color: 'rgba(255, 255, 255, 0.4)',
+  color: '#FFFFFF',
 }
 
 function isoDate(d: Date) { return d.toISOString().split('T')[0] }
@@ -132,6 +132,12 @@ export default function HomePage() {
     return programmes.find(p => p.id === programmeId)?.templates.find(t => t.id === templateId)?.name ?? null
   }
 
+  function sessionDisplayLabel(eventType: string): string {
+    if (eventType === 'strength') return 'Strength'
+    if (CARDIO_TYPES.has(eventType)) return 'Cardio'
+    return eventType.charAt(0).toUpperCase() + eventType.slice(1)
+  }
+
   const sessionLabel = selectedDate === today
     ? "Today's Sessions"
     : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
@@ -159,7 +165,7 @@ export default function HomePage() {
           {/* ── Calendar ── */}
           <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-            {/* Days row — 7 × 32px + 6 × 16px gap = 320px content */}
+            {/* Days row */}
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
               {weekDays.map((d, i) => {
                 const ds         = isoDate(d)
@@ -193,7 +199,7 @@ export default function HomePage() {
 
                     <div style={{ display: 'flex', flexDirection: 'row', gap: '2px', height: '6px', alignItems: 'center' }}>
                       {hasStrength && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#00BD44', display: 'block' }} />}
-                      {hasCardio   && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#FFFFFF', display: 'block' }} />}
+                      {hasCardio   && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: 'rgba(255,255,255,0.5)', display: 'block' }} />}
                     </div>
                   </button>
                 )
@@ -211,11 +217,11 @@ export default function HomePage() {
                   </span>
                 )}
                 {activeProgramme && (
-                  <span style={{ ...mono8, color: '#FFFFFF' }}>{activeProgramme.name}</span>
+                  <span style={{ ...mono8 }}>{activeProgramme.name}</span>
                 )}
               </div>
               {weekNumber !== null && (
-                <span style={{ ...mono8 }}>Week {weekNumber}</span>
+                <span style={{ ...mono8, color: 'rgba(255,255,255,0.4)' }}>Week {weekNumber}</span>
               )}
             </div>
           </div>
@@ -223,11 +229,11 @@ export default function HomePage() {
           {/* ── Streak ── */}
           <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px', height: '84px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '72px', flexShrink: 0 }}>
-              <Flame size={24} style={{ color: '#00BD44' }} />
+              <Flame size={24} color="#00BD44" />
               <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                 {streak} Day
               </span>
-              <span style={{ ...mono8, textAlign: 'center' }}>Workout Streak</span>
+              <span style={{ ...mono8, textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>Workout Streak</span>
             </div>
 
             <div style={{ width: '1px', alignSelf: 'stretch', background: 'rgba(255, 255, 255, 0.06)', flexShrink: 0 }} />
@@ -244,7 +250,7 @@ export default function HomePage() {
                 {weekDays.map((d, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '24px' }}>
                     <DayCheck done={dayHasSession(d)} />
-                    <span style={{ ...mono8 }}>{DAY_SHORT[i]}</span>
+                    <span style={{ ...mono8, color: 'rgba(255,255,255,0.4)' }}>{DAY_SHORT[i]}</span>
                   </div>
                 ))}
               </div>
@@ -255,22 +261,33 @@ export default function HomePage() {
           <div style={{ marginTop: '8px' }}>
             <p style={{ ...mono10, marginBottom: '12px' }}>This Week</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              {([
-                { value: weekStrength.length + weekCardio.length, label: 'Workouts', unit: '' },
-                { value: weekVolume > 0 ? Math.round(weekVolume) : 0, label: 'Volume', unit: 'kg' },
-                { value: weekCardio.length, label: 'Cardio', unit: '' },
-                { value: avgSession, label: 'Avg Session', unit: 'min' },
-              ] as const).map(({ value, label, unit }) => (
-                <div key={label} style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', height: '84px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '32px', fontWeight: 600, lineHeight: '42px', color: '#FFFFFF' }}>
-                      {value.toLocaleString()}
-                    </span>
-                    {unit && <span style={{ ...mono8 }}>{unit}</span>}
-                  </div>
-                  <span style={{ ...mono8 }}>{label}</span>
-                </div>
-              ))}
+
+              {/* Workouts */}
+              <StatCard
+                value={weekStrength.length + weekCardio.length}
+                label="Workouts"
+              />
+
+              {/* Volume */}
+              <StatCard
+                value={weekVolume > 0 ? Math.round(weekVolume) : 0}
+                unit="kg"
+                label="volume"
+              />
+
+              {/* Cardio */}
+              <StatCard
+                value={weekCardio.length}
+                label="cardio"
+              />
+
+              {/* Avg Session */}
+              <StatCard
+                value={avgSession}
+                unit="min"
+                label="average session"
+              />
+
             </div>
           </div>
 
@@ -286,20 +303,21 @@ export default function HomePage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {selectedEvents.map(ev => {
                   const isStrength   = ev.eventType === 'strength'
-                  const accentColor  = isStrength ? '#00BD44' : '#FFFFFF'
+                  const accentColor  = isStrength ? '#00BD44' : 'rgba(255,255,255,0.8)'
+                  const badgeFg      = '#0A0A0A'
                   const templateName = getTemplateName(ev.workoutTemplateId, ev.programmeId)
                   const duration     = getDurationRange(ev, programmes)
                   return (
                     <div key={ev.id} style={{ ...card, padding: '12px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', position: 'relative', overflow: 'hidden', minHeight: '68px' }}>
                       <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: accentColor }} />
                       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ ...mono8, color: '#0A0A0A', background: accentColor, padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>
-                          {ev.eventType}
+                        <span style={{ ...mono8, color: badgeFg, background: accentColor, padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>
+                          {sessionDisplayLabel(ev.eventType)}
                         </span>
-                        {duration && <span style={{ ...mono8 }}>{duration}</span>}
+                        {duration && <span style={{ ...mono8, color: 'rgba(255,255,255,0.4)' }}>{duration}</span>}
                       </div>
                       <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 600, lineHeight: '20px', color: '#FFFFFF', display: 'block' }}>
-                        {templateName ?? ev.name ?? ev.eventType}
+                        {templateName ?? ev.name ?? sessionDisplayLabel(ev.eventType)}
                       </span>
                     </div>
                   )
@@ -326,6 +344,40 @@ export default function HomePage() {
           Start Workout
         </button>
       </div>
+    </div>
+  )
+}
+
+function StatCard({ value, unit, label }: { value: number; unit?: string; label: string }) {
+  const mono8: React.CSSProperties = {
+    fontFamily: 'var(--font-geist-mono)',
+    fontSize: '8px',
+    fontWeight: 500,
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    lineHeight: '10px',
+    color: 'rgba(255,255,255,0.4)',
+  }
+  return (
+    <div style={{
+      background: 'rgba(255,255,255,0.04)',
+      border: '1px solid rgba(255,255,255,0.06)',
+      borderRadius: '8px',
+      padding: '12px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+      gap: '4px',
+      height: '84px',
+    }}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '4px' }}>
+        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '32px', fontWeight: 600, lineHeight: '42px', color: '#FFFFFF' }}>
+          {value.toLocaleString()}
+        </span>
+        {unit && <span style={{ ...mono8, paddingBottom: '4px' }}>{unit}</span>}
+      </div>
+      <span style={{ ...mono8 }}>{label}</span>
     </div>
   )
 }
