@@ -22,27 +22,37 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
       </main>
 
       <nav
-        className="flex-shrink-0 border-t border-border bg-bg"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        style={{
+          flexShrink: 0,
+          background: 'rgba(255, 255, 255, 0.03)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.03)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
       >
-        <div className="flex">
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px' }}>
           {TABS.map(({ href, label, icon: Icon }) => {
             const active = pathname.startsWith(href)
             return (
               <Link
                 key={href}
                 href={href}
-                className="flex-1 flex flex-col items-center gap-0.5 py-4 px-1 text-center"
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '52px', height: '42px', justifyContent: 'center', textDecoration: 'none' }}
               >
                 <Icon
-                  size={22}
-                  className={active ? 'text-accent' : 'text-text-tertiary'}
+                  size={24}
+                  style={{ color: active ? '#00BD44' : '#FFFFFF', opacity: active ? 1 : 0.6 }}
                 />
-                <span
-                  className={`text-[10px] font-normal tracking-wide ${
-                    active ? 'text-accent' : 'text-text-tertiary'
-                  }`}
-                >
+                <span style={{
+                  fontFamily: 'var(--font-geist-sans)',
+                  fontSize: '8px',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  color: active ? '#00BD44' : 'rgba(255, 255, 255, 0.4)',
+                  textAlign: 'center',
+                  width: '52px',
+                  lineHeight: '10px',
+                }}>
                   {label}
                 </span>
               </Link>

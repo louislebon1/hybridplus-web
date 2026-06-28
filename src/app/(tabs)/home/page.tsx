@@ -2,14 +2,41 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Flame, CheckCircle2, Circle } from 'lucide-react'
+import { Flame } from 'lucide-react'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 
 const DAY_LABELS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+const DAY_SHORT  = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const CARDIO_TYPES = new Set(['run', 'swim', 'cycle', 'walk', 'row'])
+
+const card: React.CSSProperties = {
+  background: 'rgba(255, 255, 255, 0.03)',
+  border: '1px solid rgba(255, 255, 255, 0.03)',
+  borderRadius: '8px',
+}
+
+const mono8: React.CSSProperties = {
+  fontFamily: 'var(--font-geist-mono)',
+  fontSize: '8px',
+  fontWeight: 500,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+  lineHeight: '10px',
+  color: 'rgba(255, 255, 255, 0.4)',
+}
+
+const mono10: React.CSSProperties = {
+  fontFamily: 'var(--font-geist-mono)',
+  fontSize: '10px',
+  fontWeight: 500,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  lineHeight: '13px',
+  color: 'rgba(255, 255, 255, 0.4)',
+}
 
 function isoDate(d: Date) { return d.toISOString().split('T')[0] }
 
@@ -24,10 +51,14 @@ function getWeekDays(): Date[] {
   })
 }
 
-function fmtLabel(dateStr: string, today: string) {
-  if (dateStr === today) return "Today's Sessions"
-  const d = new Date(dateStr + 'T00:00:00')
-  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
+function DayCheck({ done }: { done: boolean }) {
+  const c = done ? '#00BD44' : 'rgba(255,255,255,0.2)'
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="6.67" stroke={c} strokeWidth="1.33"/>
+      <path d="M5.5 8.5L7 10.5L10.5 5.5" stroke={c} strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
 }
 
 export default function HomePage() {
@@ -44,7 +75,6 @@ export default function HomePage() {
   const weekStart = weekDays[0]
   const weekEnd = new Date(weekDays[6]); weekEnd.setHours(23, 59, 59, 999)
 
-  // Active programme / phase
   const activeProgramme = programmes.find(p => p.isActive) ?? programmes[0] ?? null
   const activePhase = activeProgramme?.phases.find(ph => ph.isActive) ?? null
 
@@ -52,19 +82,17 @@ export default function HomePage() {
     ? Math.max(1, Math.floor((Date.now() - new Date(activeProgramme.startDate + 'T00:00:00').getTime()) / (7 * 86400000)) + 1)
     : null
 
-  // Week stats
-  const inWeek = (dateStr: string) => {
-    const d = new Date(dateStr + 'T12:00:00')
+  const inWeek = (ds: string) => {
+    const d = new Date(ds + 'T12:00:00')
     return d >= weekStart && d <= weekEnd
   }
   const weekStrength = strengthSessions.filter(s => inWeek(s.sessionDate))
-  const weekCardio = cardioSessions.filter(s => inWeek(s.sessionDate))
-  const weekVolume = weekStrength.reduce((a, s) => a + s.totalVolume, 0)
-  const avgSession = weekStrength.length > 0
+  const weekCardio   = cardioSessions.filter(s => inWeek(s.sessionDate))
+  const weekVolume   = weekStrength.reduce((a, s) => a + s.totalVolume, 0)
+  const avgSession   = weekStrength.length > 0
     ? Math.round(weekStrength.reduce((a, s) => a + s.durationSeconds, 0) / weekStrength.length / 60)
     : 0
 
-  // Streak
   const allDates = new Set([
     ...strengthSessions.map(s => s.sessionDate),
     ...cardioSessions.map(s => s.sessionDate),
@@ -79,7 +107,6 @@ export default function HomePage() {
   }
   const completedThisWeek = weekDays.filter(dayHasSession).length
 
-  // Selected day
   const selectedEvents = events[selectedDate] ?? []
 
   function getTemplateName(templateId: string | null, programmeId: string | null) {
@@ -87,10 +114,15 @@ export default function HomePage() {
     return programmes.find(p => p.id === programmeId)?.templates.find(t => t.id === templateId)?.name ?? null
   }
 
+  const sessionLabel = selectedDate === today
+    ? "Today's Sessions"
+    : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
+
   return (
-    <div className="flex flex-col h-full">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
       {/* Logo */}
-      <div className="flex justify-center pt-10 pb-5 flex-shrink-0">
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px 0', flexShrink: 0 }}>
         <svg width="110" height="14" viewBox="0 0 110 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 0H3.72574V5.36375H12.7126V0H16.4208V14H12.7126V8.63625H3.72574V14H0V0Z" fill="white"/>
           <path d="M25.2409 9.31875L17.8655 0H22.5095L27.098 6.04917L31.6835 0H36.307L28.9491 9.31875V14H25.2409V9.31875Z" fill="white"/>
@@ -103,158 +135,176 @@ export default function HomePage() {
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4 flex flex-col gap-4 no-scrollbar">
+      <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 16px 16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-        {/* Weekly calendar card */}
-        <div className="bg-bg-element border border-border rounded-2xl p-4">
-          <div className="grid grid-cols-7">
-            {weekDays.map((d, i) => {
-              const ds = isoDate(d)
-              const isSelected = ds === selectedDate
-              const dayEvents = events[ds] ?? []
-              const hasStrength = dayEvents.some(e => e.eventType === 'strength')
-              const hasCardio = dayEvents.some(e => CARDIO_TYPES.has(e.eventType))
-              return (
-                <button key={ds} onClick={() => setSelectedDate(ds)} className="flex flex-col items-center gap-1 py-1">
-                  <span className="text-[9px] text-text-tertiary font-mono tracking-wider">{DAY_LABELS[i]}</span>
-                  <span className={[
-                    'w-8 h-8 flex items-center justify-center rounded-full text-sm transition-colors',
-                    isSelected ? 'bg-accent text-accent-fg font-semibold' : 'text-text',
-                  ].join(' ')}>
-                    {d.getDate()}
+          {/* ── Calendar ── */}
+          <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+            {/* Days row — 7 × 32px + 6 × 16px gap = 320px content */}
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
+              {weekDays.map((d, i) => {
+                const ds         = isoDate(d)
+                const isToday    = ds === today
+                const isSelected = ds === selectedDate
+                const dayEvs     = events[ds] ?? []
+                const hasStrength = dayEvs.some(e => e.eventType === 'strength')
+                const hasCardio   = dayEvs.some(e => CARDIO_TYPES.has(e.eventType))
+                return (
+                  <button
+                    key={ds}
+                    onClick={() => setSelectedDate(ds)}
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '32px', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  >
+                    <span style={{
+                      fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
+                      lineHeight: '13px', textAlign: 'center', width: '32px',
+                      color: '#FFFFFF', opacity: isToday ? 1 : 0.4,
+                    }}>{DAY_LABELS[i]}</span>
+
+                    <div style={{
+                      width: '32px', height: '32px', borderRadius: '40px',
+                      background: isSelected ? '#00BD44' : 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <span style={{
+                        fontFamily: 'var(--font-geist-sans)', fontSize: '12px', fontWeight: 600, lineHeight: '16px',
+                        color: isSelected ? '#0A0A0A' : '#FFFFFF',
+                      }}>{d.getDate()}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'row', gap: '2px', height: '6px', alignItems: 'center' }}>
+                      {hasStrength && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#00BD44', display: 'block' }} />}
+                      {hasCardio   && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#FFFFFF', display: 'block' }} />}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div style={{ height: '1px', background: 'rgba(255, 255, 255, 0.06)' }} />
+
+            {/* Plan info row */}
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                {activePhase && (
+                  <span style={{ ...mono8, color: '#0A0A0A', background: '#00BD44', padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>
+                    {activePhase.name}
                   </span>
-                  <div className="flex gap-0.5 h-2 items-center justify-center">
-                    {hasStrength && <span className="w-1.5 h-1.5 rounded-full bg-accent" />}
-                    {hasCardio && <span className="w-1.5 h-1.5 rounded-full border border-text-secondary" />}
-                    {!hasStrength && !hasCardio && <span className="w-1.5 h-1.5" />}
-                  </div>
-                </button>
-              )
-            })}
+                )}
+                {activeProgramme && (
+                  <span style={{ ...mono8, color: '#FFFFFF' }}>{activeProgramme.name}</span>
+                )}
+              </div>
+              {weekNumber !== null && (
+                <span style={{ ...mono8 }}>Week {weekNumber}</span>
+              )}
+            </div>
           </div>
 
-          {(activeProgramme || activePhase) && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
-              {activePhase && (
-                <span className="text-[9px] px-2.5 py-1 rounded-full bg-accent text-accent-fg font-mono uppercase tracking-wider">
-                  {activePhase.name}
-                </span>
-              )}
-              {activeProgramme && (
-                <span className="text-xs text-text">{activeProgramme.name}</span>
-              )}
-              {weekNumber && (
-                <span className="ml-auto text-[9px] text-text-tertiary font-mono uppercase tracking-wider">Week {weekNumber}</span>
-              )}
+          {/* ── Streak ── */}
+          <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px', height: '84px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '72px', flexShrink: 0 }}>
+              <Flame size={24} style={{ color: '#00BD44' }} />
+              <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
+                {streak} Day
+              </span>
+              <span style={{ ...mono8, textAlign: 'center' }}>Workout Streak</span>
             </div>
-          )}
-        </div>
 
-        {/* Streak card */}
-        <div className="bg-bg-element border border-border rounded-2xl p-4">
-          <div className="flex gap-4 items-start">
-            <div className="min-w-[90px]">
-              <Flame size={22} className="text-accent mb-2" />
-              <p className="text-text leading-none">
-                <span className="text-3xl">{streak}</span>
-                <span className="text-lg ml-1">Day</span>
-              </p>
-              <p className="text-[9px] font-mono uppercase tracking-wider text-text-tertiary mt-1">Workout Streak</p>
-            </div>
-            <div className="flex-1 flex flex-col gap-3 pt-1">
-              <div className="h-1 bg-border rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-accent rounded-full transition-all duration-500"
-                  style={{ width: `${Math.round((completedThisWeek / 7) * 100)}%` }}
-                />
+            <div style={{ width: '1px', alignSelf: 'stretch', background: 'rgba(255, 255, 255, 0.06)', flexShrink: 0 }} />
+
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ position: 'relative', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{
+                  position: 'absolute', left: 0, top: 0, bottom: 0,
+                  width: `${Math.round((completedThisWeek / 7) * 100)}%`,
+                  background: '#00BD44', borderRadius: '4px',
+                }} />
               </div>
-              <div className="flex justify-between">
-                {weekDays.map((d, i) => {
-                  const done = dayHasSession(d)
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {weekDays.map((d, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '24px' }}>
+                    <DayCheck done={dayHasSession(d)} />
+                    <span style={{ ...mono8 }}>{DAY_SHORT[i]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── This Week ── */}
+          <div style={{ marginTop: '8px' }}>
+            <p style={{ ...mono10, marginBottom: '12px' }}>This Week</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              {([
+                { value: weekStrength.length + weekCardio.length, label: 'Workouts', unit: '' },
+                { value: weekVolume > 0 ? Math.round(weekVolume) : 0, label: 'Volume', unit: 'kg' },
+                { value: weekCardio.length, label: 'Cardio', unit: '' },
+                { value: avgSession, label: 'Avg Session', unit: 'min' },
+              ] as const).map(({ value, label, unit }) => (
+                <div key={label} style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', height: '84px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline', gap: '4px' }}>
+                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '32px', fontWeight: 600, lineHeight: '42px', color: '#FFFFFF' }}>
+                      {value.toLocaleString()}
+                    </span>
+                    {unit && <span style={{ ...mono8 }}>{unit}</span>}
+                  </div>
+                  <span style={{ ...mono8 }}>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Sessions ── */}
+          <div style={{ marginTop: '8px' }}>
+            <p style={{ ...mono10, marginBottom: '12px' }}>{sessionLabel}</p>
+
+            {selectedEvents.length === 0 ? (
+              <p style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>
+                No sessions planned
+              </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {selectedEvents.map(ev => {
+                  const isStrength   = ev.eventType === 'strength'
+                  const accentColor  = isStrength ? '#00BD44' : '#FFFFFF'
+                  const templateName = getTemplateName(ev.workoutTemplateId, ev.programmeId)
                   return (
-                    <div key={i} className="flex flex-col items-center gap-1">
-                      {done
-                        ? <CheckCircle2 size={16} className="text-accent" />
-                        : <Circle size={16} className="text-border" />
-                      }
-                      <span className="text-[8px] text-text-tertiary font-mono">{DAY_LABELS[i].slice(0, 3)}</span>
+                    <div key={ev.id} style={{ ...card, padding: '12px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', position: 'relative', overflow: 'hidden', minHeight: '68px' }}>
+                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: accentColor }} />
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ ...mono8, color: '#0A0A0A', background: accentColor, padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>
+                          {ev.eventType}
+                        </span>
+                        {ev.durationMinutes && (
+                          <span style={{ ...mono8 }}>{ev.durationMinutes}M</span>
+                        )}
+                      </div>
+                      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 600, lineHeight: '20px', color: '#FFFFFF', display: 'block' }}>
+                        {templateName ?? ev.name ?? ev.eventType}
+                      </span>
                     </div>
                   )
                 })}
               </div>
-            </div>
+            )}
           </div>
-        </div>
 
-        {/* This week stats */}
-        <div>
-          <p className="text-[9px] font-mono uppercase tracking-wider text-text-tertiary mb-3">This Week</p>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { value: weekStrength.length + weekCardio.length, label: 'Workouts', unit: '' },
-              { value: weekVolume > 0 ? Math.round(weekVolume).toLocaleString() : 0, label: 'Volume', unit: 'kg' },
-              { value: weekCardio.length, label: 'Cardio', unit: '' },
-              { value: avgSession, label: 'Avg Session', unit: 'min' },
-            ].map(({ value, label, unit }) => (
-              <div key={label} className="bg-bg-element border border-border rounded-2xl p-4">
-                <p className="text-text leading-none">
-                  <span className="text-3xl tabular">{value}</span>
-                  {unit && <span className="text-sm text-text-secondary ml-1">{unit}</span>}
-                </p>
-                <p className="text-[9px] font-mono uppercase tracking-wider text-text-tertiary mt-2">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Selected day sessions */}
-        <div>
-          <p className="text-[9px] font-mono uppercase tracking-wider text-text-tertiary mb-3">
-            {fmtLabel(selectedDate, today)}
-          </p>
-          {selectedEvents.length === 0 ? (
-            <p className="text-text-secondary text-sm py-2">No sessions planned</p>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {selectedEvents.map(ev => {
-                const isStrength = ev.eventType === 'strength'
-                const borderColor = isStrength ? '#1DB954' : '#ffffff'
-                const templateName = getTemplateName(ev.workoutTemplateId, ev.programmeId)
-                return (
-                  <div
-                    key={ev.id}
-                    className="bg-bg-element border border-border rounded-2xl p-4"
-                    style={{ borderLeftColor: borderColor, borderLeftWidth: '3px' }}
-                  >
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <span className={[
-                        'text-[9px] px-2.5 py-1 rounded-full border font-mono uppercase tracking-wider',
-                        isStrength ? 'border-accent text-accent' : 'border-text text-text',
-                      ].join(' ')}>
-                        {ev.eventType}
-                      </span>
-                      {ev.durationMinutes && (
-                        <span className="text-[9px] font-mono text-text-secondary uppercase tracking-wider">
-                          {ev.durationMinutes}M
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-lg font-semibold text-text truncate">
-                      {templateName ?? ev.name ?? ev.eventType}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+          <div style={{ height: '8px' }} />
         </div>
       </div>
 
-      {/* Start Workout CTA */}
-      <div className="px-4 pb-8 pt-3 flex-shrink-0">
+      {/* ── Start Workout ── */}
+      <div style={{ padding: '0 16px 16px', flexShrink: 0 }}>
         <button
           onClick={() => router.push('/session')}
-          className="w-full bg-accent text-accent-fg text-base font-semibold py-4 rounded-full hover:bg-accent-hover transition-colors"
+          style={{
+            width: '100%', height: '40px',
+            background: '#00BD44', borderRadius: '40px', border: 'none', cursor: 'pointer',
+            fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 600, color: '#0A0A0A',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
         >
           Start Workout
         </button>
