@@ -4,8 +4,10 @@ import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, Plus, ChevronDown, ChevronRight, Check, Link2, Unlink } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
+import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, EmptyState, Sheet } from '@/components/ui'
-import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType } from '@/types'
+import { localDateStr } from '@/lib/date'
+import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType, CalendarEventType } from '@/types'
 
 const PHASE_COLORS = ['#00BD44']
 const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
@@ -34,8 +36,10 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     addBlock, updateBlock, removeBlock, setActivePhase, addTemplateToPhase,
     removeTemplateFromPhase, setTemplateDays, setExerciseOverride, removeExerciseOverride,
     updateProgramme, addCardioTemplate, deleteCardioTemplate,
-    addCardioTemplateToPhase, removeCardioTemplateFromPhase,
+    addCardioTemplateToPhase, removeCardioTemplateFromPhase, setCardioTemplateDays,
   } = useProgrammeStore()
+
+  const { events: calendarEvents, addEvent: addCalendarEvent, deleteEvent: deleteCalendarEvent } = useCalendarStore()
 
   const programme = programmes.find((p) => p.id === id)
 
@@ -189,6 +193,64 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     setCardioName(''); setCardioMinutes(''); setCardioKm(''); setShowAddCardio(false)
   }
 
+  function syncToCalendar() {
+    if (!programme) return
+    if (!programme.startDate) {
+      window.alert('Set a programme start date first')
+      return
+    }
+    const today = new Date(); today.setHours(0, 0, 0, 0)
+    // Remove all future uncompleted events for this programme
+    Object.entries(calendarEvents).forEach(([date, evs]) => {
+      if (new Date(date + 'T00:00:00') < today) return
+      evs.forEach(ev => {
+        if (ev.programmeId === programme.id && !ev.isCompleted) {
+          deleteCalendarEvent(ev.id, date)
+        }
+      })
+    })
+    // Re-build from phases
+    const sortedPhases = [...programme.phases].sort((a, b) => a.orderIndex - b.orderIndex)
+    let weekOffset = 0
+    for (const phase of sortedPhases) {
+      const phaseStart = new Date(programme.startDate! + 'T00:00:00')
+      phaseStart.setDate(phaseStart.getDate() + weekOffset * 7)
+      const phaseEnd = new Date(phaseStart)
+      phaseEnd.setDate(phaseEnd.getDate() + phase.durationWeeks * 7 - 1)
+      // Strength workouts
+      for (const templateId of phase.templateIds) {
+        const template = programme.templates.find(t => t.id === templateId)
+        if (!template) continue
+        const days: number[] = (phase.templateDays ?? {})[templateId] ?? []
+        if (days.length === 0) continue
+        const cur = new Date(phaseStart)
+        while (cur <= phaseEnd) {
+          const dow = (cur.getDay() + 6) % 7
+          if (days.includes(dow)) {
+            addCalendarEvent({ eventType: 'strength', date: localDateStr(cur), name: template.name, isCompleted: false, workoutTemplateId: template.id, programmeId: programme.id, durationMinutes: null, distanceKm: null, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#00BD44' })
+          }
+          cur.setDate(cur.getDate() + 1)
+        }
+      }
+      // Cardio sessions
+      for (const cid of (phase.cardioTemplateIds ?? [])) {
+        const ct = (programme.cardioTemplates ?? []).find(c => c.id === cid)
+        if (!ct) continue
+        const days: number[] = (phase.cardioTemplateDays ?? {})[cid] ?? []
+        if (days.length === 0) continue
+        const cur = new Date(phaseStart)
+        while (cur <= phaseEnd) {
+          const dow = (cur.getDay() + 6) % 7
+          if (days.includes(dow)) {
+            addCalendarEvent({ eventType: ct.activityType as CalendarEventType, date: localDateStr(cur), name: ct.name, isCompleted: false, workoutTemplateId: null, programmeId: programme.id, durationMinutes: ct.targetDurationMinutes, distanceKm: ct.targetDistanceKm, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#00BD44' })
+          }
+          cur.setDate(cur.getDate() + 1)
+        }
+      }
+      weekOffset += phase.durationWeeks
+    }
+  }
+
   // Templates not yet in the selected phase
   const unassignedTemplates = (phaseId: string) => {
     const phase = programme.phases.find(ph => ph.id === phaseId)
@@ -219,15 +281,21 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
         {/* ── PHASES ─────────────────────────────────────────────────────── */}
         <div className="px-5 pt-5">
-          {/* Start date */}
+          {/* Start date + sync */}
           <div className="flex items-center gap-3 mb-4">
-            <p className="text-xs text-text-secondary">Start date</p>
+            <p className="text-xs text-text-secondary flex-shrink-0">Start date</p>
             <input
               type="date"
               value={programme.startDate ?? ''}
               onChange={e => updateProgramme(programme.id, { startDate: e.target.value || null })}
               className="text-xs text-text bg-bg-element border border-border rounded-lg px-2 py-1 focus:outline-none focus:border-accent"
             />
+            <button
+              onClick={syncToCalendar}
+              className="ml-auto text-[10px] font-mono text-accent border border-accent/40 px-2.5 py-1 rounded-full hover:bg-accent/10 transition-colors flex-shrink-0"
+            >
+              Sync to calendar
+            </button>
           </div>
 
           <div className="flex items-center justify-between mb-3">
@@ -313,24 +381,50 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                               const ct = (programme.cardioTemplates ?? []).find(c => c.id === cid)
                               if (!ct) return null
                               return (
-                                <div key={ct.id} className="flex items-center justify-between px-4 py-2.5 bg-bg-subtle">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-base">{CARDIO_ICONS[ct.activityType]}</span>
-                                    <div>
-                                      <p className="text-xs text-text">{ct.name}</p>
-                                      <p className="text-[10px] text-text-tertiary capitalize">
-                                        {ct.activityType}
-                                        {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
-                                        {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
-                                      </p>
+                                <div key={ct.id} className="px-4 py-2.5 bg-bg-subtle">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-base">{CARDIO_ICONS[ct.activityType]}</span>
+                                      <div>
+                                        <p className="text-xs text-text">{ct.name}</p>
+                                        <p className="text-[10px] text-text-tertiary capitalize">
+                                          {ct.activityType}
+                                          {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
+                                          {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
+                                        </p>
+                                      </div>
                                     </div>
+                                    <button
+                                      onClick={() => removeCardioTemplateFromPhase(programme.id, phase.id, ct.id)}
+                                      className="text-xs text-error"
+                                    >
+                                      Remove
+                                    </button>
                                   </div>
-                                  <button
-                                    onClick={() => removeCardioTemplateFromPhase(programme.id, phase.id, ct.id)}
-                                    className="text-xs text-error"
-                                  >
-                                    Remove
-                                  </button>
+                                  {/* Day-of-week toggles for cardio */}
+                                  {(() => {
+                                    const days = (phase.cardioTemplateDays ?? {})[ct.id] ?? []
+                                    const DAYS = ['M','T','W','T','F','S','S']
+                                    return (
+                                      <div className="flex gap-1">
+                                        {DAYS.map((d, i) => (
+                                          <button
+                                            key={i}
+                                            onClick={() => {
+                                              const next = days.includes(i) ? days.filter(x => x !== i) : [...days, i]
+                                              setCardioTemplateDays(programme.id, phase.id, ct.id, next)
+                                            }}
+                                            className={[
+                                              'w-7 h-7 text-[10px] rounded-full flex items-center justify-center transition-colors',
+                                              days.includes(i) ? 'bg-accent text-accent-fg' : 'bg-bg-hover text-text-tertiary',
+                                            ].join(' ')}
+                                          >
+                                            {d}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )
+                                  })()}
                                 </div>
                               )
                             })}

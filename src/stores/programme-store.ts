@@ -46,6 +46,7 @@ interface ProgrammeStore {
   addTemplateToPhase(programmeId: string, phaseId: string, templateId: string): void
   removeTemplateFromPhase(programmeId: string, phaseId: string, templateId: string): void
   setTemplateDays(programmeId: string, phaseId: string, templateId: string, days: number[]): void
+  setCardioTemplateDays(programmeId: string, phaseId: string, cardioTemplateId: string, days: number[]): void
 
   // Phase overrides (per exercise)
   setExerciseOverride(programmeId: string, phaseId: string, templateId: string, override: PhaseExerciseOverride): void
@@ -330,6 +331,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           templateIds: [],
           cardioTemplateIds: [],
           templateDays: {},
+          cardioTemplateDays: {},
           overrides: [],
           isActive: false,
         }
@@ -437,6 +439,23 @@ export const useProgrammeStore = create<ProgrammeStore>()(
                 ph.id !== phaseId ? ph : {
                   ...ph,
                   templateDays: { ...(ph.templateDays ?? {}), [templateId]: days },
+                }
+              ),
+            }
+          ),
+        }))
+      },
+
+      setCardioTemplateDays(programmeId, phaseId, cardioTemplateId, days) {
+        set(s => ({
+          programmes: s.programmes.map(p =>
+            p.id !== programmeId ? p : {
+              ...p,
+              updatedAt: now(),
+              phases: p.phases.map(ph =>
+                ph.id !== phaseId ? ph : {
+                  ...ph,
+                  cardioTemplateDays: { ...(ph.cardioTemplateDays ?? {}), [cardioTemplateId]: days },
                 }
               ),
             }
@@ -662,7 +681,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 6,
+      version: 7,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -715,6 +734,15 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           state.programmes = (state.programmes ?? []).map(p => ({
             ...p,
             phases: (p.phases ?? []).map(ph => ({ ...ph, colorHex: '#00BD44' })),
+          }))
+        }
+        if (version < 7) {
+          state.programmes = (state.programmes ?? []).map(p => ({
+            ...p,
+            phases: (p.phases ?? []).map(ph => ({
+              ...ph,
+              cardioTemplateDays: (ph as Phase & { cardioTemplateDays?: Record<string, number[]> }).cardioTemplateDays ?? {},
+            })),
           }))
         }
         return state

@@ -92,6 +92,7 @@ export interface Phase {
   templateIds: string[]
   cardioTemplateIds: string[]
   templateDays: Record<string, number[]> // templateId → [0=Mon…6=Sun]
+  cardioTemplateDays: Record<string, number[]>
   overrides: PhaseTemplateOverride[]
   isActive: boolean
 }
