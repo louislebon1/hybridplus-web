@@ -213,7 +213,7 @@ export default function HomePage() {
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
                 {activePhase && (
-                  <span style={{ ...mono8, color: '#FFFFFF', background: activePhase.colorHex ?? '#00BD44', padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>
+                  <span style={{ ...mono8, color: '#0A0A0A', background: activePhase.colorHex ?? '#00BD44', padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>
                     {activePhase.name}
                   </span>
                 )}

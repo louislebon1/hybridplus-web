@@ -7,8 +7,7 @@ import { useProgrammeStore } from '@/stores/programme-store'
 import { Button, Input, EmptyState, Sheet } from '@/components/ui'
 import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType } from '@/types'
 
-// Progressively darker shades of the primary green — lighter = earlier phase
-const PHASE_COLORS = ['#00BD44', '#00A43B', '#008A32', '#007028', '#00571F', '#003C16']
+const PHASE_COLORS = ['#00BD44']
 const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
 
 function fmtSets(block: ExerciseTemplateBlock) {

@@ -662,7 +662,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 5,
+      version: 6,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -710,6 +710,12 @@ export const useProgrammeStore = create<ProgrammeStore>()(
               })),
             }
           })
+        }
+        if (version < 6) {
+          state.programmes = (state.programmes ?? []).map(p => ({
+            ...p,
+            phases: (p.phases ?? []).map(ph => ({ ...ph, colorHex: '#00BD44' })),
+          }))
         }
         return state
       },
