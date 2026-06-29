@@ -350,35 +350,45 @@ export default function HomePage() {
 }
 
 function StatCard({ value, unit, label }: { value: number; unit?: string; label: string }) {
-  const mono8: React.CSSProperties = {
+  const labelStyle: React.CSSProperties = {
     fontFamily: 'var(--font-geist-mono)',
-    fontSize: '8px',
+    fontSize: '0.625rem',
+    fontWeight: 500,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    lineHeight: '13px',
+    color: 'rgba(255,255,255,0.4)',
+  }
+  const unitStyle: React.CSSProperties = {
+    fontFamily: 'var(--font-geist-mono)',
+    fontSize: '0.75rem',
     fontWeight: 500,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    lineHeight: '10px',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'rgba(255,255,255,0.5)',
+    alignSelf: 'flex-end',
+    paddingBottom: '8px',
   }
   return (
     <div style={{
       background: 'rgba(255,255,255,0.04)',
       border: '1px solid rgba(255,255,255,0.06)',
-      borderRadius: '8px',
-      padding: '12px',
+      borderRadius: '12px',
+      padding: '20px 16px',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      gap: '4px',
-      height: '84px',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      minHeight: '140px',
     }}>
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '4px' }}>
-        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '32px', fontWeight: 600, lineHeight: '42px', color: '#FFFFFF' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '6px' }}>
+        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '64px', fontWeight: 600, lineHeight: '1', color: '#FFFFFF' }}>
           {value.toLocaleString()}
         </span>
-        {unit && <span style={{ ...mono8, paddingBottom: '4px' }}>{unit}</span>}
+        {unit && <span style={unitStyle}>{unit}</span>}
       </div>
-      <span style={{ ...mono8 }}>{label}</span>
+      <span style={labelStyle}>{label}</span>
     </div>
   )
 }
