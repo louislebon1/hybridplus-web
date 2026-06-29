@@ -2,13 +2,24 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, Plus, ChevronDown, ChevronRight, Check } from 'lucide-react'
+import { ChevronLeft, Plus, ChevronDown, ChevronRight, Check, Link2, Unlink } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { Button, Input, EmptyState, Sheet } from '@/components/ui'
 import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType } from '@/types'
 
 const PHASE_COLORS = ['#00BD44']
 const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
+
+function getSupersetLabels(blocks: ExerciseTemplateBlock[]): Record<string, string> {
+  const labels: Record<string, string> = {}
+  let idx = 0
+  for (const b of [...blocks].sort((a, c) => a.orderIndex - c.orderIndex)) {
+    if (b.supersetGroupId && !labels[b.supersetGroupId]) {
+      labels[b.supersetGroupId] = String.fromCharCode(65 + idx++)
+    }
+  }
+  return labels
+}
 
 function fmtSets(block: ExerciseTemplateBlock) {
   const reps = `${block.targetRepsMin}`
@@ -40,6 +51,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   const [exerciseSearch, setExerciseSearch] = useState('')
   const [assignWorkoutFor, setAssignWorkoutFor] = useState<string | null>(null) // phaseId
   const [assignCardioFor, setAssignCardioFor] = useState<string | null>(null) // phaseId
+  const [linkingFor, setLinkingFor] = useState<{ templateId: string; blockId: string } | null>(null)
   const [showAddCardio, setShowAddCardio] = useState(false)
   const [cardioName, setCardioName] = useState('')
   const [cardioType, setCardioType] = useState<ActivityType>('run')
@@ -138,6 +150,32 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   const filteredExercises = exerciseSearch
     ? EXERCISES.filter(e => e.toLowerCase().includes(exerciseSearch.toLowerCase()))
     : EXERCISES
+
+  function handleUnlinkBlock(blockId: string, templateId: string) {
+    if (!programme) return
+    const template = programme.templates.find(t => t.id === templateId)
+    if (!template) return
+    const block = template.exerciseBlocks.find(b => b.id === blockId)
+    if (!block?.supersetGroupId) return
+    const groupId = block.supersetGroupId
+    const members = template.exerciseBlocks.filter(b => b.supersetGroupId === groupId)
+    // If only 2 remain, dissolve the whole group
+    const toUnlink = members.length <= 2 ? members.map(b => b.id) : [blockId]
+    toUnlink.forEach(id => updateBlock(id, { supersetGroupId: null }))
+  }
+
+  function handleLinkSuperset(sourceId: string, targetId: string, templateId: string) {
+    if (!programme) return
+    const template = programme.templates.find(t => t.id === templateId)
+    if (!template) return
+    const source = template.exerciseBlocks.find(b => b.id === sourceId)
+    const target = template.exerciseBlocks.find(b => b.id === targetId)
+    if (!source || !target) return
+    const groupId = source.supersetGroupId || target.supersetGroupId || crypto.randomUUID()
+    updateBlock(sourceId, { supersetGroupId: groupId })
+    updateBlock(targetId, { supersetGroupId: groupId })
+    setLinkingFor(null)
+  }
 
   function handleAddCardio(e: React.FormEvent) {
     e.preventDefault()
@@ -437,6 +475,8 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             <div className="flex flex-col gap-2">
               {programme.templates.map(t => {
                 const expanded = expandedTemplates.has(t.id)
+                const ssLabels = getSupersetLabels(t.exerciseBlocks)
+                const sortedBlocks = [...t.exerciseBlocks].sort((a, b) => a.orderIndex - b.orderIndex)
                 return (
                   <div key={t.id} className="border border-border rounded-xl overflow-hidden">
                     <button
@@ -456,47 +496,65 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                       <div className="border-t border-border">
                         {/* Column headers */}
                         {t.exerciseBlocks.length > 0 && (
-                          <div className="grid grid-cols-[1fr_44px_44px_64px_28px] gap-1.5 px-4 pt-2 pb-1">
-                            {['Exercise', 'Sets', 'Reps', 'kg', ''].map((h) => (
-                              <span key={h} className="text-[0.625rem] text-text-tertiary font-mono text-center first:text-left">{h}</span>
+                          <div className="grid grid-cols-[1fr_44px_44px_64px_28px_24px] gap-1.5 px-4 pt-2 pb-1">
+                            {['Exercise', 'Sets', 'Reps', 'kg', '', ''].map((h, i) => (
+                              <span key={i} className="text-[0.625rem] text-text-tertiary font-mono text-center first:text-left">{h}</span>
                             ))}
                           </div>
                         )}
-                        {t.exerciseBlocks.map(block => (
-                          <div key={block.id} className="grid grid-cols-[1fr_44px_44px_64px_28px] gap-1.5 items-center px-4 py-1.5 border-t border-border/50">
-                            <p className="text-xs text-text truncate pr-1">{block.exerciseName}</p>
-                            <input
-                              type="number" min="1" max="20"
-                              value={block.targetSets || ''}
-                              onChange={e => updateBlock(block.id, { targetSets: e.target.value === '' ? 0 : parseInt(e.target.value) })}
-                              onBlur={() => { if (!block.targetSets || block.targetSets < 1) updateBlock(block.id, { targetSets: 1 }) }}
-                              className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular"
-                            />
-                            <input
-                              type="number" min="1" max="100"
-                              value={block.targetRepsMin || ''}
-                              onChange={e => {
-                                const v = e.target.value === '' ? 0 : parseInt(e.target.value)
-                                updateBlock(block.id, { targetRepsMin: v, targetRepsMax: v })
-                              }}
-                              onBlur={() => { if (!block.targetRepsMin || block.targetRepsMin < 1) updateBlock(block.id, { targetRepsMin: 1, targetRepsMax: 1 }) }}
-                              className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular"
-                            />
-                            <input
-                              type="number" min="0" step="0.5"
-                              value={block.targetWeightKg ?? ''}
-                              placeholder="—"
-                              onChange={e => updateBlock(block.id, { targetWeightKg: e.target.value ? parseFloat(e.target.value) : null })}
-                              className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular placeholder:text-text-tertiary"
-                            />
-                            <button
-                              className="h-7 w-7 flex items-center justify-center text-text-tertiary hover:text-error transition-colors"
-                              onClick={() => removeBlock(block.id)}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
+                        {sortedBlocks.map(block => {
+                          const label = block.supersetGroupId ? ssLabels[block.supersetGroupId] : null
+                          const inSS = !!block.supersetGroupId
+                          return (
+                            <div key={block.id} className={['grid grid-cols-[1fr_44px_44px_64px_28px_24px] gap-1.5 items-center px-4 py-1.5 border-t border-border/50', inSS ? 'bg-accent/5' : ''].join(' ')}>
+                              <div className="flex items-center gap-1 min-w-0">
+                                {label && (
+                                  <span className="text-[9px] font-bold font-mono text-accent flex-shrink-0 w-3">{label}</span>
+                                )}
+                                <p className="text-xs text-text truncate">{block.exerciseName}</p>
+                              </div>
+                              <input
+                                type="number" min="1" max="20"
+                                value={block.targetSets || ''}
+                                onChange={e => updateBlock(block.id, { targetSets: e.target.value === '' ? 0 : parseInt(e.target.value) })}
+                                onBlur={() => { if (!block.targetSets || block.targetSets < 1) updateBlock(block.id, { targetSets: 1 }) }}
+                                className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular"
+                              />
+                              <input
+                                type="number" min="1" max="100"
+                                value={block.targetRepsMin || ''}
+                                onChange={e => {
+                                  const v = e.target.value === '' ? 0 : parseInt(e.target.value)
+                                  updateBlock(block.id, { targetRepsMin: v, targetRepsMax: v })
+                                }}
+                                onBlur={() => { if (!block.targetRepsMin || block.targetRepsMin < 1) updateBlock(block.id, { targetRepsMin: 1, targetRepsMax: 1 }) }}
+                                className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular"
+                              />
+                              <input
+                                type="number" min="0" step="0.5"
+                                value={block.targetWeightKg ?? ''}
+                                placeholder="—"
+                                onChange={e => updateBlock(block.id, { targetWeightKg: e.target.value ? parseFloat(e.target.value) : null })}
+                                className="h-7 w-full text-center text-xs text-text bg-bg-hover border border-border rounded-lg focus:outline-none focus:border-accent tabular placeholder:text-text-tertiary"
+                              />
+                              <button
+                                className="h-7 w-7 flex items-center justify-center text-text-tertiary hover:text-error transition-colors"
+                                onClick={() => removeBlock(block.id)}
+                              >
+                                ✕
+                              </button>
+                              <button
+                                className="h-7 w-6 flex items-center justify-center transition-colors"
+                                onClick={() => inSS ? handleUnlinkBlock(block.id, t.id) : setLinkingFor({ templateId: t.id, blockId: block.id })}
+                                title={inSS ? 'Remove from superset' : 'Add to superset'}
+                              >
+                                {inSS
+                                  ? <Unlink size={11} className="text-accent" />
+                                  : <Link2 size={11} className="text-text-tertiary opacity-40" />}
+                              </button>
+                            </div>
+                          )
+                        })}
                         <div className="flex gap-2 px-4 py-3 border-t border-border/50 mt-1">
                           <button
                             className="flex-1 text-xs text-accent py-2 border border-dashed border-accent/40 rounded-xl hover:bg-accent/5"
@@ -661,6 +719,50 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             )}
           </div>
         )}
+      </Sheet>
+
+      {/* Superset picker sheet */}
+      <Sheet visible={!!linkingFor} onClose={() => setLinkingFor(null)} title="Superset With">
+        {linkingFor && (() => {
+          const template = programme.templates.find(t => t.id === linkingFor.templateId)
+          const source = template?.exerciseBlocks.find(b => b.id === linkingFor.blockId)
+          const labels = getSupersetLabels(template?.exerciseBlocks ?? [])
+          const candidates = (template?.exerciseBlocks ?? [])
+            .filter(b => b.id !== linkingFor.blockId)
+            .sort((a, b) => a.orderIndex - b.orderIndex)
+          return candidates.length === 0 ? (
+            <p className="px-5 py-8 text-sm text-text-secondary text-center">Add more exercises to this workout first</p>
+          ) : (
+            <div className="divide-y divide-border pb-4">
+              {source && (
+                <div className="px-5 py-3 bg-accent/5">
+                  <p className="text-xs text-text-tertiary mb-0.5">Linking</p>
+                  <p className="text-sm text-accent">{source.exerciseName}</p>
+                </div>
+              )}
+              {candidates.map(b => {
+                const existingLabel = b.supersetGroupId ? labels[b.supersetGroupId] : null
+                const alreadyLinked = source?.supersetGroupId && b.supersetGroupId === source.supersetGroupId
+                return (
+                  <button
+                    key={b.id}
+                    className="w-full text-left px-5 py-3.5 hover:bg-bg-element transition-colors flex items-center justify-between"
+                    onClick={() => handleLinkSuperset(linkingFor.blockId, b.id, linkingFor.templateId)}
+                    disabled={!!alreadyLinked}
+                  >
+                    <div>
+                      <p className="text-sm text-text">{b.exerciseName}</p>
+                      {existingLabel && (
+                        <p className="text-xs text-accent mt-0.5">In superset {existingLabel} — will merge</p>
+                      )}
+                    </div>
+                    {alreadyLinked && <Check size={14} className="text-accent flex-shrink-0" />}
+                  </button>
+                )
+              })}
+            </div>
+          )
+        })()}
       </Sheet>
 
       {/* Add exercise sheet */}
