@@ -39,6 +39,7 @@ interface ProgrammeStore {
 
   // Phase CRUD
   addPhase(programmeId: string, input: { name: string; description?: string; durationWeeks: number; colorHex?: string }): Phase
+  addDeloadPhase(programmeId: string): Phase
   updatePhase(programmeId: string, phaseId: string, updates: Partial<Pick<Phase, 'name' | 'description' | 'durationWeeks' | 'colorHex' | 'orderIndex'>>): void
   deletePhase(programmeId: string, phaseId: string): void
   reorderPhases(programmeId: string, orderedIds: string[]): void
@@ -337,6 +338,51 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           cardioTemplateDays: prevPhase ? { ...prevPhase.cardioTemplateDays } : {},
           overrides: [],
           isActive: false,
+          isDeload: false,
+        }
+        set(s => ({
+          programmes: s.programmes.map(p =>
+            p.id === programmeId ? { ...p, phases: [...p.phases, phase], updatedAt: now() } : p
+          ),
+        }))
+        return phase
+      },
+
+      addDeloadPhase(programmeId) {
+        const programme = get().programmes.find(p => p.id === programmeId)
+        if (!programme) return null as unknown as Phase
+        const prevPhase = [...programme.phases].sort((a, b) => b.orderIndex - a.orderIndex)[0]
+        // Build 60% intensity overrides for every exercise in every assigned template
+        const overrides: PhaseTemplateOverride[] = (prevPhase?.templateIds ?? []).flatMap(templateId => {
+          const template = programme.templates.find(t => t.id === templateId)
+          if (!template) return []
+          return [{
+            templateId,
+            exerciseOverrides: template.exerciseBlocks.map(b => ({
+              blockId: b.id,
+              targetSetsOverride: null,
+              targetRepsMinOverride: null,
+              targetRepsMaxOverride: null,
+              targetRpeOverride: null,
+              intensityPct: 60,
+            })),
+          }]
+        })
+        const phase: Phase = {
+          id: crypto.randomUUID(),
+          programmeId,
+          name: 'Deload Week',
+          description: null,
+          durationWeeks: 1,
+          orderIndex: programme.phases.length,
+          colorHex: '#00BD44',
+          templateIds: prevPhase ? [...prevPhase.templateIds] : [],
+          cardioTemplateIds: prevPhase ? [...prevPhase.cardioTemplateIds] : [],
+          templateDays: prevPhase ? { ...prevPhase.templateDays } : {},
+          cardioTemplateDays: prevPhase ? { ...prevPhase.cardioTemplateDays } : {},
+          overrides,
+          isActive: false,
+          isDeload: true,
         }
         set(s => ({
           programmes: s.programmes.map(p =>
@@ -684,7 +730,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 7,
+      version: 8,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -745,6 +791,15 @@ export const useProgrammeStore = create<ProgrammeStore>()(
             phases: (p.phases ?? []).map(ph => ({
               ...ph,
               cardioTemplateDays: (ph as Phase & { cardioTemplateDays?: Record<string, number[]> }).cardioTemplateDays ?? {},
+            })),
+          }))
+        }
+        if (version < 8) {
+          state.programmes = (state.programmes ?? []).map(p => ({
+            ...p,
+            phases: (p.phases ?? []).map(ph => ({
+              ...ph,
+              isDeload: (ph as Phase & { isDeload?: boolean }).isDeload ?? false,
             })),
           }))
         }

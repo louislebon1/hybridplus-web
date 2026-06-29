@@ -37,6 +37,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     removeTemplateFromPhase, setTemplateDays, setExerciseOverride, removeExerciseOverride,
     updateProgramme, addCardioTemplate, deleteCardioTemplate,
     addCardioTemplateToPhase, removeCardioTemplateFromPhase, setCardioTemplateDays,
+    addDeloadPhase,
   } = useProgrammeStore()
 
   const { events: calendarEvents, addEvent: addCalendarEvent, deleteEvent: deleteCalendarEvent } = useCalendarStore()
@@ -300,7 +301,15 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
           <div className="flex items-center justify-between mb-3">
             <p className="eyebrow">Phases</p>
-            <button onClick={() => setShowAddPhase(true)} className="text-accent text-xs">+ ADD</button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => addDeloadPhase(programme.id)}
+                className="text-text-secondary text-xs hover:text-text transition-colors"
+              >
+                + Deload week
+              </button>
+              <button onClick={() => setShowAddPhase(true)} className="text-accent text-xs">+ ADD</button>
+            </div>
           </div>
 
           {programme.phases.length === 0 ? (
@@ -333,8 +342,11 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             {phase.isActive && (
                               <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-accent/15 text-accent">ACTIVE</span>
                             )}
+                            {phase.isDeload && (
+                              <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-bg-hover text-text-secondary">DELOAD</span>
+                            )}
                           </div>
-                          <p className="text-xs text-text-secondary">{phase.durationWeeks} wks · {phaseTemplates.length} workouts</p>
+                          <p className="text-xs text-text-secondary">{phase.durationWeeks} wks · {phaseTemplates.length} workouts{phase.isDeload ? ' · 60% load' : ''}</p>
                         </div>
                         {expanded
                           ? <ChevronDown size={16} className="text-text-tertiary" />

@@ -95,6 +95,7 @@ export interface Phase {
   cardioTemplateDays: Record<string, number[]>
   overrides: PhaseTemplateOverride[]
   isActive: boolean
+  isDeload: boolean
 }
 
 export interface Programme {
