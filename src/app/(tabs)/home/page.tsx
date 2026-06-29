@@ -31,7 +31,7 @@ const mono8: React.CSSProperties = {
 
 const mono10: React.CSSProperties = {
   fontFamily: 'var(--font-geist-mono)',
-  fontSize: '10px',
+  fontSize: '0.625rem',
   fontWeight: 500,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',

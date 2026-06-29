@@ -395,7 +395,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                         {t.exerciseBlocks.length > 0 && (
                           <div className="grid grid-cols-[1fr_44px_44px_64px_28px] gap-1.5 px-4 pt-2 pb-1">
                             {['Exercise', 'Sets', 'Reps', 'kg', ''].map((h) => (
-                              <span key={h} className="text-[10px] text-text-tertiary font-mono text-center first:text-left">{h}</span>
+                              <span key={h} className="text-[0.625rem] text-text-tertiary font-mono text-center first:text-left">{h}</span>
                             ))}
                           </div>
                         )}
