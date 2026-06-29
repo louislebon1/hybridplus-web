@@ -320,6 +320,9 @@ export const useProgrammeStore = create<ProgrammeStore>()(
 
       addPhase(programmeId, input) {
         const programme = get().programmes.find(p => p.id === programmeId)
+        const prevPhase = programme
+          ? [...programme.phases].sort((a, b) => b.orderIndex - a.orderIndex)[0]
+          : undefined
         const phase: Phase = {
           id: crypto.randomUUID(),
           programmeId,
@@ -328,10 +331,10 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           durationWeeks: input.durationWeeks,
           orderIndex: programme ? programme.phases.length : 0,
           colorHex: input.colorHex ?? null,
-          templateIds: [],
-          cardioTemplateIds: [],
-          templateDays: {},
-          cardioTemplateDays: {},
+          templateIds: prevPhase ? [...prevPhase.templateIds] : [],
+          cardioTemplateIds: prevPhase ? [...prevPhase.cardioTemplateIds] : [],
+          templateDays: prevPhase ? { ...prevPhase.templateDays } : {},
+          cardioTemplateDays: prevPhase ? { ...prevPhase.cardioTemplateDays } : {},
           overrides: [],
           isActive: false,
         }
