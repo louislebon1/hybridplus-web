@@ -374,13 +374,13 @@ function StatCard({ value, unit, label }: { value: number; unit?: string; label:
       background: 'rgba(255,255,255,0.04)',
       border: '1px solid rgba(255,255,255,0.06)',
       borderRadius: '12px',
-      padding: '20px 16px',
+      padding: '16px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '8px',
-      minHeight: '140px',
+      gap: '6px',
+      minHeight: '100px',
     }}>
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '6px' }}>
         <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '48px', fontWeight: 600, lineHeight: '1', color: '#FFFFFF' }}>
