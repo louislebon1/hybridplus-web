@@ -328,6 +328,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   .filter(Boolean) as typeof programme.templates
 
                 function movePhase(dir: -1 | 1) {
+                  if (!programme) return
                   const ids = sorted.map(p => p.id)
                   const from = idx
                   const to = idx + dir
