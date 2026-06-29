@@ -95,7 +95,7 @@ export default function HomePage() {
   const weekEnd = new Date(weekDays[6]); weekEnd.setHours(23, 59, 59, 999)
 
   const activeProgramme = programmes.find(p => p.isActive) ?? programmes[0] ?? null
-  const activePhase = activeProgramme?.phases.find(ph => ph.isActive) ?? null
+  const activePhase = activeProgramme?.phases.find(ph => ph.isActive) ?? activeProgramme?.phases[0] ?? null
 
   const weekNumber = activeProgramme?.startDate
     ? Math.max(1, Math.floor((Date.now() - new Date(activeProgramme.startDate + 'T00:00:00').getTime()) / (7 * 86400000)) + 1)
