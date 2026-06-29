@@ -228,7 +228,7 @@ export default function HomePage() {
           </div>
 
           {/* ── Streak ── */}
-          <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px', height: '84px' }}>
+          <div style={{ ...card, padding: '20px 12px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '72px', flexShrink: 0 }}>
               <Flame size={24} color="#00BD44" />
               <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
