@@ -200,7 +200,7 @@ export default function HomePage() {
 
                     <div style={{ display: 'flex', flexDirection: 'row', gap: '2px', height: '6px', alignItems: 'center' }}>
                       {hasStrength && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#00BD44', display: 'block' }} />}
-                      {hasCardio   && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: 'rgba(255,255,255,0.5)', display: 'block' }} />}
+                      {hasCardio   && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#fefefe', display: 'block' }} />}
                     </div>
                   </button>
                 )
