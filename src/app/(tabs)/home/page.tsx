@@ -361,13 +361,13 @@ function StatCard({ value, unit, label }: { value: number; unit?: string; label:
   }
   const unitStyle: React.CSSProperties = {
     fontFamily: 'var(--font-geist-mono)',
-    fontSize: '0.75rem',
+    fontSize: '0.625rem',
     fontWeight: 500,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     color: 'rgba(255,255,255,0.5)',
     alignSelf: 'flex-end',
-    paddingBottom: '8px',
+    paddingBottom: '4px',
   }
   return (
     <div style={{
@@ -383,7 +383,7 @@ function StatCard({ value, unit, label }: { value: number; unit?: string; label:
       minHeight: '140px',
     }}>
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '6px' }}>
-        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '64px', fontWeight: 600, lineHeight: '1', color: '#FFFFFF' }}>
+        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '32px', fontWeight: 600, lineHeight: '1', color: '#FFFFFF' }}>
           {value.toLocaleString()}
         </span>
         {unit && <span style={unitStyle}>{unit}</span>}
