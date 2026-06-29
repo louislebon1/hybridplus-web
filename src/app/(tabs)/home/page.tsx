@@ -22,11 +22,11 @@ const card: React.CSSProperties = {
 
 const mono8: React.CSSProperties = {
   fontFamily: 'var(--font-geist-mono)',
-  fontSize: '8px',
+  fontSize: '0.625rem',
   fontWeight: 500,
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
-  lineHeight: '10px',
+  lineHeight: '13px',
   color: '#FFFFFF',
 }
 
