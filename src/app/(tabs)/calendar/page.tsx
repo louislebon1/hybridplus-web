@@ -9,8 +9,8 @@ import type { CalendarEventType } from '@/types'
 import { localDateStr } from '@/lib/date'
 
 const EVENT_COLORS: Record<CalendarEventType, string> = {
-  strength: '#1DB954', run: '#1DB954', swim: '#1DB954', cycle: '#1DB954',
-  walk: '#1DB954', row: '#1DB954', rest: '#3E3E3E', other: '#A7A7A7',
+  strength: '#1DB954', run: '#fefefe', swim: '#fefefe', cycle: '#fefefe',
+  walk: '#fefefe', row: '#fefefe', rest: '#3E3E3E', other: '#A7A7A7',
 }
 
 const EVENT_ICONS: Record<CalendarEventType, string> = {

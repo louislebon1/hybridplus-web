@@ -303,8 +303,7 @@ export default function HomePage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {selectedEvents.map(ev => {
-                  const isStrength   = ev.eventType === 'strength'
-                  const accentColor  = ev.eventType === 'rest' ? 'rgba(255,255,255,0.2)' : '#00BD44'
+                  const accentColor  = ev.eventType === 'strength' ? '#00BD44' : ev.eventType === 'rest' ? 'rgba(255,255,255,0.15)' : '#fefefe'
                   const badgeFg      = '#0A0A0A'
                   const templateName = getTemplateName(ev.workoutTemplateId, ev.programmeId)
                   const duration     = getDurationRange(ev, programmes)
