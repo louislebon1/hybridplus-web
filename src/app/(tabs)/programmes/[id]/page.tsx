@@ -2,7 +2,7 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, Plus, ChevronDown, ChevronRight, Check, Link2, Unlink } from 'lucide-react'
+import { ChevronLeft, Plus, ChevronDown, ChevronRight, Check, Link2, Unlink, ArrowUp, ArrowDown } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, EmptyState, Sheet } from '@/components/ui'
@@ -37,7 +37,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     removeTemplateFromPhase, setTemplateDays, setExerciseOverride, removeExerciseOverride,
     updateProgramme, addCardioTemplate, deleteCardioTemplate,
     addCardioTemplateToPhase, removeCardioTemplateFromPhase, setCardioTemplateDays,
-    addDeloadPhase,
+    addDeloadPhase, reorderPhases,
   } = useProgrammeStore()
 
   const { events: calendarEvents, addEvent: addCalendarEvent, deleteEvent: deleteCalendarEvent } = useCalendarStore()
@@ -321,11 +321,20 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             </button>
           ) : (
             <div className="flex flex-col gap-2">
-              {programme.phases.map(phase => {
+              {[...programme.phases].sort((a, b) => a.orderIndex - b.orderIndex).map((phase, idx, sorted) => {
                 const expanded = expandedPhases.has(phase.id)
                 const phaseTemplates = phase.templateIds
                   .map(tid => programme.templates.find(t => t.id === tid))
                   .filter(Boolean) as typeof programme.templates
+
+                function movePhase(dir: -1 | 1) {
+                  const ids = sorted.map(p => p.id)
+                  const from = idx
+                  const to = idx + dir
+                  if (to < 0 || to >= ids.length) return
+                  ;[ids[from], ids[to]] = [ids[to], ids[from]]
+                  reorderPhases(programme.id, ids)
+                }
 
                 return (
                   <div key={phase.id} className="border border-border rounded-xl overflow-hidden">
@@ -352,6 +361,23 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                           ? <ChevronDown size={16} className="text-text-tertiary" />
                           : <ChevronRight size={16} className="text-text-tertiary" />}
                       </button>
+                      {/* Reorder buttons */}
+                      <div className="flex flex-col pr-2">
+                        <button
+                          onClick={() => movePhase(-1)}
+                          disabled={idx === 0}
+                          className="p-1 text-text-tertiary disabled:opacity-20 hover:text-text transition-colors"
+                        >
+                          <ArrowUp size={12} />
+                        </button>
+                        <button
+                          onClick={() => movePhase(1)}
+                          disabled={idx === sorted.length - 1}
+                          className="p-1 text-text-tertiary disabled:opacity-20 hover:text-text transition-colors"
+                        >
+                          <ArrowDown size={12} />
+                        </button>
+                      </div>
                     </div>
 
                     {expanded && (
