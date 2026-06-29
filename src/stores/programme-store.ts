@@ -662,7 +662,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 4,
+      version: 5,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -697,6 +697,19 @@ export const useProgrammeStore = create<ProgrammeStore>()(
               cardioTemplateIds: (ph as Phase & { cardioTemplateIds?: string[] }).cardioTemplateIds ?? [],
             })),
           }))
+        }
+        if (version < 5) {
+          const GREEN_PHASES = ['#00BD44', '#00A43B', '#008A32', '#007028', '#00571F', '#003C16']
+          state.programmes = (state.programmes ?? []).map(p => {
+            const sorted = [...(p.phases ?? [])].sort((a, b) => a.orderIndex - b.orderIndex).map(ph => ph.id)
+            return {
+              ...p,
+              phases: (p.phases ?? []).map(ph => ({
+                ...ph,
+                colorHex: GREEN_PHASES[sorted.indexOf(ph.id) % GREEN_PHASES.length],
+              })),
+            }
+          })
         }
         return state
       },
