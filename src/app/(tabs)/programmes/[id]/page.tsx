@@ -216,9 +216,9 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   <div key={phase.id} className="border border-border rounded-xl overflow-hidden">
                     {/* Phase header row */}
                     <div className="flex items-center gap-0 bg-bg-element">
-                      <div className="w-1 self-stretch flex-shrink-0" style={{ backgroundColor: phase.colorHex ?? '#1DB954' }} />
+                      <div className="w-2 self-stretch flex-shrink-0" style={{ backgroundColor: phase.colorHex ?? '#00BD44' }} />
                       <button
-                        className="flex-1 flex items-center justify-between px-4 py-3 text-left"
+                        className="flex-1 flex items-center justify-between px-3 py-3 text-left"
                         onClick={() => togglePhase(phase.id)}
                       >
                         <div>
