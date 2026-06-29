@@ -8,6 +8,7 @@ import { useCalendarStore } from '@/stores/calendar-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import type { CalendarEventData, Programme } from '@/types'
+import { localDateStr } from '@/lib/date'
 
 const DAY_LABELS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const DAY_SHORT  = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -39,7 +40,7 @@ const mono10: React.CSSProperties = {
   color: '#FFFFFF',
 }
 
-function isoDate(d: Date) { return d.toISOString().split('T')[0] }
+const isoDate = localDateStr
 
 function getWeekDays(): Date[] {
   const now = new Date()

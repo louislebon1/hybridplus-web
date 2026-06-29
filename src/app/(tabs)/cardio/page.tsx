@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useCardioStore } from '@/stores/cardio-store'
 import { Button, Input, EmptyState } from '@/components/ui'
 import type { ActivityType, RunSessionType } from '@/types'
+import { localDateStr } from '@/lib/date'
 
 const ACTIVITY_ICONS: Record<ActivityType, string> = {
   run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣',
@@ -33,7 +34,7 @@ export default function CardioPage() {
 
   const [form, setForm] = useState({
     activityType: 'run' as ActivityType,
-    sessionDate: new Date().toISOString().split('T')[0],
+    sessionDate: localDateStr(),
     hours: '', minutes: '30',
     distanceKm: '', heartRate: '', rpe: '',
     runType: 'easy' as RunSessionType,
@@ -65,7 +66,7 @@ export default function CardioPage() {
       notes: form.notes || null,
       splits: [],
     })
-    setForm({ activityType: 'run', sessionDate: new Date().toISOString().split('T')[0], hours: '', minutes: '30', distanceKm: '', heartRate: '', rpe: '', runType: 'easy', notes: '' })
+    setForm({ activityType: 'run', sessionDate: localDateStr(), hours: '', minutes: '30', distanceKm: '', heartRate: '', rpe: '', runType: 'easy', notes: '' })
     setTab('history')
   }
 

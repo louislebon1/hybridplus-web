@@ -6,6 +6,7 @@ import { useCalendarStore } from '@/stores/calendar-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import type { CalendarEventType } from '@/types'
+import { localDateStr } from '@/lib/date'
 
 const EVENT_COLORS: Record<CalendarEventType, string> = {
   strength: '#1DB954', run: '#1DB954', swim: '#06b6d4', cycle: '#a855f7',
@@ -20,7 +21,7 @@ const EVENT_ICONS: Record<CalendarEventType, string> = {
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
-function isoDate(d: Date) { return d.toISOString().split('T')[0] }
+const isoDate = localDateStr
 
 function formatDayHeading(dateStr: string) {
   const d = new Date(dateStr + 'T00:00:00')

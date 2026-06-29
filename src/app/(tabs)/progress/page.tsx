@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { useCardioStore } from '@/stores/cardio-store'
+import { localDateStr } from '@/lib/date'
 
 function fmtPace(paceSecs: number) {
   const m = Math.floor(paceSecs / 60)
@@ -23,7 +24,7 @@ function getWeekKey(dateStr: string) {
   const day = d.getDay()
   const mon = new Date(d)
   mon.setDate(d.getDate() - ((day + 6) % 7))
-  return mon.toISOString().split('T')[0]
+  return localDateStr(mon)
 }
 
 export default function ProgressPage() {
@@ -51,7 +52,7 @@ export default function ProgressPage() {
   ])
   let streak = 0
   const cursor = new Date(); cursor.setHours(0,0,0,0)
-  while (allDates.has(cursor.toISOString().split('T')[0])) {
+  while (allDates.has(localDateStr(cursor))) {
     streak++; cursor.setDate(cursor.getDate() - 1)
   }
 
@@ -65,8 +66,8 @@ export default function ProgressPage() {
       const ws = new Date(weekStart)
       ws.setDate(weekStart.getDate() - i * 7)
       const we = new Date(ws); we.setDate(ws.getDate() + 6)
-      const wsStr = ws.toISOString().split('T')[0]
-      const weStr = we.toISOString().split('T')[0]
+      const wsStr = localDateStr(ws)
+      const weStr = localDateStr(we)
       const hasSession = sessions.some((s) => s.sessionDate >= wsStr && s.sessionDate <= weStr)
         || cardioSessions.some((s) => s.sessionDate >= wsStr && s.sessionDate <= weStr)
       if (!hasSession) break

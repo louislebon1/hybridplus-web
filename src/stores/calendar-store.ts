@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { CalendarEventData } from '@/types'
 import { syncCalendarEvents, deleteCalendarEventFromCloud, loadCalendarEvents } from '@/lib/sync'
+import { localDateStr } from '@/lib/date'
 
 type EventMap = Record<string, CalendarEventData[]>
 
@@ -26,7 +27,7 @@ export const useCalendarStore = create<CalendarStore>()(
   persist(
     (set, get) => ({
       events: {},
-      selectedDate: new Date().toISOString().split('T')[0],
+      selectedDate: localDateStr(),
       viewMode: 'month',
 
       setSelectedDate(date) {
