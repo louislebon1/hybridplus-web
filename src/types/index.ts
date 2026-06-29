@@ -71,6 +71,16 @@ export interface PhaseTemplateOverride {
   exerciseOverrides: PhaseExerciseOverride[]
 }
 
+export interface CardioTemplate {
+  id: string
+  programmeId: string
+  name: string
+  activityType: ActivityType
+  targetDurationMinutes: number | null
+  targetDistanceKm: number | null
+  notes: string | null
+}
+
 export interface Phase {
   id: string
   programmeId: string
@@ -80,6 +90,7 @@ export interface Phase {
   orderIndex: number
   colorHex: string | null
   templateIds: string[]
+  cardioTemplateIds: string[]
   templateDays: Record<string, number[]> // templateId → [0=Mon…6=Sun]
   overrides: PhaseTemplateOverride[]
   isActive: boolean
@@ -95,6 +106,7 @@ export interface Programme {
   updatedAt: string
   phases: Phase[]
   templates: WorkoutTemplate[]
+  cardioTemplates: CardioTemplate[]
 }
 
 // Session types

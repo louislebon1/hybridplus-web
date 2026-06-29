@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import { ChevronLeft, Plus, ChevronDown, ChevronRight, Check } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { Button, Input, EmptyState, Sheet } from '@/components/ui'
-import type { ExerciseTemplateBlock, PhaseExerciseOverride } from '@/types'
+import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType } from '@/types'
 
 const PHASE_COLORS = ['#1DB954', '#06b6d4', '#f59e0b', '#a855f7', '#F15E6C', '#84cc16']
+const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
 
 function fmtSets(block: ExerciseTemplateBlock) {
   const reps = `${block.targetRepsMin}`
@@ -21,7 +22,8 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     programmes, addTemplate, addPhase, deleteTemplate, deletePhase,
     addBlock, updateBlock, removeBlock, setActivePhase, addTemplateToPhase,
     removeTemplateFromPhase, setTemplateDays, setExerciseOverride, removeExerciseOverride,
-    updateProgramme,
+    updateProgramme, addCardioTemplate, deleteCardioTemplate,
+    addCardioTemplateToPhase, removeCardioTemplateFromPhase,
   } = useProgrammeStore()
 
   const programme = programmes.find((p) => p.id === id)
@@ -37,6 +39,12 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   const [addExerciseFor, setAddExerciseFor] = useState<string | null>(null)
   const [exerciseSearch, setExerciseSearch] = useState('')
   const [assignWorkoutFor, setAssignWorkoutFor] = useState<string | null>(null) // phaseId
+  const [assignCardioFor, setAssignCardioFor] = useState<string | null>(null) // phaseId
+  const [showAddCardio, setShowAddCardio] = useState(false)
+  const [cardioName, setCardioName] = useState('')
+  const [cardioType, setCardioType] = useState<ActivityType>('run')
+  const [cardioMinutes, setCardioMinutes] = useState('')
+  const [cardioKm, setCardioKm] = useState('')
   // Override editing: { phaseId, templateId, blockId }
   const [editingOverride, setEditingOverride] = useState<{ phaseId: string; templateId: string; blockId: string } | null>(null)
   const [overrideForm, setOverrideForm] = useState<{
@@ -131,11 +139,29 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     ? EXERCISES.filter(e => e.toLowerCase().includes(exerciseSearch.toLowerCase()))
     : EXERCISES
 
+  function handleAddCardio(e: React.FormEvent) {
+    e.preventDefault()
+    if (!cardioName.trim() || !programme) return
+    addCardioTemplate(programme.id, {
+      name: cardioName.trim(),
+      activityType: cardioType,
+      targetDurationMinutes: cardioMinutes ? parseInt(cardioMinutes) : null,
+      targetDistanceKm: cardioKm ? parseFloat(cardioKm) : null,
+    })
+    setCardioName(''); setCardioMinutes(''); setCardioKm(''); setShowAddCardio(false)
+  }
+
   // Templates not yet in the selected phase
   const unassignedTemplates = (phaseId: string) => {
     const phase = programme.phases.find(ph => ph.id === phaseId)
     if (!phase) return programme.templates
     return programme.templates.filter(t => !phase.templateIds.includes(t.id))
+  }
+
+  const unassignedCardioTemplates = (phaseId: string) => {
+    const phase = programme.phases.find(ph => ph.id === phaseId)
+    if (!phase) return programme.cardioTemplates ?? []
+    return (programme.cardioTemplates ?? []).filter(ct => !(phase.cardioTemplateIds ?? []).includes(ct.id))
   }
 
   return (
@@ -229,12 +255,49 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             + Assign workout
                           </button>
                           <button
+                            onClick={() => setAssignCardioFor(phase.id)}
+                            className="text-xs text-text-secondary border border-border px-3 py-1 rounded-full hover:bg-bg-hover"
+                          >
+                            + Assign cardio
+                          </button>
+                          <button
                             onClick={() => { if (window.confirm('Delete this phase?')) deletePhase(programme.id, phase.id) }}
                             className="text-xs text-error ml-auto"
                           >
                             Delete
                           </button>
                         </div>
+
+                        {/* Assigned cardio */}
+                        {(phase.cardioTemplateIds ?? []).length > 0 && (
+                          <div className="divide-y divide-border border-t border-border">
+                            {(phase.cardioTemplateIds ?? []).map(cid => {
+                              const ct = (programme.cardioTemplates ?? []).find(c => c.id === cid)
+                              if (!ct) return null
+                              return (
+                                <div key={ct.id} className="flex items-center justify-between px-4 py-2.5 bg-bg-subtle">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-base">{CARDIO_ICONS[ct.activityType]}</span>
+                                    <div>
+                                      <p className="text-xs text-text">{ct.name}</p>
+                                      <p className="text-[10px] text-text-tertiary capitalize">
+                                        {ct.activityType}
+                                        {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
+                                        {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => removeCardioTemplateFromPhase(programme.id, phase.id, ct.id)}
+                                    className="text-xs text-error"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
 
                         {/* Assigned workouts */}
                         {phaseTemplates.length === 0 ? (
@@ -467,7 +530,113 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             </form>
           )}
         </div>
+
+        {/* ── CARDIO SESSIONS ─────────────────────────────────────────────── */}
+        <div className="px-5 pt-6 pb-6">
+          <div className="flex items-center justify-between mb-3">
+            <p className="eyebrow">Cardio Sessions</p>
+            <button onClick={() => setShowAddCardio(true)} className="text-accent text-xs">+ ADD</button>
+          </div>
+
+          {(programme.cardioTemplates ?? []).length === 0 ? (
+            <EmptyState
+              icon="🏃"
+              title="No cardio sessions"
+              description="Add cardio sessions to include in this programme"
+              action={{ label: 'Add Cardio', onClick: () => setShowAddCardio(true) }}
+            />
+          ) : (
+            <div className="flex flex-col gap-2">
+              {(programme.cardioTemplates ?? []).map(ct => (
+                <div key={ct.id} className="border border-border rounded-xl px-4 py-3 flex items-center justify-between bg-bg-element">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{CARDIO_ICONS[ct.activityType]}</span>
+                    <div>
+                      <p className="text-sm text-text">{ct.name}</p>
+                      <p className="text-xs text-text-secondary capitalize">
+                        {ct.activityType}
+                        {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
+                        {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { if (window.confirm('Delete this cardio session?')) deleteCardioTemplate(ct.id) }}
+                    className="text-xs text-error"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {showAddCardio && (
+            <form onSubmit={handleAddCardio} className="mt-3 bg-bg-element border border-border rounded-xl p-4 flex flex-col gap-3">
+              <p className="text-sm text-text">New cardio session</p>
+              <Input placeholder="Session name (e.g. Easy Run)" value={cardioName} onChange={e => setCardioName(e.target.value)} autoFocus />
+              <div>
+                <p className="text-xs text-text-secondary mb-1.5">Activity</p>
+                <div className="flex gap-1.5 flex-wrap">
+                  {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map(type => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setCardioType(type)}
+                      className={[
+                        'px-3 py-1 rounded-full text-xs border transition-colors',
+                        cardioType === type ? 'bg-accent/15 border-accent text-accent' : 'border-border text-text-secondary',
+                      ].join(' ')}
+                    >
+                      {CARDIO_ICONS[type]} {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Input label="Duration (min)" type="number" min="1" placeholder="30" value={cardioMinutes} onChange={e => setCardioMinutes(e.target.value)} />
+                <Input label="Distance (km)" type="number" step="0.1" placeholder="5" value={cardioKm} onChange={e => setCardioKm(e.target.value)} />
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" size="sm" className="flex-1" disabled={!cardioName.trim()}>CREATE</Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => setShowAddCardio(false)}>Cancel</Button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
+
+      {/* Assign cardio to phase sheet */}
+      <Sheet visible={!!assignCardioFor} onClose={() => setAssignCardioFor(null)} title="Assign Cardio">
+        {assignCardioFor && (
+          <div className="divide-y divide-border">
+            {unassignedCardioTemplates(assignCardioFor).length === 0 ? (
+              <p className="text-text-secondary text-sm px-5 py-8 text-center">All cardio sessions are already assigned to this phase</p>
+            ) : (
+              unassignedCardioTemplates(assignCardioFor).map(ct => (
+                <button
+                  key={ct.id}
+                  className="w-full text-left px-5 py-4 hover:bg-bg-element transition-colors flex items-center gap-3"
+                  onClick={() => {
+                    addCardioTemplateToPhase(programme.id, assignCardioFor, ct.id)
+                    setAssignCardioFor(null)
+                  }}
+                >
+                  <span className="text-xl">{CARDIO_ICONS[ct.activityType]}</span>
+                  <div>
+                    <p className="text-sm text-text">{ct.name}</p>
+                    <p className="text-xs text-text-tertiary capitalize">
+                      {ct.activityType}
+                      {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
+                      {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
+                    </p>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </Sheet>
 
       {/* Assign workout to phase sheet */}
       <Sheet visible={!!assignWorkoutFor} onClose={() => setAssignWorkoutFor(null)} title="Assign Workout">

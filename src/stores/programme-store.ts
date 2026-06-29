@@ -9,6 +9,8 @@ import type {
   PhaseExerciseOverride,
   ExerciseLibraryItem,
   WorkoutTemplateRef,
+  CardioTemplate,
+  ActivityType,
 } from '@/types'
 import { syncProgrammes, deleteProgrammeFromCloud, loadProgrammes } from '@/lib/sync'
 
@@ -49,6 +51,13 @@ interface ProgrammeStore {
   setExerciseOverride(programmeId: string, phaseId: string, templateId: string, override: PhaseExerciseOverride): void
   removeExerciseOverride(programmeId: string, phaseId: string, templateId: string, blockId: string): void
 
+  // Cardio template CRUD
+  addCardioTemplate(programmeId: string, input: { name: string; activityType: ActivityType; targetDurationMinutes?: number | null; targetDistanceKm?: number | null }): CardioTemplate
+  updateCardioTemplate(id: string, updates: Partial<Pick<CardioTemplate, 'name' | 'activityType' | 'targetDurationMinutes' | 'targetDistanceKm' | 'notes'>>): void
+  deleteCardioTemplate(id: string): void
+  addCardioTemplateToPhase(programmeId: string, phaseId: string, cardioTemplateId: string): void
+  removeCardioTemplateFromPhase(programmeId: string, phaseId: string, cardioTemplateId: string): void
+
   // Selectors
   getActiveProgramme(): Programme | null
   getActivePhase(programmeId: string): Phase | null
@@ -87,6 +96,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           updatedAt: timestamp,
           phases: [],
           templates: [],
+          cardioTemplates: [],
         }
         set(s => ({ programmes: [...s.programmes, programme] }))
         return programme
@@ -318,6 +328,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           orderIndex: programme ? programme.phases.length : 0,
           colorHex: input.colorHex ?? null,
           templateIds: [],
+          cardioTemplateIds: [],
           templateDays: {},
           overrides: [],
           isActive: false,
@@ -488,6 +499,91 @@ export const useProgrammeStore = create<ProgrammeStore>()(
         }))
       },
 
+      // ── Cardio template CRUD ────────────────────────────────────────────────
+
+      addCardioTemplate(programmeId, input) {
+        const ct: CardioTemplate = {
+          id: crypto.randomUUID(),
+          programmeId,
+          name: input.name,
+          activityType: input.activityType,
+          targetDurationMinutes: input.targetDurationMinutes ?? null,
+          targetDistanceKm: input.targetDistanceKm ?? null,
+          notes: null,
+        }
+        set(s => ({
+          programmes: s.programmes.map(p =>
+            p.id === programmeId
+              ? { ...p, cardioTemplates: [...(p.cardioTemplates ?? []), ct], updatedAt: now() }
+              : p
+          ),
+        }))
+        return ct
+      },
+
+      updateCardioTemplate(id, updates) {
+        set(s => ({
+          programmes: s.programmes.map(p => {
+            if (!(p.cardioTemplates ?? []).some(ct => ct.id === id)) return p
+            return {
+              ...p,
+              updatedAt: now(),
+              cardioTemplates: p.cardioTemplates.map(ct => ct.id === id ? { ...ct, ...updates } : ct),
+            }
+          }),
+        }))
+      },
+
+      deleteCardioTemplate(id) {
+        set(s => ({
+          programmes: s.programmes.map(p => {
+            if (!(p.cardioTemplates ?? []).some(ct => ct.id === id)) return p
+            return {
+              ...p,
+              updatedAt: now(),
+              cardioTemplates: p.cardioTemplates.filter(ct => ct.id !== id),
+              phases: p.phases.map(ph => ({
+                ...ph,
+                cardioTemplateIds: (ph.cardioTemplateIds ?? []).filter(cid => cid !== id),
+              })),
+            }
+          }),
+        }))
+      },
+
+      addCardioTemplateToPhase(programmeId, phaseId, cardioTemplateId) {
+        set(s => ({
+          programmes: s.programmes.map(p =>
+            p.id !== programmeId ? p : {
+              ...p,
+              updatedAt: now(),
+              phases: p.phases.map(ph =>
+                ph.id !== phaseId || (ph.cardioTemplateIds ?? []).includes(cardioTemplateId)
+                  ? ph
+                  : { ...ph, cardioTemplateIds: [...(ph.cardioTemplateIds ?? []), cardioTemplateId] }
+              ),
+            }
+          ),
+        }))
+      },
+
+      removeCardioTemplateFromPhase(programmeId, phaseId, cardioTemplateId) {
+        set(s => ({
+          programmes: s.programmes.map(p =>
+            p.id !== programmeId ? p : {
+              ...p,
+              updatedAt: now(),
+              phases: p.phases.map(ph =>
+                ph.id !== phaseId ? ph : {
+                  ...ph,
+                  cardioTemplateIds: (ph.cardioTemplateIds ?? []).filter(id => id !== cardioTemplateId),
+                }
+              ),
+            }
+          ),
+        }))
+      },
+
       // ── Selectors ───────────────────────────────────────────────────────────
 
       getActiveProgramme() {
@@ -566,7 +662,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 3,
+      version: 4,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -589,6 +685,16 @@ export const useProgrammeStore = create<ProgrammeStore>()(
             phases: (p.phases ?? []).map(ph => ({
               ...ph,
               templateDays: (ph as Phase & { templateDays?: Record<string, number[]> }).templateDays ?? {},
+            })),
+          }))
+        }
+        if (version < 4) {
+          state.programmes = (state.programmes ?? []).map(p => ({
+            ...p,
+            cardioTemplates: (p as Programme & { cardioTemplates?: CardioTemplate[] }).cardioTemplates ?? [],
+            phases: (p.phases ?? []).map(ph => ({
+              ...ph,
+              cardioTemplateIds: (ph as Phase & { cardioTemplateIds?: string[] }).cardioTemplateIds ?? [],
             })),
           }))
         }

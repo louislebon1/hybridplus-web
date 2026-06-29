@@ -5,7 +5,21 @@ import { useRouter } from 'next/navigation'
 import { X, Plus, Check, ChevronLeft } from 'lucide-react'
 import { useSessionStore, formatDuration, getElapsedSeconds, getRestRemaining } from '@/stores/session-store'
 import { useProgrammeStore } from '@/stores/programme-store'
+import { useCardioStore } from '@/stores/cardio-store'
 import { Button, Input, Sheet } from '@/components/ui'
+import type { ActivityType, RunSessionType } from '@/types'
+import { localDateStr } from '@/lib/date'
+
+const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
+
+const EMPTY_CARDIO_FORM = {
+  activityType: 'run' as ActivityType,
+  sessionDate: '',
+  hours: '', minutes: '30',
+  distanceKm: '', heartRate: '', rpe: '',
+  runType: 'easy' as RunSessionType,
+  notes: '',
+}
 
 const EXERCISES = [
   { id: 'sq', name: 'Squat' }, { id: 'bp', name: 'Bench Press' }, { id: 'dl', name: 'Deadlift' },
@@ -52,11 +66,53 @@ export default function SessionPage() {
     setSessionNotes,
   } = useSessionStore()
   const { programmes } = useProgrammeStore()
+  const { addSession: addCardioSession } = useCardioStore()
 
   const [elapsed, setElapsed] = useState(0)
   const [showAddExercise, setShowAddExercise] = useState(false)
   const [exerciseSearch, setExerciseSearch] = useState('')
   const [editingName, setEditingName] = useState(false)
+  const [cardioForm, setCardioForm] = useState(EMPTY_CARDIO_FORM)
+  const [showLogCardio, setShowLogCardio] = useState(false)
+
+  function openCardioLog(preset?: { activityType: ActivityType; minutes?: number | null; km?: number | null }) {
+    setCardioForm({
+      ...EMPTY_CARDIO_FORM,
+      sessionDate: localDateStr(),
+      activityType: preset?.activityType ?? 'run',
+      minutes: preset?.minutes ? String(preset.minutes) : '30',
+      distanceKm: preset?.km ? String(preset.km) : '',
+    })
+    setShowLogCardio(true)
+  }
+
+  function handleCardioLog(e: React.FormEvent) {
+    e.preventDefault()
+    const durationSeconds = (parseInt(cardioForm.hours || '0') * 3600) + (parseInt(cardioForm.minutes || '0') * 60)
+    const distKm = cardioForm.distanceKm ? parseFloat(cardioForm.distanceKm) : null
+    const paceSecs = distKm && durationSeconds ? durationSeconds / distKm : null
+    addCardioSession({
+      activityType: cardioForm.activityType,
+      sessionDate: cardioForm.sessionDate || localDateStr(),
+      startedAt: null, completedAt: null,
+      durationSeconds,
+      distanceKm: distKm,
+      avgPaceSecs: paceSecs,
+      avgSpeedKmh: distKm && durationSeconds ? (distKm / durationSeconds) * 3600 : null,
+      avgHeartRate: cardioForm.heartRate ? parseInt(cardioForm.heartRate) : null,
+      maxHeartRate: null,
+      elevationGainM: null, elevationLossM: null,
+      rpe: cardioForm.rpe ? parseInt(cardioForm.rpe) : null,
+      runType: cardioForm.activityType === 'run' ? cardioForm.runType : null,
+      cadenceSpm: null, stroke: null, poolLengthM: null, swolfScore: null,
+      avgPowerWatts: null, cadenceRpm: null, strokeRateSpm: null,
+      surface: null,
+      notes: cardioForm.notes || null,
+      splits: [],
+    })
+    setShowLogCardio(false)
+    router.replace('/home')
+  }
 
   useEffect(() => {
     if (!activeSession) return
@@ -69,12 +125,17 @@ export default function SessionPage() {
     p.templates.map((t) => ({ ...t, programmeName: p.name, programmeId: p.id }))
   ).slice(0, 5)
 
+  const allCardioTemplates = programmes.flatMap((p) =>
+    (p.cardioTemplates ?? []).map((ct) => ({ ...ct, programmeName: p.name }))
+  )
+
   const filtered = exerciseSearch
     ? EXERCISES.filter((e) => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
     : EXERCISES
 
   if (!activeSession) {
     return (
+      <>
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-3 px-4 pt-12 pb-4 flex-shrink-0">
           <button onClick={() => router.back()} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-bg-element">
@@ -123,8 +184,108 @@ export default function SessionPage() {
               </div>
             </div>
           )}
+
+          {/* Cardio */}
+          <div>
+            <p className="eyebrow mb-3">Log cardio</p>
+            <div className="flex flex-col gap-2">
+              {allCardioTemplates.length > 0 && allCardioTemplates.map((ct) => (
+                <button
+                  key={ct.id}
+                  onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })}
+                  className="bg-bg-element border border-border rounded-2xl px-4 py-3 text-left hover:bg-bg-hover transition-colors flex items-center gap-3"
+                >
+                  <span className="text-xl">{CARDIO_ICONS[ct.activityType]}</span>
+                  <div>
+                    <p className="text-sm text-text">{ct.name}</p>
+                    <p className="text-xs text-text-secondary">
+                      {ct.programmeName} · {ct.activityType}
+                      {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
+                      {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
+                    </p>
+                  </div>
+                </button>
+              ))}
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => openCardioLog({ activityType: type })}
+                    className="flex-shrink-0 flex flex-col items-center gap-1 px-4 py-3 bg-bg-element border border-border rounded-2xl hover:bg-bg-hover transition-colors"
+                  >
+                    <span className="text-xl">{CARDIO_ICONS[type]}</span>
+                    <span className="text-xs text-text-secondary capitalize">{type}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Log cardio sheet */}
+      <Sheet visible={showLogCardio} onClose={() => setShowLogCardio(false)} title="Log Cardio">
+        <form onSubmit={handleCardioLog} className="px-5 py-4 flex flex-col gap-4 pb-8">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setCardioForm(f => ({ ...f, activityType: type }))}
+                className={[
+                  'flex-shrink-0 px-4 py-2 rounded-full text-sm border transition-colors',
+                  cardioForm.activityType === type
+                    ? 'bg-accent text-accent-fg border-accent'
+                    : 'border-border text-text-secondary hover:bg-bg-element',
+                ].join(' ')}
+              >
+                {CARDIO_ICONS[type]} {type}
+              </button>
+            ))}
+          </div>
+
+          <Input label="Date" type="date" value={cardioForm.sessionDate} onChange={e => setCardioForm(f => ({ ...f, sessionDate: e.target.value }))} />
+
+          <div>
+            <p className="text-sm font-normal text-text mb-2">Duration</p>
+            <div className="flex gap-2 items-center">
+              <Input placeholder="0" type="number" min="0" value={cardioForm.hours} onChange={e => setCardioForm(f => ({ ...f, hours: e.target.value }))} />
+              <span className="text-text-secondary text-sm flex-shrink-0">h</span>
+              <Input placeholder="30" type="number" min="0" max="59" value={cardioForm.minutes} onChange={e => setCardioForm(f => ({ ...f, minutes: e.target.value }))} />
+              <span className="text-text-secondary text-sm flex-shrink-0">m</span>
+            </div>
+          </div>
+
+          <Input label="Distance (km)" type="number" step="0.01" placeholder="5.00" value={cardioForm.distanceKm} onChange={e => setCardioForm(f => ({ ...f, distanceKm: e.target.value }))} />
+          <Input label="Avg heart rate (bpm)" type="number" placeholder="145" value={cardioForm.heartRate} onChange={e => setCardioForm(f => ({ ...f, heartRate: e.target.value }))} />
+          <Input label="RPE (1–10)" type="number" min="1" max="10" placeholder="7" value={cardioForm.rpe} onChange={e => setCardioForm(f => ({ ...f, rpe: e.target.value }))} />
+
+          {cardioForm.activityType === 'run' && (
+            <div>
+              <p className="text-sm font-normal text-text mb-2">Run type</p>
+              <div className="flex flex-wrap gap-2">
+                {(['easy', 'tempo', 'intervals', 'long_run', 'recovery', 'race'] as RunSessionType[]).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setCardioForm(f => ({ ...f, runType: type }))}
+                    className={[
+                      'px-3 py-1.5 rounded-full text-xs border transition-colors',
+                      cardioForm.runType === type ? 'border-accent bg-accent/10 text-accent' : 'border-border text-text-secondary',
+                    ].join(' ')}
+                  >
+                    {type.replace('_', ' ')}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Input label="Notes" placeholder="How did it feel?" value={cardioForm.notes} onChange={e => setCardioForm(f => ({ ...f, notes: e.target.value }))} />
+          <Button type="submit" size="lg" className="w-full">LOG SESSION</Button>
+        </form>
+      </Sheet>
+      </>
     )
   }
 
