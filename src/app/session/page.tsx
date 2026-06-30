@@ -185,7 +185,7 @@ export default function SessionPage() {
                         className="bg-accent/10 border border-accent/40 rounded-2xl px-4 py-3 text-left hover:bg-accent/15 transition-colors"
                       >
                         <div className="flex items-center gap-2">
-                          <p className="text-[20px] leading-[24px] text-text">{t.name}</p>
+                          <p style={{ fontSize: '20px', lineHeight: '28px', color: 'var(--text)' }}>{t.name}</p>
                           {hasOverride && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent">phase</span>
                           )}
@@ -204,7 +204,7 @@ export default function SessionPage() {
                   >
                     <span className="text-xl">{CARDIO_ICONS[ev.eventType as ActivityType]}</span>
                     <div>
-                      <p className="text-[20px] leading-[24px] text-text">{ev.name ?? ev.eventType}</p>
+                      <p style={{ fontSize: '20px', lineHeight: '28px', color: 'var(--text)' }}>{ev.name ?? ev.eventType}</p>
                       <p className="text-[10px] text-text-secondary capitalize">
                         {ev.eventType}{ev.durationMinutes ? ` · ${ev.durationMinutes} min` : ''}
                       </p>
@@ -232,7 +232,7 @@ export default function SessionPage() {
                       className={['rounded-2xl px-4 py-3 text-left transition-colors border', isToday ? 'opacity-40 bg-bg-element border-border' : 'bg-bg-element border-border hover:bg-bg-hover'].join(' ')}
                     >
                       <div className="flex items-center gap-2">
-                        <p className="text-[20px] leading-[24px] text-text">{t.name}</p>
+                        <p style={{ fontSize: '20px', lineHeight: '28px', color: 'var(--text)' }}>{t.name}</p>
                         {hasOverride && (
                           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">phase</span>
                         )}
@@ -259,7 +259,7 @@ export default function SessionPage() {
                 >
                   <span className="text-xl">{CARDIO_ICONS[ct.activityType]}</span>
                   <div>
-                    <p className="text-[20px] leading-[24px] text-text">{ct.name}</p>
+                    <p style={{ fontSize: '20px', lineHeight: '28px', color: 'var(--text)' }}>{ct.name}</p>
                     <p className="text-[10px] text-text-secondary">
                       {ct.programmeName} · {ct.activityType}
                       {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
@@ -369,12 +369,12 @@ export default function SessionPage() {
               onBlur={(e) => { useSessionStore.getState().activeSession && Object.assign(useSessionStore.getState().activeSession!, { name: e.target.value }); setEditingName(false) }}
               onKeyDown={(e) => e.key === 'Enter' && setEditingName(false)}
               className="bg-transparent border-b border-accent text-center focus:outline-none w-48"
-              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '24px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)' }}
+              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '20px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)' }}
             />
           ) : (
             <button
               onClick={() => setEditingName(true)}
-              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '24px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '20px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             >{activeSession.name}</button>
           )}
           <span className="text-xs text-text-secondary tabular">{formatDuration(elapsed)}</span>
