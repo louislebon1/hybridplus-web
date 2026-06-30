@@ -368,10 +368,14 @@ export default function SessionPage() {
               defaultValue={activeSession.name}
               onBlur={(e) => { useSessionStore.getState().activeSession && Object.assign(useSessionStore.getState().activeSession!, { name: e.target.value }); setEditingName(false) }}
               onKeyDown={(e) => e.key === 'Enter' && setEditingName(false)}
-              className="text-[24px] leading-[28px] font-normal text-text bg-transparent border-b border-accent text-center focus:outline-none w-48"
+              className="bg-transparent border-b border-accent text-center focus:outline-none w-48"
+              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '24px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)' }}
             />
           ) : (
-            <button onClick={() => setEditingName(true)} className="text-[24px] leading-[28px] font-normal text-text">{activeSession.name}</button>
+            <button
+              onClick={() => setEditingName(true)}
+              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '24px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >{activeSession.name}</button>
           )}
           <span className="text-xs text-text-secondary tabular">{formatDuration(elapsed)}</span>
         </div>
