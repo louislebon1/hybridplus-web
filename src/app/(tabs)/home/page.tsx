@@ -382,7 +382,7 @@ function StatCard({ value, unit, label }: { value: number; unit?: string; label:
       minHeight: '100px',
     }}>
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '6px' }}>
-        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '48px', fontWeight: 600, lineHeight: '1', color: '#FFFFFF' }}>
+        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '36px', fontWeight: 600, lineHeight: '1', color: '#FFFFFF' }}>
           {value.toLocaleString()}
         </span>
         {unit && <span style={unitStyle}>{unit}</span>}
