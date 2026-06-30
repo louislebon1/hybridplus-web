@@ -6,6 +6,7 @@ import { X, Plus, Check, ChevronLeft } from 'lucide-react'
 import { useSessionStore, formatDuration, getElapsedSeconds, getRestRemaining } from '@/stores/session-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCardioStore } from '@/stores/cardio-store'
+import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import type { ActivityType, RunSessionType } from '@/types'
 import { localDateStr } from '@/lib/date'
@@ -67,6 +68,7 @@ export default function SessionPage() {
   } = useSessionStore()
   const { programmes } = useProgrammeStore()
   const { addSession: addCardioSession } = useCardioStore()
+  const { events: calendarEvents } = useCalendarStore()
 
   const [elapsed, setElapsed] = useState(0)
   const [showAddExercise, setShowAddExercise] = useState(false)
@@ -129,6 +131,16 @@ export default function SessionPage() {
     (p.cardioTemplates ?? []).map((ct) => ({ ...ct, programmeName: p.name }))
   )
 
+  const today = localDateStr()
+  const todayEvents = calendarEvents[today] ?? []
+  const todayStrengthIds = new Set(
+    todayEvents
+      .filter(e => e.eventType === 'strength' && e.workoutTemplateId)
+      .map(e => e.workoutTemplateId!)
+  )
+  const CARDIO_TYPES = new Set(['run','swim','cycle','walk','row'])
+  const todayCardioEvents = todayEvents.filter(e => CARDIO_TYPES.has(e.eventType))
+
   const filtered = exerciseSearch
     ? EXERCISES.filter((e) => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
     : EXERCISES
@@ -154,6 +166,55 @@ export default function SessionPage() {
             <p className="text-sm opacity-80 mt-1">Start an empty session — add exercises as you go</p>
           </button>
 
+          {/* Today's scheduled sessions */}
+          {(todayStrengthIds.size > 0 || todayCardioEvents.length > 0) && (
+            <div>
+              <p className="eyebrow mb-3">Today</p>
+              <div className="flex flex-col gap-2">
+                {allTemplates
+                  .filter(t => todayStrengthIds.has(t.id))
+                  .map((t) => {
+                    const store = useProgrammeStore.getState()
+                    const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
+                    const activePhase = store.getActivePhase(t.programmeId)
+                    const hasOverride = activePhase?.overrides.some(o => o.templateId === t.id)
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => ref && startSession(ref)}
+                        className="bg-accent/10 border border-accent/40 rounded-2xl px-4 py-3 text-left hover:bg-accent/15 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm text-text">{t.name}</p>
+                          {hasOverride && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent">phase</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-accent/70">
+                          {t.programmeName}{activePhase ? ` · ${activePhase.name}` : ''} · {t.exerciseBlocks.length} exercises
+                        </p>
+                      </button>
+                    )
+                  })}
+                {todayCardioEvents.map(ev => (
+                  <button
+                    key={ev.id}
+                    onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })}
+                    className="bg-white/5 border border-white/20 rounded-2xl px-4 py-3 text-left hover:bg-white/10 transition-colors flex items-center gap-3"
+                  >
+                    <span className="text-xl">{CARDIO_ICONS[ev.eventType as ActivityType]}</span>
+                    <div>
+                      <p className="text-sm text-text">{ev.name ?? ev.eventType}</p>
+                      <p className="text-xs text-text-secondary capitalize">
+                        {ev.eventType}{ev.durationMinutes ? ` · ${ev.durationMinutes} min` : ''}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {allTemplates.length > 0 && (
             <div>
               <p className="eyebrow mb-3">From programme</p>
@@ -163,11 +224,12 @@ export default function SessionPage() {
                   const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                   const activePhase = store.getActivePhase(t.programmeId)
                   const hasOverride = activePhase?.overrides.some(o => o.templateId === t.id)
+                  const isToday = todayStrengthIds.has(t.id)
                   return (
                     <button
                       key={t.id}
                       onClick={() => ref && startSession(ref)}
-                      className="bg-bg-element border border-border rounded-2xl px-4 py-3 text-left hover:bg-bg-hover transition-colors"
+                      className={['rounded-2xl px-4 py-3 text-left transition-colors border', isToday ? 'opacity-40 bg-bg-element border-border' : 'bg-bg-element border-border hover:bg-bg-hover'].join(' ')}
                     >
                       <div className="flex items-center gap-2">
                         <p className="text-sm text-text">{t.name}</p>
