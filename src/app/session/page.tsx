@@ -190,7 +190,7 @@ export default function SessionPage() {
                             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent">phase</span>
                           )}
                         </div>
-                        <p className="text-xs text-accent/70">
+                        <p className="text-[10px] text-accent/70">
                           {t.programmeName}{activePhase ? ` · ${activePhase.name}` : ''} · {t.exerciseBlocks.length} exercises
                         </p>
                       </button>
@@ -205,7 +205,7 @@ export default function SessionPage() {
                     <span className="text-xl">{CARDIO_ICONS[ev.eventType as ActivityType]}</span>
                     <div>
                       <p className="text-sm text-text">{ev.name ?? ev.eventType}</p>
-                      <p className="text-xs text-text-secondary capitalize">
+                      <p className="text-[10px] text-text-secondary capitalize">
                         {ev.eventType}{ev.durationMinutes ? ` · ${ev.durationMinutes} min` : ''}
                       </p>
                     </div>
@@ -237,7 +237,7 @@ export default function SessionPage() {
                           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">phase</span>
                         )}
                       </div>
-                      <p className="text-xs text-text-secondary">
+                      <p className="text-[10px] text-text-secondary">
                         {t.programmeName}{activePhase ? ` · ${activePhase.name}` : ''} · {t.exerciseBlocks.length} exercises
                       </p>
                     </button>
@@ -260,7 +260,7 @@ export default function SessionPage() {
                   <span className="text-xl">{CARDIO_ICONS[ct.activityType]}</span>
                   <div>
                     <p className="text-sm text-text">{ct.name}</p>
-                    <p className="text-xs text-text-secondary">
+                    <p className="text-[10px] text-text-secondary">
                       {ct.programmeName} · {ct.activityType}
                       {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
                       {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
