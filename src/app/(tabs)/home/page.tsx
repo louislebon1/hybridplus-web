@@ -316,7 +316,7 @@ export default function HomePage() {
                         </span>
                         {duration && <span style={{ ...mono8, color: 'rgba(255,255,255,0.4)' }}>{duration}</span>}
                       </div>
-                      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '18px', fontWeight: 600, lineHeight: '24px', color: '#FFFFFF', display: 'block' }}>
+                      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 600, lineHeight: '20px', color: '#FFFFFF', display: 'block' }}>
                         {templateName ?? ev.name ?? sessionDisplayLabel(ev.eventType)}
                       </span>
                     </div>
