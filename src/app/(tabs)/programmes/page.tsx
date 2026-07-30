@@ -293,10 +293,14 @@ export default function WorkoutsPage() {
 
               {/* Empty state */}
               {filteredProgrammes.length === 0 && !showCreate && (
-                <div style={{ padding: '40px 16px', textAlign: 'center' }}>
-                  <p style={{ ...bodyStyle, color: 'rgba(17,17,17,0.4)' }}>
-                    No {progSubTab} programmes
-                  </p>
+                <div style={{ padding: '16px 16px 0' }}>
+                  <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
+                    <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
+                      {progSubTab === 'active'
+                        ? 'No active programmes – add a new programme to get started.'
+                        : 'No inactive programmes – all your programmes are currently active.'}
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -372,35 +376,40 @@ export default function WorkoutsPage() {
           <>
             <SubTabBar tabs={['strength', 'cardio'] as const} active={sessSubTab} onChange={setSessSubTab} />
 
-            {/* CTA above list */}
-            <div style={{ padding: '20px 16px 0', flexShrink: 0 }}>
-              <CtaButton
-                label={sessSubTab === 'strength' ? 'Add new session' : 'Log cardio session'}
-                onClick={() => { if (sessSubTab === 'cardio') router.push('/cardio') }}
-              />
-            </div>
-
             {/* Session cards */}
-            <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '20px 16px 0' }}>
+            <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 0' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {sessSubTab === 'strength' ? (
                   strengthSessions.length === 0 ? (
-                    <p style={{ ...bodyStyle, color: 'rgba(17,17,17,0.4)' }}>
-                      No sessions yet — add workouts to a programme first
-                    </p>
+                    <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
+                      <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
+                        No sessions available – add a new session to get started.
+                      </p>
+                    </div>
                   ) : (
                     strengthSessions.map(t => <StrengthCard key={t.id} tmpl={t} />)
                   )
                 ) : (
                   sortedCardio.length === 0 ? (
-                    <p style={{ ...bodyStyle, color: 'rgba(17,17,17,0.4)' }}>
-                      No cardio sessions logged yet
-                    </p>
+                    <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
+                      <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
+                        No cardio sessions logged – log your first session to get started.
+                      </p>
+                    </div>
                   ) : (
                     sortedCardio.map(s => <CardioCard key={s.id} s={s} />)
                   )
                 )}
               </div>
+
+              {/* CTA below list — consistent with programmes tab */}
+              <div style={{ padding: '16px 0 0' }}>
+                <CtaButton
+                  label={sessSubTab === 'strength' ? 'Add new session' : 'Log cardio session'}
+                  onClick={() => { if (sessSubTab === 'cardio') router.push('/cardio') }}
+                />
+              </div>
+
               <div style={{ height: '88px' }} />
             </div>
           </>
