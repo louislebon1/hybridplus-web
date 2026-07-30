@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0a0a0a;
-  --bg-element: rgba(255, 255, 255, 0.04);
-  --bg-hover: #282828;
-  --bg-selected: #282828;
-  --bg-subtle: #1A1A1A;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: #535353;
-  --text: #fefefe;
-  --text-secondary: #A7A7A7;
-  --text-tertiary: #A7A7A7;
-  --text-disabled: #535353;
-  --accent: #1DB954;
-  --accent-hover: #1ed760;
-  --accent-fg: #000000;
-  --success: #1DB954;
-  --success-subtle: #0d2e18;
-  --warning: #f59e0b;
-  --warning-subtle: #2d1f00;
-  --error: #F15E6C;
-  --error-subtle: #2d0a0e;
+  --bg: #FFFEFA;
+  --bg-element: rgba(17, 17, 17, 0.04);
+  --bg-hover: rgba(17, 17, 17, 0.08);
+  --bg-selected: rgba(17, 17, 17, 0.12);
+  --bg-subtle: #F5F3EC;
+  --border: rgba(17, 17, 17, 0.10);
+  --border-strong: #111111;
+  --text: #111111;
+  --text-secondary: #555555;
+  --text-tertiary: #888888;
+  --text-disabled: #C0C0C0;
+  --accent: #3B948F;
+  --accent-hover: #2d7a76;
+  --accent-fg: #FFFDF5;
+  --success: #3B948F;
+  --success-subtle: #e8f4f3;
+  --warning: #d97706;
+  --warning-subtle: #fef3c7;
+  --error: #dc2626;
+  --error-subtle: #fee2e2;
 }
 
 @theme inline {
@@ -45,9 +45,9 @@
 
 @layer utilities {
   .eyebrow {
-    font-family: var(--font-geist-mono);
+    font-family: var(--font-geist-sans);
     font-size: 0.625rem;
-    font-weight: 400;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-tertiary);
@@ -56,7 +56,7 @@
 
 * { box-sizing: border-box; }
 
-h1, h2, h3, h4, h5, h6 { font-weight: 600; }
+h1, h2, h3, h4, h5, h6 { font-weight: 700; }
 
 html, body {
   height: 100%;

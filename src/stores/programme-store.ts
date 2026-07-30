@@ -375,7 +375,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           description: null,
           durationWeeks: 1,
           orderIndex: programme.phases.length,
-          colorHex: '#00BD44',
+          colorHex: '#3B948F',
           templateIds: prevPhase ? [...prevPhase.templateIds] : [],
           cardioTemplateIds: prevPhase ? [...prevPhase.cardioTemplateIds] : [],
           templateDays: prevPhase ? { ...prevPhase.templateDays } : {},
@@ -730,7 +730,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 8,
+      version: 9,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -801,6 +801,12 @@ export const useProgrammeStore = create<ProgrammeStore>()(
               ...ph,
               isDeload: (ph as Phase & { isDeload?: boolean }).isDeload ?? false,
             })),
+          }))
+        }
+        if (version < 9) {
+          state.programmes = (state.programmes ?? []).map(p => ({
+            ...p,
+            phases: (p.phases ?? []).map(ph => ({ ...ph, colorHex: '#3B948F' })),
           }))
         }
         return state

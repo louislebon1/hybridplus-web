@@ -178,21 +178,21 @@ export default function SessionPage() {
                     const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                     const activePhase = store.getActivePhase(t.programmeId)
                     return (
-                      <button key={t.id} onClick={() => ref && startSession(ref)} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#00BD44' }} />
+                      <button key={t.id} onClick={() => ref && startSession(ref)} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
+                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#3B948F' }} />
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontFamily: 'var(--font-geist-mono)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#0A0A0A', background: '#00BD44', padding: '4px 10px', borderRadius: '12px' }}>Strength</span>
-                          {activePhase && <span style={{ fontFamily: 'var(--font-geist-mono)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(255,255,255,0.4)' }}>{activePhase.name}</span>}
+                          <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFDF5', background: '#3B948F', padding: '4px 10px', borderRadius: '200px' }}>Strength</span>
+                          {activePhase && <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(17,17,17,0.4)' }}>{activePhase.name}</span>}
                         </div>
-                        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#fefefe' }}>{t.name}</span>
+                        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{t.name}</span>
                       </button>
                     )
                   })}
                 {todayCardioEvents.map(ev => (
-                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#fefefe' }} />
-                    <span style={{ fontFamily: 'var(--font-geist-mono)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#0A0A0A', background: '#fefefe', padding: '4px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center' }}>{ev.eventType}</span>
-                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#fefefe' }}>{ev.name ?? ev.eventType}</span>
+                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
+                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#111111' }} />
+                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFEFA', background: '#111111', padding: '4px 10px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center' }}>{ev.eventType}</span>
+                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{ev.name ?? ev.eventType}</span>
                   </button>
                 ))}
               </div>
@@ -209,13 +209,13 @@ export default function SessionPage() {
                   const activePhase = store.getActivePhase(t.programmeId)
                   const isToday = todayStrengthIds.has(t.id)
                   return (
-                    <button key={t.id} onClick={() => ref && startSession(ref)} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%', opacity: isToday ? 0.4 : 1 }}>
-                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#00BD44' }} />
+                    <button key={t.id} onClick={() => ref && startSession(ref)} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%', opacity: isToday ? 0.4 : 1 }}>
+                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#3B948F' }} />
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontFamily: 'var(--font-geist-mono)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#0A0A0A', background: '#00BD44', padding: '4px 10px', borderRadius: '12px' }}>Strength</span>
-                        {activePhase && <span style={{ fontFamily: 'var(--font-geist-mono)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(255,255,255,0.4)' }}>{activePhase.name}</span>}
+                        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFDF5', background: '#3B948F', padding: '4px 10px', borderRadius: '200px' }}>Strength</span>
+                        {activePhase && <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(17,17,17,0.4)' }}>{activePhase.name}</span>}
                       </div>
-                      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#fefefe' }}>{t.name}</span>
+                      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{t.name}</span>
                     </button>
                   )
                 })}
@@ -228,13 +228,13 @@ export default function SessionPage() {
             <p className="eyebrow mb-3">Log cardio</p>
             <div className="flex flex-col gap-2">
               {allCardioTemplates.length > 0 && allCardioTemplates.map((ct) => (
-                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#fefefe' }} />
+                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#111111' }} />
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontFamily: 'var(--font-geist-mono)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#0A0A0A', background: '#fefefe', padding: '4px 10px', borderRadius: '12px' }}>{ct.activityType}</span>
-                    {ct.targetDurationMinutes && <span style={{ fontFamily: 'var(--font-geist-mono)', fontSize: '0.625rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(255,255,255,0.4)' }}>{ct.targetDurationMinutes}M</span>}
+                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFEFA', background: '#111111', padding: '4px 10px', borderRadius: '200px' }}>{ct.activityType}</span>
+                    {ct.targetDurationMinutes && <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(17,17,17,0.4)' }}>{ct.targetDurationMinutes}M</span>}
                   </div>
-                  <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#fefefe' }}>{ct.name}</span>
+                  <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{ct.name}</span>
                 </button>
               ))}
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">

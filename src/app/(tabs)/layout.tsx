@@ -24,8 +24,8 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
       <nav
         style={{
           flexShrink: 0,
-          background: 'rgba(255, 255, 255, 0.03)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.03)',
+          background: '#FFFEFA',
+          borderTop: '1px solid rgba(17, 17, 17, 0.08)',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
@@ -36,22 +36,22 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
               <Link
                 key={href}
                 href={href}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '52px', height: '42px', justifyContent: 'center', textDecoration: 'none' }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '52px', height: '42px', justifyContent: 'center', textDecoration: 'none' }}
               >
                 <Icon
-                  size={24}
-                  style={{ color: active ? '#00BD44' : '#FFFFFF', opacity: active ? 1 : 0.6 }}
+                  size={22}
+                  style={{ color: active ? '#3B948F' : '#111111', opacity: active ? 1 : 0.35 }}
                 />
                 <span style={{
                   fontFamily: 'var(--font-geist-sans)',
-                  fontSize: '8px',
+                  fontSize: '9px',
                   fontWeight: 500,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  color: active ? '#00BD44' : 'rgba(255, 255, 255, 0.4)',
+                  color: active ? '#3B948F' : 'rgba(17,17,17,0.4)',
                   textAlign: 'center',
                   width: '52px',
-                  lineHeight: '10px',
+                  lineHeight: '11px',
                 }}>
                   {label}
                 </span>

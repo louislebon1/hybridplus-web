@@ -9,7 +9,7 @@ import { Button, Input, EmptyState, Sheet } from '@/components/ui'
 import { localDateStr } from '@/lib/date'
 import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType, CalendarEventType } from '@/types'
 
-const PHASE_COLORS = ['#00BD44']
+const PHASE_COLORS = ['#3B948F']
 const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
 
 function getSupersetLabels(blocks: ExerciseTemplateBlock[]): Record<string, string> {
@@ -228,7 +228,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
         while (cur <= phaseEnd) {
           const dow = (cur.getDay() + 6) % 7
           if (days.includes(dow)) {
-            addCalendarEvent({ eventType: 'strength', date: localDateStr(cur), name: template.name, isCompleted: false, workoutTemplateId: template.id, programmeId: programme.id, durationMinutes: null, distanceKm: null, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#00BD44' })
+            addCalendarEvent({ eventType: 'strength', date: localDateStr(cur), name: template.name, isCompleted: false, workoutTemplateId: template.id, programmeId: programme.id, durationMinutes: null, distanceKm: null, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#3B948F' })
           }
           cur.setDate(cur.getDate() + 1)
         }
@@ -243,7 +243,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
         while (cur <= phaseEnd) {
           const dow = (cur.getDay() + 6) % 7
           if (days.includes(dow)) {
-            addCalendarEvent({ eventType: ct.activityType as CalendarEventType, date: localDateStr(cur), name: ct.name, isCompleted: false, workoutTemplateId: null, programmeId: programme.id, durationMinutes: ct.targetDurationMinutes, distanceKm: ct.targetDistanceKm, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#00BD44' })
+            addCalendarEvent({ eventType: ct.activityType as CalendarEventType, date: localDateStr(cur), name: ct.name, isCompleted: false, workoutTemplateId: null, programmeId: programme.id, durationMinutes: ct.targetDurationMinutes, distanceKm: ct.targetDistanceKm, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#3B948F' })
           }
           cur.setDate(cur.getDate() + 1)
         }
@@ -341,7 +341,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   <div key={phase.id} className="border border-border rounded-xl overflow-hidden">
                     {/* Phase header row */}
                     <div className="flex items-center gap-0 bg-bg-element">
-                      <div className="w-2 self-stretch flex-shrink-0" style={{ backgroundColor: phase.colorHex ?? '#00BD44' }} />
+                      <div className="w-2 self-stretch flex-shrink-0" style={{ backgroundColor: phase.colorHex ?? '#3B948F' }} />
                       <button
                         className="flex-1 flex items-center justify-between px-3 py-3 text-left"
                         onClick={() => togglePhase(phase.id)}
