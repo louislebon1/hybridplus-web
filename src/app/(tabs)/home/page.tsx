@@ -116,8 +116,8 @@ export default function HomePage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
       {/* ── Logo ── */}
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '28px 0 20px', flexShrink: 0 }}>
-        <svg width="157" height="20" viewBox="0 0 110 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '28px 0', flexShrink: 0 }}>
+        <svg width="141" height="18" viewBox="0 0 110 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 0H3.72574V5.36375H12.7126V0H16.4208V14H12.7126V8.63625H3.72574V14H0V0Z" fill="#111111"/>
           <path d="M25.2409 9.31875L17.8655 0H22.5095L27.098 6.04917L31.6835 0H36.307L28.9491 9.31875V14H25.2409V9.31875Z" fill="#111111"/>
           <path d="M37.74 0H48.0019C51.3708 0 52.5143 1.42917 52.5143 3.4475C52.5143 5.0925 51.5785 6.16875 50.1747 6.69667C51.8592 7.12833 53.2629 8.08792 53.2629 10.1617C53.2629 12.4512 51.9352 14 48.7885 14H37.7429V0H37.74ZM46.8584 5.775C47.9258 5.775 48.7856 5.55917 48.7856 4.2875C48.7856 3.09458 48.0545 2.83792 46.8584 2.83792H41.4657V5.775H46.8584ZM47.6071 11.1621C48.6745 11.1621 49.4056 10.9083 49.4056 9.65417C49.4056 8.4 48.5429 8.18417 47.6071 8.18417H41.4657V11.1592H47.6071V11.1621Z" fill="#111111"/>
