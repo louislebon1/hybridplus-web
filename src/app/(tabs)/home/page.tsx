@@ -339,7 +339,7 @@ export default function HomePage() {
       </div>
 
       {/* ── Start Workout — sits above floating nav pill ── */}
-      <div style={{ padding: '12px 16px', paddingBottom: 'max(calc(env(safe-area-inset-bottom) + 80px), 80px)', flexShrink: 0 }}>
+      <div style={{ padding: '12px 16px', paddingBottom: '88px', flexShrink: 0 }}>
         <button
           onClick={() => router.push('/session')}
           style={{
