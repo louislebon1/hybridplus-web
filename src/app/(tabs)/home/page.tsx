@@ -2,28 +2,28 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useProgrammeStore } from '@/stores/programme-store'
+import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import type { CalendarEventData, Programme } from '@/types'
 import { localDateStr } from '@/lib/date'
 
 const DAY_LABELS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const CARDIO_TYPES = new Set(['run', 'swim', 'cycle', 'walk', 'row'])
 
-const card: React.CSSProperties = {
-  background: 'rgba(17, 17, 17, 0.03)',
-  border: '1px solid rgba(17, 17, 17, 0.08)',
-  borderRadius: '12px',
+const CARDIO_LABELS: Record<string, string> = {
+  run: 'Run', swim: 'Swim', cycle: 'Cycle', walk: 'Walk', row: 'Row',
 }
 
-const label10: React.CSSProperties = {
+const metaText: React.CSSProperties = {
   fontFamily: 'var(--font-geist-sans)',
-  fontSize: '10px',
+  fontSize: '8px',
   fontWeight: 500,
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
-  lineHeight: '13px',
   color: 'rgba(17,17,17,0.4)',
+  lineHeight: '12px',
 }
 
 const isoDate = localDateStr
@@ -39,21 +39,41 @@ function getWeekDays(): Date[] {
   })
 }
 
-function getDurationRange(ev: CalendarEventData, programmes: Programme[]): string | null {
-  if (ev.eventType === 'strength' && ev.workoutTemplateId && ev.programmeId) {
-    const template = programmes
-      .find(p => p.id === ev.programmeId)
-      ?.templates.find(t => t.id === ev.workoutTemplateId)
-    if (template && template.exerciseBlocks.length > 0) {
-      const totalSets = template.exerciseBlocks.reduce((s, b) => s + b.targetSets, 0)
-      const estMin = totalSets * 3
-      const lo = Math.max(15, Math.round(estMin * 0.85 / 5) * 5)
-      const hi = Math.round(estMin * 1.15 / 5) * 5
-      return `${lo}M–${hi}M`
+function getTemplate(ev: CalendarEventData, programmes: Programme[]) {
+  if (!ev.workoutTemplateId || !ev.programmeId) return null
+  return programmes.find(p => p.id === ev.programmeId)?.templates.find(t => t.id === ev.workoutTemplateId) ?? null
+}
+
+function getDuration(ev: CalendarEventData, programmes: Programme[]): string | null {
+  if (ev.eventType === 'strength') {
+    const tmpl = getTemplate(ev, programmes)
+    if (tmpl && tmpl.exerciseBlocks.length > 0) {
+      const totalSets = tmpl.exerciseBlocks.reduce((s, b) => s + b.targetSets, 0)
+      const est = totalSets * 3
+      const lo = Math.max(15, Math.round(est * 0.85 / 5) * 5)
+      const hi = Math.round(est * 1.15 / 5) * 5
+      return lo === hi ? `${lo} Mins` : `${lo} – ${hi} Mins`
     }
   }
-  if (ev.durationMinutes) return `${ev.durationMinutes}M`
+  if (ev.durationMinutes) return `${ev.durationMinutes} Mins`
   return null
+}
+
+function getMuscleGroups(ev: CalendarEventData, programmes: Programme[]): string[] {
+  if (ev.eventType !== 'strength') return []
+  const tmpl = getTemplate(ev, programmes)
+  if (!tmpl) return []
+  const seen = new Set<string>()
+  for (const block of tmpl.exerciseBlocks) {
+    const ex = EXERCISE_LIBRARY.find(e => e.id === block.exerciseId)
+    if (ex) seen.add(ex.category)
+  }
+  return Array.from(seen).slice(0, 3).map(c => MUSCLE_GROUP_LABELS[c] ?? c)
+}
+
+function getExerciseCount(ev: CalendarEventData, programmes: Programme[]): number | null {
+  if (ev.eventType !== 'strength') return null
+  return getTemplate(ev, programmes)?.exerciseBlocks.length ?? null
 }
 
 export default function HomePage() {
@@ -75,26 +95,28 @@ export default function HomePage() {
 
   const selectedEvents = events[selectedDate] ?? []
 
-  function getTemplateName(templateId: string | null, programmeId: string | null) {
-    if (!templateId || !programmeId) return null
-    return programmes.find(p => p.id === programmeId)?.templates.find(t => t.id === templateId)?.name ?? null
+  function getTemplateName(ev: CalendarEventData): string {
+    if (!ev.workoutTemplateId || !ev.programmeId) return ev.name ?? sessionLabel
+    return programmes.find(p => p.id === ev.programmeId)?.templates.find(t => t.id === ev.workoutTemplateId)?.name
+      ?? ev.name
+      ?? sessionLabel
   }
 
-  function sessionDisplayLabel(eventType: string): string {
+  function sessionTypeName(eventType: string): string {
     if (eventType === 'strength') return 'Strength'
     if (CARDIO_TYPES.has(eventType)) return 'Cardio'
     return eventType.charAt(0).toUpperCase() + eventType.slice(1)
   }
 
   const sessionLabel = selectedDate === today
-    ? "Today's Sessions"
+    ? "Today's sessions"
     : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-      {/* Logo */}
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px 0', flexShrink: 0 }}>
+      {/* ── Logo ── */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '28px 0 20px', flexShrink: 0 }}>
         <svg width="110" height="14" viewBox="0 0 110 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 0H3.72574V5.36375H12.7126V0H16.4208V14H12.7126V8.63625H3.72574V14H0V0Z" fill="#111111"/>
           <path d="M25.2409 9.31875L17.8655 0H22.5095L27.098 6.04917L31.6835 0H36.307L28.9491 9.31875V14H25.2409V9.31875Z" fill="#111111"/>
@@ -106,15 +128,15 @@ export default function HomePage() {
         </svg>
       </div>
 
-      {/* Scrollable content */}
-      <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 16px 16px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* ── Scrollable content ── */}
+      <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '0 16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
 
-          {/* ── Calendar ── */}
-          <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* ── Calendar (no card bg — transparent, on white page) ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
             {/* Days row */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               {weekDays.map((d, i) => {
                 const ds         = isoDate(d)
                 const isToday    = ds === today
@@ -126,106 +148,210 @@ export default function HomePage() {
                   <button
                     key={ds}
                     onClick={() => setSelectedDate(ds)}
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '32px', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', background: 'none', border: 'none', padding: 0, cursor: 'pointer', flex: 1 }}
                   >
+                    {/* Day label */}
                     <span style={{
                       fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
-                      lineHeight: '13px', textAlign: 'center', width: '32px',
-                      color: '#111111', opacity: (isToday || isSelected) ? 1 : 0.35,
+                      textAlign: 'center', color: '#111111',
+                      opacity: (isToday || isSelected) ? 1 : 0.4,
                     }}>{DAY_LABELS[i]}</span>
 
+                    {/* Day circle */}
                     <div style={{
-                      width: '32px', height: '32px', borderRadius: '40px',
-                      background: isSelected ? '#3B948F' : (isToday ? 'rgba(59,148,143,0.12)' : 'transparent'),
+                      width: '40px', height: '40px', borderRadius: '40px',
+                      background: isSelected
+                        ? '#3B948F'
+                        : isToday ? 'rgba(59,148,143,0.10)' : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <span style={{
-                        fontFamily: 'var(--font-geist-sans)', fontSize: '12px', fontWeight: 600, lineHeight: '16px',
+                        fontFamily: 'var(--font-geist-sans)', fontSize: '20px', fontWeight: 500, lineHeight: '20px',
                         color: isSelected ? '#FFFDF5' : '#111111',
                       }}>{d.getDate()}</span>
                     </div>
 
+                    {/* Activity dots */}
                     <div style={{ display: 'flex', flexDirection: 'row', gap: '2px', height: '6px', alignItems: 'center' }}>
-                      {hasStrength && <span style={{ width: '6px', height: '6px', borderRadius: '200px', background: '#3B948F', display: 'block' }} />}
-                      {hasCardio   && <span style={{ width: '6px', height: '6px', borderRadius: '200px', background: '#111111', display: 'block' }} />}
+                      {hasStrength && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#3B948F', display: 'block' }} />}
+                      {hasCardio   && <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: '#111111', display: 'block' }} />}
                     </div>
                   </button>
                 )
               })}
             </div>
 
-            <div style={{ height: '1px', background: 'rgba(17, 17, 17, 0.08)' }} />
+            {/* Divider */}
+            <div style={{ height: '1px', background: 'rgba(17,17,17,0.08)' }} />
 
             {/* Plan info row */}
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
                 {activePhase && (
-                  <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#FFFDF5', background: '#3B948F', padding: '4px 10px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center' }}>
+                  <span style={{
+                    fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
+                    textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px',
+                    color: '#FFFDF5', background: '#3B948F',
+                    padding: '4px 12px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center',
+                  }}>
                     {activePhase.name}
                   </span>
                 )}
                 {activeProgramme && (
-                  <span style={{ ...label10, color: '#111111', opacity: 0.6 }}>{activeProgramme.name}</span>
+                  <span style={{
+                    fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
+                    textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px',
+                    color: 'rgba(17,17,17,0.4)',
+                  }}>{activeProgramme.name}</span>
                 )}
               </div>
               {weekNumber !== null && (
-                <span style={{ ...label10 }}>Week {weekNumber}</span>
+                <span style={{
+                  fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
+                  textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px',
+                  color: '#3B948F',
+                }}>Week {weekNumber}</span>
               )}
             </div>
           </div>
 
-          {/* ── Sessions ── */}
-          <div style={{ marginTop: '8px' }}>
-            <p style={{ ...label10, marginBottom: '12px' }}>{sessionLabel}</p>
-
-            {selectedEvents.length === 0 ? (
-              <p style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '14px', color: 'rgba(17,17,17,0.4)' }}>
-                No sessions planned
-              </p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {selectedEvents.map(ev => {
-                  const isStrength = ev.eventType === 'strength'
-                  const isCardio = CARDIO_TYPES.has(ev.eventType)
-                  const accentColor = isStrength ? '#3B948F' : isCardio ? '#111111' : 'rgba(17,17,17,0.15)'
-                  const pillTextColor = isStrength ? '#FFFDF5' : isCardio ? '#FFFEFA' : '#111111'
-                  const templateName = getTemplateName(ev.workoutTemplateId, ev.programmeId)
-                  const duration     = getDurationRange(ev, programmes)
-                  return (
-                    <div key={ev.id} style={{ ...card, padding: '12px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', position: 'relative', overflow: 'hidden', minHeight: '68px' }}>
-                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: accentColor }} />
-                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: pillTextColor, background: accentColor, padding: '4px 10px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center' }}>
-                          {sessionDisplayLabel(ev.eventType)}
-                        </span>
-                        {duration && <span style={{ ...label10 }}>{duration}</span>}
-                      </div>
-                      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 600, lineHeight: '20px', color: '#111111', display: 'block' }}>
-                        {templateName ?? ev.name ?? sessionDisplayLabel(ev.eventType)}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+          {/* ── Sessions header ── */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '24px', marginBottom: '16px' }}>
+            <span style={{
+              fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 500,
+              lineHeight: '24px', color: '#111111',
+            }}>
+              {sessionLabel}
+            </span>
+            <button
+              onClick={() => router.push('/calendar')}
+              style={{
+                fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
+                lineHeight: '24px', color: '#111111', textDecoration: 'underline',
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              }}
+            >
+              View schedule
+            </button>
           </div>
+
+          {/* ── Session cards ── */}
+          {selectedEvents.length === 0 ? (
+            <p style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '14px', color: 'rgba(17,17,17,0.4)', margin: 0 }}>
+              No sessions planned
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {selectedEvents.map(ev => {
+                const isStrength     = ev.eventType === 'strength'
+                const isCardio       = CARDIO_TYPES.has(ev.eventType)
+                const badgeBg        = isStrength ? '#3B948F' : '#111111'
+                const name           = getTemplateName(ev)
+                const duration       = getDuration(ev, programmes)
+                const exerciseCount  = getExerciseCount(ev, programmes)
+                const muscleTags     = getMuscleGroups(ev, programmes)
+                const cardioTag      = isCardio ? (CARDIO_LABELS[ev.eventType] ?? null) : null
+
+                return (
+                  <div
+                    key={ev.id}
+                    style={{
+                      background: 'rgba(17,17,17,0.03)',
+                      borderRadius: '12px',
+                      padding: '12px 16px',
+                      display: 'flex', flexDirection: 'column', gap: '16px',
+                    }}
+                  >
+                    {/* Name + tags group */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {/* Session name */}
+                      <span style={{
+                        fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 500,
+                        lineHeight: '24px', color: '#111111',
+                      }}>
+                        {name}
+                      </span>
+
+                      {/* Tags row */}
+                      <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '4px' }}>
+                        {/* Type badge */}
+                        <span style={{
+                          fontFamily: 'var(--font-geist-sans)', fontSize: '8px', fontWeight: 500,
+                          textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: '12px',
+                          color: '#FFFDF5', background: badgeBg,
+                          padding: '4px 12px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center',
+                        }}>
+                          {sessionTypeName(ev.eventType)}
+                        </span>
+
+                        {/* Cardio discipline tag */}
+                        {cardioTag && (
+                          <span style={{
+                            fontFamily: 'var(--font-geist-sans)', fontSize: '8px', fontWeight: 500,
+                            textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: '12px',
+                            color: '#3B948F', background: 'rgba(17,17,17,0.05)',
+                            padding: '4px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center',
+                          }}>
+                            {cardioTag}
+                          </span>
+                        )}
+
+                        {/* Muscle group tags */}
+                        {muscleTags.map(tag => (
+                          <span key={tag} style={{
+                            fontFamily: 'var(--font-geist-sans)', fontSize: '8px', fontWeight: 500,
+                            textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: '12px',
+                            color: '#3B948F', background: 'rgba(17,17,17,0.05)',
+                            padding: '4px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center',
+                          }}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Meta row */}
+                    {(duration || exerciseCount) && (
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
+                        {duration && (
+                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
+                            <Image src="/icon-clock.svg" alt="" width={12} height={12} />
+                            <span style={metaText}>{duration}</span>
+                          </div>
+                        )}
+                        {exerciseCount !== null && (
+                          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
+                            <Image src="/icon-exercise.svg" alt="" width={12} height={12} />
+                            <span style={metaText}>{exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
           <div style={{ height: '8px' }} />
         </div>
       </div>
 
       {/* ── Start Workout — sits above floating nav pill ── */}
-      <div style={{ padding: '0 16px', paddingBottom: 'max(calc(env(safe-area-inset-bottom) + 80px), 80px)', flexShrink: 0 }}>
+      <div style={{ padding: '12px 16px', paddingBottom: 'max(calc(env(safe-area-inset-bottom) + 80px), 80px)', flexShrink: 0 }}>
         <button
           onClick={() => router.push('/session')}
           style={{
             width: '100%', height: '48px',
             background: '#3B948F', borderRadius: '40px', border: 'none', cursor: 'pointer',
-            fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 600, color: '#FFFDF5',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
           }}
         >
-          Start Workout
+          <Image src="/icon-play.svg" alt="" width={20} height={20} />
+          <span style={{
+            fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 500,
+            lineHeight: '24px', color: '#FFFEFA',
+          }}>Start workout</span>
         </button>
       </div>
     </div>
