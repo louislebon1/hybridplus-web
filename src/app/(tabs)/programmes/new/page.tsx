@@ -2,16 +2,24 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 
 const FONT = 'var(--font-geist-sans)'
 
-const inputStyle: React.CSSProperties = {
-  padding: '12px 16px',
-  borderRadius: '12px',
-  border: '1px solid rgba(17,17,17,0.1)',
-  background: 'rgba(17,17,17,0.03)',
+const labelStyle: React.CSSProperties = {
+  fontFamily: FONT,
+  fontSize: '14px',
+  fontWeight: 500,
+  lineHeight: '18px',
+  color: '#111111',
+}
+
+const fieldStyle: React.CSSProperties = {
+  padding: '8px 12px',
+  borderRadius: '6px',
+  border: 'none',
+  background: 'rgba(17,17,17,0.05)',
   fontFamily: FONT,
   fontSize: '16px',
   fontWeight: 500,
@@ -22,19 +30,11 @@ const inputStyle: React.CSSProperties = {
   boxSizing: 'border-box',
 }
 
-const labelStyle: React.CSSProperties = {
-  fontFamily: FONT,
-  fontSize: '14px',
-  fontWeight: 500,
-  lineHeight: '18px',
-  color: '#111111',
-}
-
 export default function NewProgrammePage() {
   const router = useRouter()
   const { createProgramme } = useProgrammeStore()
 
-  const [name, setName]               = useState('')
+  const [name,        setName]        = useState('')
   const [description, setDescription] = useState('')
 
   function handleSubmit(e: React.FormEvent) {
@@ -47,51 +47,54 @@ export default function NewProgrammePage() {
   const canSubmit = name.trim().length > 0
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: FONT }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: FONT, background: '#FFFEFA' }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '28px 16px 0', flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '28px 16px 0', flexShrink: 0 }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 500, lineHeight: '30px', color: '#111111', margin: 0 }}>
+          Add new programme
+        </h1>
         <button
           onClick={() => router.back()}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '8px' }}
+          style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
-          <ArrowLeft size={20} color="#111111" />
+          <X size={16} color="#111111" />
         </button>
-        <h1 style={{ fontSize: '24px', fontWeight: 500, lineHeight: '30px', color: '#111111', margin: 0 }}>
-          New Programme
-        </h1>
       </div>
+
+      {/* Divider */}
+      <div style={{ height: '1px', background: 'rgba(17,17,17,0.05)', margin: '20px 0 0', flexShrink: 0 }} />
 
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '20px' }}
+        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px' }}
       >
+
+        {/* Name */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={labelStyle}>Programme name</label>
+          <label style={labelStyle}>Name</label>
           <input
             autoFocus
-            placeholder="e.g. Strength Block A"
+            placeholder="Ultimate Hybrid Build"
             value={name}
             onChange={e => setName(e.target.value)}
-            style={inputStyle}
+            style={{ ...fieldStyle, height: '48px' }}
           />
         </div>
 
+        {/* Description */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={labelStyle}>
-            Description{' '}
-            <span style={{ color: 'rgba(17,17,17,0.4)' }}>(optional)</span>
-          </label>
+          <label style={labelStyle}>Description</label>
           <textarea
-            placeholder="What is this programme for?"
+            placeholder="Add description here..."
             value={description}
             onChange={e => setDescription(e.target.value)}
-            rows={3}
-            style={{ ...inputStyle, resize: 'none' }}
+            style={{ ...fieldStyle, height: '96px', resize: 'none', paddingTop: '12px' }}
           />
         </div>
 
+        {/* CTA */}
         <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
           <button
             type="submit"
@@ -100,7 +103,7 @@ export default function NewProgrammePage() {
               width: '100%',
               height: '48px',
               borderRadius: '40px',
-              border: 'none',
+              border: canSubmit ? '1px solid #3B948F' : 'none',
               background: canSubmit ? '#3B948F' : 'rgba(17,17,17,0.1)',
               cursor: canSubmit ? 'pointer' : 'default',
               fontFamily: FONT,
@@ -110,11 +113,11 @@ export default function NewProgrammePage() {
               color: canSubmit ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
             }}
           >
-            Create Programme
+            Add new programme
           </button>
         </div>
-      </form>
 
+      </form>
     </div>
   )
 }

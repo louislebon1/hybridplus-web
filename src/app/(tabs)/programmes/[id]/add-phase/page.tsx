@@ -188,7 +188,7 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
               border: canSubmit ? '1px solid #3B948F' : 'none',
               background: canSubmit ? '#3B948F' : 'rgba(17,17,17,0.1)',
               fontFamily: FONT,
-              fontSize: '14px',
+              fontSize: '16px',
               fontWeight: 500,
               lineHeight: '24px',
               color: canSubmit ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
