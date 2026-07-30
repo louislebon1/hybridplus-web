@@ -28,7 +28,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
         right: 0,
         display: 'flex',
         justifyContent: 'center',
-        paddingBottom: 'max(env(safe-area-inset-bottom), 24px)',
+        paddingBottom: '24px',
         pointerEvents: 'none',
       }}>
         <nav style={{
@@ -41,6 +41,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           borderRadius: '200px',
           border: '1px solid rgba(17, 17, 17, 0.05)',
           background: '#FFFEFA',
+          boxShadow: '0px 0px 12px 4px rgba(17, 17, 17, 0.08)',
           pointerEvents: 'auto',
         }}>
           {TABS.map(({ href, inactive, active }) => {
