@@ -263,8 +263,12 @@ export const useSessionStore = create<SessionStore>()((set, get) => ({
         .map(s => ({
           weight: s.weightValue,
           reps: s.reps,
+          rpe: s.rpe,
           e1rm: s.estimatedOneRepMax,
           setType: s.setType,
+          targetRepsMin: block.targetRepsMin,
+          targetRepsMax: block.targetRepsMax,
+          targetRpe: block.targetRpe,
         }))
 
       const totalVolume = completedSets.reduce((acc, s) => {
@@ -275,6 +279,7 @@ export const useSessionStore = create<SessionStore>()((set, get) => ({
       return {
         exerciseId: block.exerciseId,
         exerciseName: block.exerciseName,
+        orderIndex: block.orderIndex,
         sets: completedSets,
         totalVolume,
       }
@@ -292,6 +297,9 @@ export const useSessionStore = create<SessionStore>()((set, get) => ({
       exercises,
       totalVolume,
       notes: activeSession.notes,
+      phaseType: null,
+      trainingFocus: null,
+      programmeId: activeSession.programmeId,
     }
 
     useSessionHistoryStore.getState().addSession(strengthSession)

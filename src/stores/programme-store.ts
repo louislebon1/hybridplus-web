@@ -11,6 +11,8 @@ import type {
   WorkoutTemplateRef,
   CardioTemplate,
   ActivityType,
+  PhaseType,
+  TrainingFocus,
 } from '@/types'
 import { syncProgrammes, deleteProgrammeFromCloud, loadProgrammes } from '@/lib/sync'
 
@@ -38,9 +40,9 @@ interface ProgrammeStore {
   moveBlockDown(templateId: string, blockId: string): void
 
   // Phase CRUD
-  addPhase(programmeId: string, input: { name: string; description?: string; durationWeeks: number; colorHex?: string }): Phase
+  addPhase(programmeId: string, input: { name: string; description?: string; durationWeeks: number; colorHex?: string; phaseType?: PhaseType; trainingFocus?: TrainingFocus }): Phase
   addDeloadPhase(programmeId: string): Phase
-  updatePhase(programmeId: string, phaseId: string, updates: Partial<Pick<Phase, 'name' | 'description' | 'durationWeeks' | 'colorHex' | 'orderIndex'>>): void
+  updatePhase(programmeId: string, phaseId: string, updates: Partial<Pick<Phase, 'name' | 'description' | 'durationWeeks' | 'colorHex' | 'orderIndex' | 'phaseType' | 'trainingFocus'>>): void
   deletePhase(programmeId: string, phaseId: string): void
   reorderPhases(programmeId: string, orderedIds: string[]): void
   setActivePhase(programmeId: string, phaseId: string): void
@@ -339,6 +341,8 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           overrides: [],
           isActive: false,
           isDeload: false,
+          phaseType: input.phaseType ?? null,
+          trainingFocus: input.trainingFocus ?? null,
         }
         set(s => ({
           programmes: s.programmes.map(p =>
@@ -383,6 +387,8 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           overrides,
           isActive: false,
           isDeload: true,
+          phaseType: 'deload',
+          trainingFocus: null,
         }
         set(s => ({
           programmes: s.programmes.map(p =>
@@ -730,7 +736,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
     {
       name: 'hp-programme',
       storage: createJSONStorage(() => localStorage),
-      version: 9,
+      version: 10,
       migrate(persistedState, version) {
         const state = persistedState as { programmes: Programme[] }
         if (version < 1) {
@@ -807,6 +813,16 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           state.programmes = (state.programmes ?? []).map(p => ({
             ...p,
             phases: (p.phases ?? []).map(ph => ({ ...ph, colorHex: '#3B948F' })),
+          }))
+        }
+        if (version < 10) {
+          state.programmes = (state.programmes ?? []).map(p => ({
+            ...p,
+            phases: (p.phases ?? []).map(ph => ({
+              ...ph,
+              phaseType: (ph as Phase & { phaseType?: PhaseType }).phaseType ?? null,
+              trainingFocus: (ph as Phase & { trainingFocus?: TrainingFocus }).trainingFocus ?? null,
+            })),
           }))
         }
         return state

@@ -19,6 +19,47 @@ export type Equipment =
   | 'band'
   | 'other'
 
+// Prescription types
+export type PhaseType = 'foundation' | 'build' | 'peak' | 'deload' | 'recovery'
+export type TrainingFocus =
+  | 'hypertrophy'
+  | 'strength'
+  | 'power'
+  | 'endurance'
+  | 'conditioning'
+  | 'general-fitness'
+  | 'fat-loss'
+  | 'maintenance'
+export type ExerciseCategory = 'compound' | 'isolation'
+export type MovementPattern =
+  | 'horizontal-push'
+  | 'horizontal-pull'
+  | 'vertical-push'
+  | 'vertical-pull'
+  | 'squat'
+  | 'hinge'
+  | 'lunge'
+  | 'carry'
+  | 'rotation'
+  | 'plyometric'
+  | 'full-body'
+  | 'isolation'
+export type ExerciseDifficulty = 'beginner' | 'intermediate' | 'advanced'
+
+export interface ExercisePrescription {
+  exerciseId: string
+  exerciseName: string
+  sets: number
+  repMin: number
+  repMax: number
+  rpeMin: number
+  rpeMax: number
+  recommendedLoadKg: number | null
+  isEstimated: boolean
+  loadRationale: 'increase' | 'maintain' | 'reduce' | 'no-history' | 'estimated'
+  progressionNote: string | null
+}
+
 export interface ExerciseLibraryItem {
   id: string
   name: string
@@ -27,6 +68,11 @@ export interface ExerciseLibraryItem {
   primaryMuscles: string[]
   secondaryMuscles?: string[]
   tertiaryMuscles?: string[]
+  movementPattern: MovementPattern
+  exerciseCategory: ExerciseCategory
+  difficulty: ExerciseDifficulty
+  recommendedRepRange: { min: number; max: number }
+  recommendedRpeRange: { min: number; max: number }
 }
 
 export interface ExerciseTemplateBlock {
@@ -113,6 +159,8 @@ export interface Phase {
   overrides: PhaseTemplateOverride[]
   isActive: boolean
   isDeload: boolean
+  phaseType: PhaseType | null
+  trainingFocus: TrainingFocus | null
 }
 
 export interface Programme {
@@ -336,13 +384,18 @@ export interface CardioSession {
 export interface CompletedSet {
   weight: number | null
   reps: number | null
+  rpe: number | null
   e1rm: number | null
   setType: string
+  targetRepsMin: number | null
+  targetRepsMax: number | null
+  targetRpe: number | null
 }
 
 export interface CompletedExercise {
   exerciseId: string
   exerciseName: string
+  orderIndex: number
   sets: CompletedSet[]
   totalVolume: number
 }
@@ -357,4 +410,7 @@ export interface StrengthSession {
   exercises: CompletedExercise[]
   totalVolume: number
   notes: string
+  phaseType: PhaseType | null
+  trainingFocus: TrainingFocus | null
+  programmeId: string | null
 }
