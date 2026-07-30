@@ -4,15 +4,10 @@ export type MuscleGroup =
   | 'chest'
   | 'back'
   | 'shoulders'
-  | 'biceps'
-  | 'triceps'
-  | 'quads'
-  | 'hamstrings'
-  | 'glutes'
-  | 'calves'
+  | 'arms'
+  | 'legs'
   | 'core'
   | 'full body'
-  | 'olympic'
 export type Equipment =
   | 'barbell'
   | 'dumbbell'
@@ -30,6 +25,8 @@ export interface ExerciseLibraryItem {
   category: MuscleGroup
   equipment: Equipment
   primaryMuscles: string[]
+  secondaryMuscles?: string[]
+  tertiaryMuscles?: string[]
 }
 
 export interface ExerciseTemplateBlock {
