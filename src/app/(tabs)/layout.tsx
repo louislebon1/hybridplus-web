@@ -2,63 +2,77 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Activity, BarChart2, User } from 'lucide-react'
+import Image from 'next/image'
 
 const TABS = [
-  { href: '/home', label: 'Home', icon: Home },
-  { href: '/programmes', label: 'Programmes', icon: Activity },
-  { href: '/progress', label: 'Progress', icon: BarChart2 },
-  { href: '/profile', label: 'Profile', icon: User },
+  { href: '/home',       inactive: '/nav-home.svg',         active: '/nav-home-active.svg'     },
+  { href: '/programmes', inactive: '/nav-workouts.svg',     active: '/nav-workouts-active.svg' },
+  { href: '/progress',   inactive: '/nav-progress.svg',     active: '/nav-progress-active.svg' },
+  { href: '/profile',    inactive: '/nav-user.svg',         active: '/nav-user-active.svg'     },
 ]
 
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col h-full">
-      <main className="flex-1 overflow-hidden">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
+      <main style={{ flex: 1, overflow: 'hidden' }}>
         {children}
       </main>
 
-      <nav
-        style={{
-          flexShrink: 0,
+      {/* Floating pill nav — absolutely positioned, doesn't push content */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        paddingBottom: 'max(env(safe-area-inset-bottom), 24px)',
+        pointerEvents: 'none',
+      }}>
+        <nav style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: '4px',
+          padding: '4px',
+          width: '300px',
+          borderRadius: '200px',
+          border: '1px solid rgba(17, 17, 17, 0.05)',
           background: '#FFFEFA',
-          borderTop: '1px solid rgba(17, 17, 17, 0.08)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px' }}>
-          {TABS.map(({ href, label, icon: Icon }) => {
-            const active = pathname.startsWith(href)
+          pointerEvents: 'auto',
+        }}>
+          {TABS.map(({ href, inactive, active }) => {
+            const isActive = pathname.startsWith(href)
             return (
               <Link
                 key={href}
                 href={href}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '52px', height: '42px', justifyContent: 'center', textDecoration: 'none' }}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  borderRadius: '200px',
+                  background: isActive ? 'rgba(17, 17, 17, 0.05)' : 'transparent',
+                  textDecoration: 'none',
+                }}
               >
-                <Icon
-                  size={22}
-                  style={{ color: active ? '#3B948F' : '#111111', opacity: active ? 1 : 0.35 }}
+                <Image
+                  src={isActive ? active : inactive}
+                  alt=""
+                  width={24}
+                  height={24}
+                  style={{ display: 'block' }}
                 />
-                <span style={{
-                  fontFamily: 'var(--font-geist-sans)',
-                  fontSize: '9px',
-                  fontWeight: 500,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: active ? '#3B948F' : 'rgba(17,17,17,0.4)',
-                  textAlign: 'center',
-                  width: '52px',
-                  lineHeight: '11px',
-                }}>
-                  {label}
-                </span>
               </Link>
             )
           })}
-        </div>
-      </nav>
+        </nav>
+      </div>
     </div>
   )
 }

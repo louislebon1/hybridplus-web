@@ -2,16 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Flame } from 'lucide-react'
-import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { useCalendarStore } from '@/stores/calendar-store'
-import { useCardioStore } from '@/stores/cardio-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import type { CalendarEventData, Programme } from '@/types'
 import { localDateStr } from '@/lib/date'
 
 const DAY_LABELS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-const DAY_SHORT  = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const CARDIO_TYPES = new Set(['run', 'swim', 'cycle', 'walk', 'row'])
 
 const card: React.CSSProperties = {
@@ -60,29 +56,15 @@ function getDurationRange(ev: CalendarEventData, programmes: Programme[]): strin
   return null
 }
 
-function DayCheck({ done }: { done: boolean }) {
-  const c = done ? '#3B948F' : 'rgba(17,17,17,0.15)'
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="6.67" stroke={c} strokeWidth="1.33"/>
-      <path d="M5.5 8.5L7 10.5L10.5 5.5" stroke={c} strokeWidth="1.33" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
-}
-
 export default function HomePage() {
   const router = useRouter()
   const today = isoDate(new Date())
   const [selectedDate, setSelectedDate] = useState(today)
 
-  const { sessions: strengthSessions } = useSessionHistoryStore()
   const { events } = useCalendarStore()
-  const { sessions: cardioSessions } = useCardioStore()
   const { programmes } = useProgrammeStore()
 
   const weekDays = getWeekDays()
-  const weekStart = weekDays[0]
-  const weekEnd = new Date(weekDays[6]); weekEnd.setHours(23, 59, 59, 999)
 
   const activeProgramme = programmes.find(p => p.isActive) ?? programmes[0] ?? null
   const activePhase = activeProgramme?.phases.find(ph => ph.isActive) ?? activeProgramme?.phases[0] ?? null
@@ -90,31 +72,6 @@ export default function HomePage() {
   const weekNumber = activeProgramme?.startDate
     ? Math.max(1, Math.floor((Date.now() - new Date(activeProgramme.startDate + 'T00:00:00').getTime()) / (7 * 86400000)) + 1)
     : null
-
-  const inWeek = (ds: string) => {
-    const d = new Date(ds + 'T12:00:00')
-    return d >= weekStart && d <= weekEnd
-  }
-  const weekStrength = strengthSessions.filter(s => inWeek(s.sessionDate))
-  const weekCardio   = cardioSessions.filter(s => inWeek(s.sessionDate))
-  const weekVolume   = weekStrength.reduce((a, s) => a + s.totalVolume, 0)
-  const avgSession   = weekStrength.length > 0
-    ? Math.round(weekStrength.reduce((a, s) => a + s.durationSeconds, 0) / weekStrength.length / 60)
-    : 0
-
-  const allDates = new Set([
-    ...strengthSessions.map(s => s.sessionDate),
-    ...cardioSessions.map(s => s.sessionDate),
-  ])
-  let streak = 0
-  const cur = new Date(); cur.setHours(0, 0, 0, 0)
-  while (allDates.has(isoDate(cur))) { streak++; cur.setDate(cur.getDate() - 1) }
-
-  const dayHasSession = (d: Date) => {
-    const ds = isoDate(d)
-    return allDates.has(ds) || (events[ds] ?? []).some(e => e.isCompleted)
-  }
-  const completedThisWeek = weekDays.filter(dayHasSession).length
 
   const selectedEvents = events[selectedDate] ?? []
 
@@ -217,48 +174,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* ── Streak ── */}
-          <div style={{ ...card, padding: '12px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '72px', flexShrink: 0 }}>
-              <Flame size={24} color="#3B948F" />
-              <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 600, lineHeight: '18px', color: '#111111' }}>
-                {streak} Day
-              </span>
-              <span style={{ ...label10, textAlign: 'center' }}>Workout Streak</span>
-            </div>
-
-            <div style={{ width: '1px', alignSelf: 'stretch', background: 'rgba(17, 17, 17, 0.08)', flexShrink: 0 }} />
-
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ position: 'relative', height: '4px', background: 'rgba(17,17,17,0.10)', borderRadius: '8px', overflow: 'hidden' }}>
-                <div style={{
-                  position: 'absolute', left: 0, top: 0, bottom: 0,
-                  width: `${Math.round((completedThisWeek / 7) * 100)}%`,
-                  background: '#3B948F', borderRadius: '4px',
-                }} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {weekDays.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '24px' }}>
-                    <DayCheck done={dayHasSession(d)} />
-                    <span style={{ ...label10 }}>{DAY_SHORT[i]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* ── This Week ── */}
-          <div style={{ marginTop: '8px' }}>
-            <p style={{ ...label10, marginBottom: '12px' }}>This Week</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <StatCard value={weekStrength.length + weekCardio.length} label="Workouts" />
-              <StatCard value={weekVolume > 0 ? Math.round(weekVolume) : 0} unit="kg" label="Volume" />
-              <StatCard value={weekCardio.length} label="Cardio" />
-              <StatCard value={avgSession} unit="min" label="Avg Session" />
-            </div>
-          </div>
-
           {/* ── Sessions ── */}
           <div style={{ marginTop: '8px' }}>
             <p style={{ ...label10, marginBottom: '12px' }}>{sessionLabel}</p>
@@ -299,8 +214,8 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── Start Workout ── */}
-      <div style={{ padding: '0 16px 16px', flexShrink: 0 }}>
+      {/* ── Start Workout — sits above floating nav pill ── */}
+      <div style={{ padding: '0 16px', paddingBottom: 'max(calc(env(safe-area-inset-bottom) + 80px), 80px)', flexShrink: 0 }}>
         <button
           onClick={() => router.push('/session')}
           style={{
@@ -313,37 +228,6 @@ export default function HomePage() {
           Start Workout
         </button>
       </div>
-    </div>
-  )
-}
-
-function StatCard({ value, unit, label }: { value: number; unit?: string; label: string }) {
-  return (
-    <div style={{
-      background: 'rgba(17,17,17,0.03)',
-      border: '1px solid rgba(17,17,17,0.08)',
-      borderRadius: '12px',
-      padding: '16px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '6px',
-      minHeight: '100px',
-    }}>
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '4px' }}>
-        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '36px', fontWeight: 700, lineHeight: '1', color: '#111111' }}>
-          {value.toLocaleString()}
-        </span>
-        {unit && (
-          <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(17,17,17,0.4)', paddingBottom: '4px' }}>
-            {unit}
-          </span>
-        )}
-      </div>
-      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(17,17,17,0.4)' }}>
-        {label}
-      </span>
     </div>
   )
 }
