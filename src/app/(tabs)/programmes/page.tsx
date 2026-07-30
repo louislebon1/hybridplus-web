@@ -4,12 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronRight, Plus } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
-import { useCardioStore } from '@/stores/cardio-store'
 import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import Image from 'next/image'
-import type { WorkoutTemplate, CardioSession } from '@/types'
+import type { WorkoutTemplate, CardioTemplate } from '@/types'
 
-type MainTab   = 'programmes' | 'sessions'
+type MainTab    = 'programmes' | 'sessions'
 type ProgSubTab = 'active' | 'inactive'
 type SessSubTab = 'strength' | 'cardio'
 
@@ -43,19 +42,10 @@ function tmplMuscles(tmpl: WorkoutTemplate): string[] {
   return Array.from(seen).slice(0, 3).map(c => MUSCLE_GROUP_LABELS[c] ?? c)
 }
 
-function fmtSecs(secs: number): string {
-  const h = Math.floor(secs / 3600), m = Math.floor((secs % 3600) / 60)
-  return h > 0 ? `${h}h ${m}m` : `${m} Mins`
-}
-
 function fmtStartDate(d: string): string {
   return new Date(d + 'T00:00:00')
     .toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
     .toLowerCase()
-}
-
-function fmtShortDate(d: string): string {
-  return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
 // ─── Session cards ─────────────────────────────────────────────────────────────
@@ -95,29 +85,29 @@ function StrengthCard({ tmpl }: { tmpl: WorkoutTemplate }) {
   )
 }
 
-function CardioCard({ s }: { s: CardioSession }) {
-  const label = [s.runType?.replace('_', ' '), s.activityType].filter(Boolean).join(' ')
+function CardioTemplateCard({ t }: { t: CardioTemplate }) {
   return (
     <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <span style={{ ...bodyStyle, color: '#111111', textTransform: 'capitalize' }}>{label}</span>
+        <span style={{ ...bodyStyle, color: '#111111' }}>{t.name}</span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
           <span style={{ ...tagStyle, color: '#FFFDF5', background: '#111111', padding: '4px 12px', borderRadius: '200px' }}>Cardio</span>
-          <span style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{s.activityType}</span>
+          <span style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{t.activityType}</span>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-        {s.durationSeconds > 0 && (
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-            <Image src="/icon-clock.svg" alt="" width={12} height={12} />
-            <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{fmtSecs(s.durationSeconds)}</span>
-          </div>
-        )}
-        {s.distanceKm && (
-          <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{s.distanceKm.toFixed(2)} km</span>
-        )}
-        <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{fmtShortDate(s.sessionDate)}</span>
-      </div>
+      {(t.targetDurationMinutes || t.targetDistanceKm) && (
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {t.targetDurationMinutes && (
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <Image src="/icon-clock.svg" alt="" width={12} height={12} />
+              <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDurationMinutes} Mins</span>
+            </div>
+          )}
+          {t.targetDistanceKm && (
+            <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDistanceKm.toFixed(1)} km</span>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -126,30 +116,19 @@ function CardioCard({ s }: { s: CardioSession }) {
 
 export default function WorkoutsPage() {
   const router = useRouter()
-  const { programmes, createProgramme } = useProgrammeStore()
-  const { sessions: cardioSessions } = useCardioStore()
+  const { programmes } = useProgrammeStore()
 
   const [mainTab,    setMainTab]    = useState<MainTab>('programmes')
   const [progSubTab, setProgSubTab] = useState<ProgSubTab>('active')
   const [sessSubTab, setSessSubTab] = useState<SessSubTab>('strength')
-  const [showCreate, setShowCreate] = useState(false)
-  const [newName,    setNewName]    = useState('')
-  const [newDesc,    setNewDesc]    = useState('')
-
-  function handleCreate(e: React.FormEvent) {
-    e.preventDefault()
-    if (!newName.trim()) return
-    createProgramme({ name: newName.trim(), description: newDesc.trim() })
-    setNewName(''); setNewDesc(''); setShowCreate(false)
-  }
 
   const filteredProgrammes = programmes.filter(p =>
     progSubTab === 'active' ? p.isActive : !p.isActive
   )
   const strengthSessions = programmes.flatMap(p => p.templates)
-  const sortedCardio     = [...cardioSessions].sort((a, b) => b.sessionDate.localeCompare(a.sessionDate))
+  const cardioTemplates  = programmes.flatMap(p => p.cardioTemplates)
 
-  // ─── Sub-tab bar (shared) ────────────────────────────────────────────────────
+  // ─── Sub-tab bar ─────────────────────────────────────────────────────────────
 
   function SubTabBar<T extends string>({ tabs, active, onChange }: {
     tabs: readonly T[]; active: T; onChange: (t: T) => void
@@ -181,7 +160,7 @@ export default function WorkoutsPage() {
     )
   }
 
-  // ─── CTA button (shared) ─────────────────────────────────────────────────────
+  // ─── CTA button ──────────────────────────────────────────────────────────────
 
   function CtaButton({ label, onClick }: { label: string; onClick: () => void }) {
     return (
@@ -243,7 +222,6 @@ export default function WorkoutsPage() {
 
             <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto' }}>
 
-              {/* Programme rows */}
               {filteredProgrammes.map(p => {
                 const phases = p.phases.length
                 const weeks  = p.phases.reduce((sum, ph) => sum + ph.durationWeeks, 0)
@@ -291,8 +269,7 @@ export default function WorkoutsPage() {
                 )
               })}
 
-              {/* Empty state */}
-              {filteredProgrammes.length === 0 && !showCreate && (
+              {filteredProgrammes.length === 0 && (
                 <div style={{ padding: '16px 16px 0' }}>
                   <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
                     <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
@@ -304,67 +281,9 @@ export default function WorkoutsPage() {
                 </div>
               )}
 
-              {/* Inline create form */}
-              {showCreate && (
-                <form onSubmit={handleCreate} style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <input
-                    autoFocus
-                    placeholder="Programme name"
-                    value={newName}
-                    onChange={e => setNewName(e.target.value)}
-                    style={{
-                      padding: '12px 16px', borderRadius: '12px',
-                      border: '1px solid rgba(17,17,17,0.1)', background: 'rgba(17,17,17,0.03)',
-                      ...bodyStyle, color: '#111111', outline: 'none',
-                      width: '100%', boxSizing: 'border-box',
-                    }}
-                  />
-                  <input
-                    placeholder="Description (optional)"
-                    value={newDesc}
-                    onChange={e => setNewDesc(e.target.value)}
-                    style={{
-                      padding: '12px 16px', borderRadius: '12px',
-                      border: '1px solid rgba(17,17,17,0.1)', background: 'rgba(17,17,17,0.03)',
-                      ...bodyStyle, color: '#111111', outline: 'none',
-                      width: '100%', boxSizing: 'border-box',
-                    }}
-                  />
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      type="submit"
-                      disabled={!newName.trim()}
-                      style={{
-                        flex: 1, padding: '12px', borderRadius: '40px', border: 'none',
-                        background: newName.trim() ? '#3B948F' : 'rgba(17,17,17,0.1)',
-                        cursor: newName.trim() ? 'pointer' : 'default',
-                        fontFamily: FONT, fontSize: '14px', fontWeight: 500,
-                        color: newName.trim() ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
-                      }}
-                    >
-                      Create
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setShowCreate(false); setNewName(''); setNewDesc('') }}
-                      style={{
-                        padding: '12px 20px', borderRadius: '40px',
-                        background: 'transparent', border: '1px solid rgba(17,17,17,0.1)',
-                        cursor: 'pointer', fontFamily: FONT, fontSize: '14px', fontWeight: 500, color: '#111111',
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {/* Add new programme CTA */}
-              {!showCreate && (
-                <div style={{ padding: '16px' }}>
-                  <CtaButton label="Add new programme" onClick={() => setShowCreate(true)} />
-                </div>
-              )}
+              <div style={{ padding: '16px' }}>
+                <CtaButton label="Add new programme" onClick={() => router.push('/programmes/new')} />
+              </div>
 
               <div style={{ height: '88px' }} />
             </div>
@@ -376,37 +295,35 @@ export default function WorkoutsPage() {
           <>
             <SubTabBar tabs={['strength', 'cardio'] as const} active={sessSubTab} onChange={setSessSubTab} />
 
-            {/* Session cards */}
             <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 0' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {sessSubTab === 'strength' ? (
                   strengthSessions.length === 0 ? (
                     <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
                       <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
-                        No sessions available – add a new session to get started.
+                        No session templates yet – create a new session to add it to a programme.
                       </p>
                     </div>
                   ) : (
                     strengthSessions.map(t => <StrengthCard key={t.id} tmpl={t} />)
                   )
                 ) : (
-                  sortedCardio.length === 0 ? (
+                  cardioTemplates.length === 0 ? (
                     <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
                       <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
-                        No cardio sessions logged – log your first session to get started.
+                        No cardio templates yet – create a new cardio session to add it to a programme.
                       </p>
                     </div>
                   ) : (
-                    sortedCardio.map(s => <CardioCard key={s.id} s={s} />)
+                    cardioTemplates.map(t => <CardioTemplateCard key={t.id} t={t} />)
                   )
                 )}
               </div>
 
-              {/* CTA below list — consistent with programmes tab */}
               <div style={{ padding: '16px 0 0' }}>
                 <CtaButton
-                  label={sessSubTab === 'strength' ? 'Add new session' : 'Log cardio session'}
-                  onClick={() => { if (sessSubTab === 'cardio') router.push('/cardio') }}
+                  label={sessSubTab === 'strength' ? 'Add new session' : 'Add cardio session'}
+                  onClick={() => router.push(`/sessions/new?type=${sessSubTab}`)}
                 />
               </div>
 
