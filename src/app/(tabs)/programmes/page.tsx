@@ -51,65 +51,95 @@ function fmtStartDate(d: string): string {
 
 // ─── Session cards ─────────────────────────────────────────────────────────────
 
-function StrengthCard({ tmpl }: { tmpl: StrengthSessionTemplate }) {
+const chevronCircle: React.CSSProperties = {
+  width: '28px', height: '28px', borderRadius: '200px',
+  background: 'rgba(17,17,17,0.05)', flexShrink: 0,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+}
+
+function StrengthCard({ tmpl, onEdit }: { tmpl: StrengthSessionTemplate; onEdit: () => void }) {
   const dur     = tmplDuration(tmpl)
   const muscles = tmplMuscles(tmpl)
   const count   = tmpl.exerciseBlocks.length
   return (
-    <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <span style={{ ...bodyStyle, color: '#111111' }}>{tmpl.name}</span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-          <span style={{ ...tagStyle, color: '#FFFDF5', background: '#3B948F', padding: '4px 12px', borderRadius: '200px' }}>Strength</span>
-          {muscles.map(m => (
-            <span key={m} style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{m}</span>
-          ))}
+    <button
+      onClick={onEdit}
+      style={{
+        background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px',
+        display: 'flex', alignItems: 'flex-start', gap: '12px',
+        border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
+      }}
+    >
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <span style={{ ...bodyStyle, color: '#111111' }}>{tmpl.name}</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            <span style={{ ...tagStyle, color: '#FFFDF5', background: '#3B948F', padding: '4px 12px', borderRadius: '200px' }}>Strength</span>
+            {muscles.map(m => (
+              <span key={m} style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{m}</span>
+            ))}
+          </div>
         </div>
+        {(dur || count > 0) && (
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            {dur && (
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                <Image src="/icon-clock.svg" alt="" width={12} height={12} />
+                <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{dur}</span>
+              </div>
+            )}
+            {count > 0 && (
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                <Image src="/icon-exercise.svg" alt="" width={12} height={12} />
+                <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{count} exercise{count !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      {(dur || count > 0) && (
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          {dur && (
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <Image src="/icon-clock.svg" alt="" width={12} height={12} />
-              <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{dur}</span>
-            </div>
-          )}
-          {count > 0 && (
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <Image src="/icon-exercise.svg" alt="" width={12} height={12} />
-              <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{count} exercise{count !== 1 ? 's' : ''}</span>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+      <div style={chevronCircle}>
+        <ChevronRight size={14} color="#111111" />
+      </div>
+    </button>
   )
 }
 
-function CardioTemplateCard({ t }: { t: CardioSessionTemplate }) {
+function CardioTemplateCard({ t, onEdit }: { t: CardioSessionTemplate; onEdit: () => void }) {
   return (
-    <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <span style={{ ...bodyStyle, color: '#111111' }}>{t.name}</span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-          <span style={{ ...tagStyle, color: '#FFFDF5', background: '#111111', padding: '4px 12px', borderRadius: '200px' }}>Cardio</span>
-          <span style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{t.activityType}</span>
+    <button
+      onClick={onEdit}
+      style={{
+        background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px',
+        display: 'flex', alignItems: 'flex-start', gap: '12px',
+        border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
+      }}
+    >
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <span style={{ ...bodyStyle, color: '#111111' }}>{t.name}</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            <span style={{ ...tagStyle, color: '#FFFDF5', background: '#111111', padding: '4px 12px', borderRadius: '200px' }}>Cardio</span>
+            <span style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{t.activityType}</span>
+          </div>
         </div>
+        {(t.targetDurationMinutes || t.targetDistanceKm) && (
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            {t.targetDurationMinutes && (
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                <Image src="/icon-clock.svg" alt="" width={12} height={12} />
+                <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDurationMinutes} Mins</span>
+              </div>
+            )}
+            {t.targetDistanceKm && (
+              <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDistanceKm.toFixed(1)} km</span>
+            )}
+          </div>
+        )}
       </div>
-      {(t.targetDurationMinutes || t.targetDistanceKm) && (
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          {t.targetDurationMinutes && (
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <Image src="/icon-clock.svg" alt="" width={12} height={12} />
-              <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDurationMinutes} Mins</span>
-            </div>
-          )}
-          {t.targetDistanceKm && (
-            <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDistanceKm.toFixed(1)} km</span>
-          )}
-        </div>
-      )}
-    </div>
+      <div style={chevronCircle}>
+        <ChevronRight size={14} color="#111111" />
+      </div>
+    </button>
   )
 }
 
@@ -305,7 +335,7 @@ export default function WorkoutsPage() {
                       </p>
                     </div>
                   ) : (
-                    strengthTemplates.map(t => <StrengthCard key={t.id} tmpl={t} />)
+                    strengthTemplates.map(t => <StrengthCard key={t.id} tmpl={t} onEdit={() => router.push(`/sessions/edit/${t.id}`)} />)
                   )
                 ) : (
                   cardioTemplates.length === 0 ? (
@@ -315,7 +345,7 @@ export default function WorkoutsPage() {
                       </p>
                     </div>
                   ) : (
-                    cardioTemplates.map(t => <CardioTemplateCard key={t.id} t={t} />)
+                    cardioTemplates.map(t => <CardioTemplateCard key={t.id} t={t} onEdit={() => router.push(`/sessions/edit/${t.id}`)} />)
                   )
                 )}
               </div>
