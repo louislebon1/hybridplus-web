@@ -59,7 +59,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
   const programme = programmes.find(p => p.id === id)
 
-  const [detailTab,         setDetailTab]         = useState<'phases' | 'workouts'>('phases')
+  const [detailTab,         setDetailTab]         = useState<'phases' | 'sessions'>('phases')
   const [expandedPhases,    setExpandedPhases]    = useState<Set<string>>(new Set())
   const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(new Set())
   const [showAddTemplate,   setShowAddTemplate]   = useState(false)
@@ -304,7 +304,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
       {/* Tabs */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', padding: '0 16px', borderBottom: '1px solid rgba(17,17,17,0.05)', flexShrink: 0 }}>
-        {(['phases', 'workouts'] as const).map(tab => (
+        {(['phases', 'sessions'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setDetailTab(tab)}
@@ -605,8 +605,8 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           </div>
         )}
 
-        {/* ── WORKOUTS TAB ───────────────────────────────────────────────── */}
-        {detailTab === 'workouts' && (
+        {/* ── SESSIONS TAB ───────────────────────────────────────────────── */}
+        {detailTab === 'sessions' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
             {/* Template list */}
