@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronRight, Plus } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
+import { useTemplateStore } from '@/stores/template-store'
 import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import Image from 'next/image'
-import type { WorkoutTemplate, CardioTemplate } from '@/types'
+import type { StrengthSessionTemplate, CardioSessionTemplate } from '@/types'
 
 type MainTab    = 'programmes' | 'sessions'
 type ProgSubTab = 'active' | 'inactive'
@@ -24,7 +25,7 @@ const bodyStyle: React.CSSProperties = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function tmplDuration(tmpl: WorkoutTemplate): string | null {
+function tmplDuration(tmpl: StrengthSessionTemplate): string | null {
   if (tmpl.exerciseBlocks.length === 0) return null
   const totalSets = tmpl.exerciseBlocks.reduce((s, b) => s + b.targetSets, 0)
   const est = totalSets * 3
@@ -33,7 +34,7 @@ function tmplDuration(tmpl: WorkoutTemplate): string | null {
   return lo === hi ? `${lo} Mins` : `${lo} – ${hi} Mins`
 }
 
-function tmplMuscles(tmpl: WorkoutTemplate): string[] {
+function tmplMuscles(tmpl: StrengthSessionTemplate): string[] {
   const seen = new Set<string>()
   for (const b of tmpl.exerciseBlocks) {
     const ex = EXERCISE_LIBRARY.find(e => e.id === b.exerciseId)
@@ -50,7 +51,7 @@ function fmtStartDate(d: string): string {
 
 // ─── Session cards ─────────────────────────────────────────────────────────────
 
-function StrengthCard({ tmpl }: { tmpl: WorkoutTemplate }) {
+function StrengthCard({ tmpl }: { tmpl: StrengthSessionTemplate }) {
   const dur     = tmplDuration(tmpl)
   const muscles = tmplMuscles(tmpl)
   const count   = tmpl.exerciseBlocks.length
@@ -85,7 +86,7 @@ function StrengthCard({ tmpl }: { tmpl: WorkoutTemplate }) {
   )
 }
 
-function CardioTemplateCard({ t }: { t: CardioTemplate }) {
+function CardioTemplateCard({ t }: { t: CardioSessionTemplate }) {
   return (
     <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -117,6 +118,7 @@ function CardioTemplateCard({ t }: { t: CardioTemplate }) {
 export default function WorkoutsPage() {
   const router = useRouter()
   const { programmes } = useProgrammeStore()
+  const { strengthTemplates, cardioTemplates } = useTemplateStore()
 
   const [mainTab,    setMainTab]    = useState<MainTab>('programmes')
   const [progSubTab, setProgSubTab] = useState<ProgSubTab>('active')
@@ -125,8 +127,6 @@ export default function WorkoutsPage() {
   const filteredProgrammes = programmes.filter(p =>
     progSubTab === 'active' ? p.isActive : !p.isActive
   )
-  const strengthSessions = programmes.flatMap(p => p.templates)
-  const cardioTemplates  = programmes.flatMap(p => p.cardioTemplates)
 
   // ─── Sub-tab bar ─────────────────────────────────────────────────────────────
 
@@ -298,14 +298,14 @@ export default function WorkoutsPage() {
             <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 0' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {sessSubTab === 'strength' ? (
-                  strengthSessions.length === 0 ? (
+                  strengthTemplates.length === 0 ? (
                     <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
                       <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
-                        No session templates yet – create a new session to add it to a programme.
+                        No session templates yet – create a new session to get started.
                       </p>
                     </div>
                   ) : (
-                    strengthSessions.map(t => <StrengthCard key={t.id} tmpl={t} />)
+                    strengthTemplates.map(t => <StrengthCard key={t.id} tmpl={t} />)
                   )
                 ) : (
                   cardioTemplates.length === 0 ? (

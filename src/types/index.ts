@@ -81,6 +81,26 @@ export interface CardioTemplate {
   notes: string | null
 }
 
+// Standalone session templates — created in the Sessions tab, assigned to programmes later
+export interface StrengthSessionTemplate {
+  id: string
+  name: string
+  notes: string | null
+  exerciseBlocks: ExerciseTemplateBlock[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CardioSessionTemplate {
+  id: string
+  name: string
+  activityType: ActivityType
+  targetDurationMinutes: number | null
+  targetDistanceKm: number | null
+  notes: string | null
+  createdAt: string
+}
+
 export interface Phase {
   id: string
   programmeId: string

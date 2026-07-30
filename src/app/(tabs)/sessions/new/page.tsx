@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
-import { useProgrammeStore } from '@/stores/programme-store'
+import { useTemplateStore } from '@/stores/template-store'
 import type { ActivityType } from '@/types'
 
 const FONT = 'var(--font-geist-sans)'
@@ -36,34 +36,32 @@ const labelStyle: React.CSSProperties = {
 function SessionNewContent() {
   const router       = useRouter()
   const searchParams = useSearchParams()
-  const { programmes, addTemplate, addCardioTemplate } = useProgrammeStore()
+  const { addStrengthTemplate, addCardioTemplate } = useTemplateStore()
 
-  const activePrograms = programmes.filter(p => p.isActive)
-  const initialType    = searchParams.get('type') === 'cardio' ? 'cardio' : 'strength'
+  const initialType = searchParams.get('type') === 'cardio' ? 'cardio' : 'strength'
 
   const [type,           setType]           = useState<'strength' | 'cardio'>(initialType as 'strength' | 'cardio')
-  const [programmeId,    setProgrammeId]    = useState(activePrograms[0]?.id ?? '')
   const [name,           setName]           = useState('')
   const [activityType,   setActivityType]   = useState<ActivityType>('run')
   const [targetDuration, setTargetDuration] = useState('')
   const [targetDistance, setTargetDistance] = useState('')
 
-  const canSubmit = name.trim().length > 0 && programmeId.length > 0
+  const canSubmit = name.trim().length > 0
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!canSubmit) return
     if (type === 'strength') {
-      addTemplate(programmeId, name.trim())
+      addStrengthTemplate({ name: name.trim() })
     } else {
-      addCardioTemplate(programmeId, {
+      addCardioTemplate({
         name: name.trim(),
         activityType,
         targetDurationMinutes: targetDuration ? parseInt(targetDuration) : null,
         targetDistanceKm:      targetDistance ? parseFloat(targetDistance) : null,
       })
     }
-    router.push('/programmes')
+    router.back()
   }
 
   return (
@@ -114,28 +112,6 @@ function SessionNewContent() {
           </div>
         </div>
 
-        {/* Programme selector */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={labelStyle}>Programme</label>
-          {activePrograms.length === 0 ? (
-            <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
-              <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
-                No active programmes – create a programme first before adding sessions.
-              </p>
-            </div>
-          ) : (
-            <select
-              value={programmeId}
-              onChange={e => setProgrammeId(e.target.value)}
-              style={{ ...inputStyle, appearance: 'none' as const }}
-            >
-              {activePrograms.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          )}
-        </div>
-
         {/* Session name */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={labelStyle}>Session name</label>
@@ -148,7 +124,7 @@ function SessionNewContent() {
           />
         </div>
 
-        {/* Cardio fields */}
+        {/* Cardio-only fields */}
         {type === 'cardio' && (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
