@@ -2,7 +2,7 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar, RefreshCw } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, Sheet } from '@/components/ui'
@@ -295,7 +295,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           onClick={syncToCalendar}
           style={{ width: '48px', height: '48px', borderRadius: '40px', background: '#3B948F', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
-          <Check size={20} color="#FFFEFA" />
+          <RefreshCw size={18} color="#FFFEFA" />
         </button>
       </div>
 
