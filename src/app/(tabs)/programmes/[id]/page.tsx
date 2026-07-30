@@ -273,7 +273,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           <ChevronLeft size={20} className="text-text" />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl text-text truncate">{programme.name}</h1>
+          <h1 className="text-xl font-medium text-text truncate">{programme.name}</h1>
           {programme.description && <p className="text-xs text-text-secondary truncate">{programme.description}</p>}
         </div>
       </div>

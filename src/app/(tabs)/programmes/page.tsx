@@ -43,7 +43,7 @@ export default function ProgrammesPage() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-4 flex-shrink-0">
-        <h1 className="text-2xl font-normal text-text">Programmes</h1>
+        <h1 className="text-xl font-medium text-text">Programmes</h1>
         <Button size="sm" onClick={() => setShowCreate((v) => !v)}>
           <Plus size={16} />
           NEW
@@ -54,7 +54,7 @@ export default function ProgrammesPage() {
         {/* Create form */}
         {showCreate && (
           <form onSubmit={handleCreate} className="bg-bg-element border border-border rounded-2xl p-4 flex flex-col gap-3">
-            <p className="text-sm font-normal text-text">New programme</p>
+            <p className="text-sm font-medium text-text">New programme</p>
             <Input
               placeholder="Programme name"
               value={newName}
@@ -91,7 +91,7 @@ export default function ProgrammesPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     {p.isActive && (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-normal bg-accent/15 text-accent">ACTIVE</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-accent/15 text-accent">ACTIVE</span>
                     )}
                     {editingId === p.id ? (
                       <input
@@ -101,10 +101,10 @@ export default function ProgrammesPage() {
                         onBlur={() => saveEdit(p.id)}
                         onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(p.id) }}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-base font-normal text-text bg-bg border border-accent rounded-lg px-2 py-0.5 w-full focus:outline-none"
+                        className="text-base font-medium text-text bg-bg border border-accent rounded-lg px-2 py-0.5 w-full focus:outline-none"
                       />
                     ) : (
-                      <p className="text-base font-normal text-text truncate">{p.name}</p>
+                      <p className="text-base font-medium text-text truncate">{p.name}</p>
                     )}
                   </div>
                   {p.description && (

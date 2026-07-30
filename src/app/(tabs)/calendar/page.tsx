@@ -120,7 +120,7 @@ export default function CalendarPage() {
         <button onClick={prevMonth} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-element">
           <ChevronLeft size={20} className="text-text" />
         </button>
-        <h2 className="text-lg text-text">{MONTHS[month]} {year}</h2>
+        <h2 className="text-base font-medium text-text">{MONTHS[month]} {year}</h2>
         <button onClick={nextMonth} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-element">
           <ChevronRight size={20} className="text-text" />
         </button>
