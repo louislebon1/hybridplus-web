@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Calendar, Dumbbell, Activity, BarChart2 } from 'lucide-react'
+import { Home, Activity, BarChart2, User } from 'lucide-react'
 
 const TABS = [
   { href: '/home', label: 'Home', icon: Home },
-  { href: '/programmes', label: 'Train', icon: Dumbbell },
-  { href: '/calendar', label: 'Plan', icon: Calendar },
-  { href: '/cardio', label: 'Cardio', icon: Activity },
+  { href: '/programmes', label: 'Programmes', icon: Activity },
   { href: '/progress', label: 'Progress', icon: BarChart2 },
+  { href: '/profile', label: 'Profile', icon: User },
 ]
 
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
