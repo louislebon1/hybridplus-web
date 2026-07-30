@@ -40,7 +40,7 @@ interface ProgrammeStore {
   moveBlockDown(templateId: string, blockId: string): void
 
   // Phase CRUD
-  addPhase(programmeId: string, input: { name: string; description?: string; durationWeeks: number; colorHex?: string; phaseType?: PhaseType; trainingFocus?: TrainingFocus }): Phase
+  addPhase(programmeId: string, input: { name: string; description?: string; durationWeeks: number; colorHex?: string; phaseType?: PhaseType | null; trainingFocus?: TrainingFocus | null }): Phase
   addDeloadPhase(programmeId: string): Phase
   updatePhase(programmeId: string, phaseId: string, updates: Partial<Pick<Phase, 'name' | 'description' | 'durationWeeks' | 'colorHex' | 'orderIndex' | 'phaseType' | 'trainingFocus'>>): void
   deletePhase(programmeId: string, phaseId: string): void
