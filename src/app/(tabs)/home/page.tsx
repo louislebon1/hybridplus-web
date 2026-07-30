@@ -18,12 +18,12 @@ const CARDIO_LABELS: Record<string, string> = {
 
 const metaText: React.CSSProperties = {
   fontFamily: 'var(--font-geist-sans)',
-  fontSize: '8px',
+  fontSize: '11px',
   fontWeight: 500,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
+  letterSpacing: '0.02em',
   color: 'rgba(17,17,17,0.4)',
-  lineHeight: '12px',
+  lineHeight: '14px',
 }
 
 const isoDate = localDateStr
@@ -152,7 +152,8 @@ export default function HomePage() {
                   >
                     {/* Day label */}
                     <span style={{
-                      fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
+                      fontFamily: 'var(--font-geist-sans)', fontSize: '11px', fontWeight: 500,
+                      textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
                       textAlign: 'center', color: '#111111',
                       opacity: (isToday || isSelected) ? 1 : 0.4,
                     }}>{DAY_LABELS[i]}</span>
@@ -166,7 +167,7 @@ export default function HomePage() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <span style={{
-                        fontFamily: 'var(--font-geist-sans)', fontSize: '20px', fontWeight: 500, lineHeight: '20px',
+                        fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 500, lineHeight: '24px',
                         color: isSelected ? '#FFFDF5' : '#111111',
                       }}>{d.getDate()}</span>
                     </div>
@@ -189,8 +190,8 @@ export default function HomePage() {
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
                 {activePhase && (
                   <span style={{
-                    fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
-                    textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px',
+                    fontFamily: 'var(--font-geist-sans)', fontSize: '11px', fontWeight: 500,
+                    textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
                     color: '#FFFDF5', background: '#3B948F',
                     padding: '4px 12px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center',
                   }}>
@@ -199,16 +200,16 @@ export default function HomePage() {
                 )}
                 {activeProgramme && (
                   <span style={{
-                    fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
-                    textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px',
-                    color: 'rgba(17,17,17,0.4)',
+                    fontFamily: 'var(--font-geist-sans)', fontSize: '11px', fontWeight: 500,
+                    textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
+                    color: '#111111',
                   }}>{activeProgramme.name}</span>
                 )}
               </div>
               {weekNumber !== null && (
                 <span style={{
-                  fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
-                  textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px',
+                  fontFamily: 'var(--font-geist-sans)', fontSize: '11px', fontWeight: 500,
+                  textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
                   color: '#3B948F',
                 }}>Week {weekNumber}</span>
               )}
@@ -218,7 +219,7 @@ export default function HomePage() {
           {/* ── Sessions header ── */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '24px', marginBottom: '16px' }}>
             <span style={{
-              fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 500,
+              fontFamily: 'var(--font-geist-sans)', fontSize: '18px', fontWeight: 500,
               lineHeight: '24px', color: '#111111',
             }}>
               {sessionLabel}
@@ -226,8 +227,8 @@ export default function HomePage() {
             <button
               onClick={() => router.push('/calendar')}
               style={{
-                fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500,
-                lineHeight: '24px', color: '#111111', textDecoration: 'underline',
+                fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 500,
+                lineHeight: '18px', color: '#111111', textDecoration: 'underline',
                 background: 'none', border: 'none', padding: 0, cursor: 'pointer',
               }}
             >
@@ -276,8 +277,8 @@ export default function HomePage() {
                       <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '4px' }}>
                         {/* Type badge */}
                         <span style={{
-                          fontFamily: 'var(--font-geist-sans)', fontSize: '8px', fontWeight: 500,
-                          textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: '12px',
+                          fontFamily: 'var(--font-geist-sans)', fontSize: '11px', fontWeight: 500,
+                          textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
                           color: '#FFFDF5', background: badgeBg,
                           padding: '4px 12px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center',
                         }}>
@@ -287,8 +288,8 @@ export default function HomePage() {
                         {/* Cardio discipline tag */}
                         {cardioTag && (
                           <span style={{
-                            fontFamily: 'var(--font-geist-sans)', fontSize: '8px', fontWeight: 500,
-                            textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: '12px',
+                            fontFamily: 'var(--font-geist-sans)', fontSize: '11px', fontWeight: 500,
+                            textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
                             color: '#3B948F', background: 'rgba(17,17,17,0.05)',
                             padding: '4px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center',
                           }}>
@@ -299,8 +300,8 @@ export default function HomePage() {
                         {/* Muscle group tags */}
                         {muscleTags.map(tag => (
                           <span key={tag} style={{
-                            fontFamily: 'var(--font-geist-sans)', fontSize: '8px', fontWeight: 500,
-                            textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: '12px',
+                            fontFamily: 'var(--font-geist-sans)', fontSize: '11px', fontWeight: 500,
+                            textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
                             color: '#3B948F', background: 'rgba(17,17,17,0.05)',
                             padding: '4px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center',
                           }}>
@@ -347,9 +348,9 @@ export default function HomePage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
           }}
         >
-          <Image src="/icon-play.svg" alt="" width={20} height={20} />
+          <Image src="/icon-play.svg" alt="" width={24} height={24} />
           <span style={{
-            fontFamily: 'var(--font-geist-sans)', fontSize: '14px', fontWeight: 500,
+            fontFamily: 'var(--font-geist-sans)', fontSize: '16px', fontWeight: 500,
             lineHeight: '24px', color: '#FFFEFA',
           }}>Start workout</span>
         </button>
