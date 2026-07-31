@@ -11,18 +11,21 @@ const TABS = [
   { href: '/profile',    inactive: '/nav-user.svg',         active: '/nav-user-active.svg'     },
 ]
 
+// Nav pill height (48px) + bottom padding (24px) + breathing room (8px)
+const NAV_CLEARANCE = 80
+
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
-      <main style={{ flex: 1, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+      <main style={{ flex: 1, paddingBottom: NAV_CLEARANCE }}>
         {children}
       </main>
 
-      {/* Floating pill nav — absolutely positioned, doesn't push content */}
+      {/* Floating pill nav — fixed so it always sits above content */}
       <div style={{
-        position: 'absolute',
+        position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
