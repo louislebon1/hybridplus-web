@@ -113,7 +113,7 @@ export default function HomePage() {
     : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
 
       {/* ── Logo ── */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '28px 0', flexShrink: 0 }}>
