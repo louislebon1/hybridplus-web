@@ -253,6 +253,13 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           `"${otherActive.name}" is already your active programme. Only one programme can be active at a time. Do you want to activate "${programme.name}" instead?`
         )) return
         updateProgramme(otherActive.id, { startDate: null })
+        const today = new Date(); today.setHours(0, 0, 0, 0)
+        Object.entries(calendarEvents).forEach(([date, evs]) => {
+          if (new Date(date + 'T00:00:00') < today) return
+          evs.forEach(ev => {
+            if (ev.programmeId === otherActive.id && !ev.isCompleted) deleteCalendarEvent(ev.id, date)
+          })
+        })
       }
     }
     updateProgramme(programme.id, { startDate: dateStr })
