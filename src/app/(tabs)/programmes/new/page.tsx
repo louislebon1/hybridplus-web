@@ -58,7 +58,7 @@ export default function NewProgrammePage() {
           onClick={() => router.back()}
           style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
-          <X size={16} color="rgba(17,17,17,0.4)" />
+          <X size={16} color="#3B948F" />
         </button>
       </div>
 
