@@ -2,7 +2,7 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar, RefreshCw } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar, RefreshCw, Trash2 } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, Sheet } from '@/components/ui'
@@ -52,7 +52,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     removeTemplateFromPhase, setTemplateDays, setExerciseOverride, removeExerciseOverride,
     updateProgramme, addCardioTemplate, deleteCardioTemplate,
     addCardioTemplateToPhase, removeCardioTemplateFromPhase, setCardioTemplateDays,
-    reorderPhases, deletePhase,
+    reorderPhases, deletePhase, deleteProgramme,
   } = useProgrammeStore()
 
   const { events: calendarEvents, addEvent: addCalendarEvent, deleteEvent: deleteCalendarEvent } = useCalendarStore()
@@ -244,6 +244,14 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     return (programme.cardioTemplates ?? []).filter(ct => !(phase.cardioTemplateIds ?? []).includes(ct.id))
   }
 
+  function handleDeleteProgramme() {
+    if (!window.confirm(`Delete "${programme.name}"? This cannot be undone.`)) return
+    deleteProgramme(programme.id)
+    router.replace('/programmes')
+  }
+
+  const isActive = !!programme.startDate
+
   const sortedPhases = [...programme.phases].sort((a, b) => a.orderIndex - b.orderIndex)
   const filteredExercises = exerciseSearch.trim()
     ? EXERCISE_LIBRARY.filter(e => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
@@ -253,16 +261,24 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: FONT, background: '#FFFEFA' }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '28px 16px 0', flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '28px 16px 0', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
+          <button
+            onClick={() => router.back()}
+            style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          >
+            <ChevronLeft size={16} color="#111111" />
+          </button>
+          <h1 style={{ fontSize: '20px', fontWeight: 500, lineHeight: '26px', color: '#111111', margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {programme.name}
+          </h1>
+        </div>
         <button
-          onClick={() => router.back()}
-          style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          onClick={handleDeleteProgramme}
+          style={{ width: '40px', height: '40px', borderRadius: '200px', background: '#D24F4F', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: '12px' }}
         >
-          <ChevronLeft size={16} color="#111111" />
+          <Trash2 size={18} color="#FFFEFA" />
         </button>
-        <h1 style={{ fontSize: '20px', fontWeight: 500, lineHeight: '26px', color: '#111111', margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {programme.name}
-        </h1>
       </div>
 
       {/* Divider */}
