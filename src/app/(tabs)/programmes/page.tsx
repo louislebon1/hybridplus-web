@@ -155,7 +155,7 @@ export default function WorkoutsPage() {
   const [sessSubTab, setSessSubTab] = useState<SessSubTab>('strength')
 
   const filteredProgrammes = programmes.filter(p =>
-    progSubTab === 'active' ? p.isActive : !p.isActive
+    progSubTab === 'active' ? !!p.startDate : !p.startDate
   )
 
   // ─── Sub-tab bar ─────────────────────────────────────────────────────────────
@@ -304,8 +304,8 @@ export default function WorkoutsPage() {
                   <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
                     <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
                       {progSubTab === 'active'
-                        ? 'No active programmes – add a new programme to get started.'
-                        : 'No inactive programmes – all your programmes are currently active.'}
+                        ? 'No active programme – open a programme and set a start date to activate it.'
+                        : 'No programmes yet – add one to get started.'}
                     </p>
                   </div>
                 </div>

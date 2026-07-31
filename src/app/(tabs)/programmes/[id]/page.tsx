@@ -244,6 +244,20 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     return (programme.cardioTemplates ?? []).filter(ct => !(phase.cardioTemplateIds ?? []).includes(ct.id))
   }
 
+  function handleSetStartDate(dateStr: string | null) {
+    if (!programme) return
+    if (dateStr) {
+      const otherActive = programmes.find(p => p.id !== programme.id && !!p.startDate)
+      if (otherActive) {
+        if (!window.confirm(
+          `"${otherActive.name}" is already your active programme. Only one programme can be active at a time. Do you want to activate "${programme.name}" instead?`
+        )) return
+        updateProgramme(otherActive.id, { startDate: null })
+      }
+    }
+    updateProgramme(programme.id, { startDate: dateStr })
+  }
+
   function handleDeleteProgramme() {
     if (!programme) return
     if (!window.confirm(`Delete "${programme.name}"? This cannot be undone.`)) return
@@ -304,7 +318,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           <input
             type="date"
             value={programme.startDate ?? ''}
-            onChange={e => updateProgramme(programme.id, { startDate: e.target.value || null })}
+            onChange={e => handleSetStartDate(e.target.value || null)}
             style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%' }}
           />
         </div>
