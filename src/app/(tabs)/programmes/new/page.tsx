@@ -58,7 +58,7 @@ export default function NewProgrammePage() {
           onClick={() => router.back()}
           style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
         >
-          <X size={16} color="#111111" />
+          <X size={16} color="rgba(17,17,17,0.4)" />
         </button>
       </div>
 
@@ -68,7 +68,7 @@ export default function NewProgrammePage() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px' }}
+        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px 100px', display: 'flex', flexDirection: 'column', gap: '24px' }}
       >
 
         {/* Name */}
@@ -95,27 +95,25 @@ export default function NewProgrammePage() {
         </div>
 
         {/* CTA */}
-        <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            style={{
-              width: '100%',
-              height: '48px',
-              borderRadius: '40px',
-              border: canSubmit ? '1px solid #3B948F' : 'none',
-              background: canSubmit ? '#3B948F' : 'rgba(17,17,17,0.1)',
-              cursor: canSubmit ? 'pointer' : 'default',
-              fontFamily: FONT,
-              fontSize: '16px',
-              fontWeight: 500,
-              lineHeight: '24px',
-              color: canSubmit ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
-            }}
-          >
-            Add new programme
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          style={{
+            width: '100%',
+            height: '48px',
+            borderRadius: '40px',
+            border: canSubmit ? '1px solid #3B948F' : 'none',
+            background: canSubmit ? '#3B948F' : 'rgba(17,17,17,0.1)',
+            cursor: canSubmit ? 'pointer' : 'default',
+            fontFamily: FONT,
+            fontSize: '16px',
+            fontWeight: 500,
+            lineHeight: '24px',
+            color: canSubmit ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
+          }}
+        >
+          Add new programme
+        </button>
 
       </form>
     </div>
