@@ -245,6 +245,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   }
 
   function handleDeleteProgramme() {
+    if (!programme) return
     if (!window.confirm(`Delete "${programme.name}"? This cannot be undone.`)) return
     deleteProgramme(programme.id)
     router.replace('/programmes')
