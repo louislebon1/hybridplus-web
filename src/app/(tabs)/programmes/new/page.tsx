@@ -68,7 +68,7 @@ export default function NewProgrammePage() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '24px' }}
+        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}
       >
 
         {/* Name */}
@@ -99,6 +99,7 @@ export default function NewProgrammePage() {
           type="submit"
           disabled={!canSubmit}
           style={{
+            marginTop: '8px',
             width: '100%',
             height: '48px',
             borderRadius: '40px',

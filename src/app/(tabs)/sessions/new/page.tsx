@@ -82,7 +82,7 @@ function SessionNewContent() {
 
       <form
         onSubmit={handleSubmit}
-        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '20px' }}
+        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}
       >
 
         {/* Type toggle */}
@@ -188,7 +188,7 @@ function SessionNewContent() {
         )}
 
         {/* Submit */}
-        <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
+        <div style={{ marginTop: '8px' }}>
           <button
             type="submit"
             disabled={!canSubmit}

@@ -107,7 +107,7 @@ export default function EditSessionPage() {
 
       <form
         onSubmit={handleSave}
-        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '20px' }}
+        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}
       >
 
         {/* Strength form */}
@@ -197,7 +197,7 @@ export default function EditSessionPage() {
         )}
 
         {/* Save */}
-        <div style={{ marginTop: 'auto', paddingTop: '8px' }}>
+        <div style={{ marginTop: '8px' }}>
           <button
             type="submit"
             disabled={!canSave}
