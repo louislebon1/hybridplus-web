@@ -2,7 +2,7 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar, RefreshCw, Trash2 } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar, RefreshCw, Trash2 } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, Sheet } from '@/components/ui'
@@ -267,7 +267,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             onClick={() => router.back()}
             style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
           >
-            <ChevronLeft size={16} color="#111111" />
+            <ArrowLeft size={16} color="#3B948F" />
           </button>
           <h1 style={{ fontSize: '20px', fontWeight: 500, lineHeight: '26px', color: '#111111', margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {programme.name}

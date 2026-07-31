@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Plus, Check, ChevronLeft } from 'lucide-react'
+import { X, Plus, Check, ArrowLeft } from 'lucide-react'
 import { useSessionStore, formatDuration, getElapsedSeconds, getRestRemaining } from '@/stores/session-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCardioStore } from '@/stores/cardio-store'
@@ -150,8 +150,8 @@ export default function SessionPage() {
       <>
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-3 px-4 pt-12 pb-4 flex-shrink-0">
-          <button onClick={() => router.back()} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-bg-element">
-            <ChevronLeft size={20} className="text-text" />
+          <button onClick={() => router.back()} style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <ArrowLeft size={16} color="#3B948F" />
           </button>
           <h1 className="text-xl font-normal text-text">Start Workout</h1>
         </div>
