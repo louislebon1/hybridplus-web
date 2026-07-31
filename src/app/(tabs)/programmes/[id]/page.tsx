@@ -377,7 +377,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                     }}
                   >
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <span style={{ fontSize: '20px', fontWeight: 500, lineHeight: '26px', color: '#111111' }}>
+                      <span style={{ fontSize: '18px', fontWeight: 500, lineHeight: '24px', color: '#111111' }}>
                         {phase.name}
                       </span>
                       <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -652,7 +652,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                         }}
                       >
                         <div>
-                          <p style={{ fontSize: '16px', fontWeight: 500, color: '#111111', margin: 0 }}>{t.name}</p>
+                          <p style={{ fontSize: '18px', fontWeight: 500, lineHeight: '24px', color: '#111111', margin: 0 }}>{t.name}</p>
                           <p style={{ fontSize: '12px', color: 'rgba(17,17,17,0.5)', margin: '2px 0 0' }}>
                             {t.exerciseBlocks.length} exercise{t.exerciseBlocks.length !== 1 ? 's' : ''}
                           </p>
