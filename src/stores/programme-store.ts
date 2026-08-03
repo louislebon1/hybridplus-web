@@ -41,7 +41,7 @@ interface ProgrammeStore {
 
   // Phase CRUD
   addPhase(programmeId: string, input: { name: string; description?: string; durationWeeks: number; colorHex?: string; phaseType?: PhaseType | null; trainingFocus?: TrainingFocus | null }): Phase
-  addDeloadPhase(programmeId: string): Phase
+  addDeloadPhase(programmeId: string): Phase | null
   updatePhase(programmeId: string, phaseId: string, updates: Partial<Pick<Phase, 'name' | 'description' | 'durationWeeks' | 'colorHex' | 'orderIndex' | 'phaseType' | 'trainingFocus'>>): void
   deletePhase(programmeId: string, phaseId: string): void
   reorderPhases(programmeId: string, orderedIds: string[]): void
@@ -354,7 +354,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
 
       addDeloadPhase(programmeId) {
         const programme = get().programmes.find(p => p.id === programmeId)
-        if (!programme) return null as unknown as Phase
+        if (!programme) return null
         const prevPhase = [...programme.phases].sort((a, b) => b.orderIndex - a.orderIndex)[0]
         // Build 60% intensity overrides for every exercise in every assigned template
         const overrides: PhaseTemplateOverride[] = (prevPhase?.templateIds ?? []).flatMap(templateId => {

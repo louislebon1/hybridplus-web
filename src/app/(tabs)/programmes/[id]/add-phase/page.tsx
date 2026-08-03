@@ -4,9 +4,8 @@ import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { X, Minus, Plus } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
+import { Input } from '@/components/ui'
 import type { PhaseType } from '@/types'
-
-const FONT = 'var(--font-geist-sans)'
 
 const PHASE_TYPES: { value: PhaseType; label: string }[] = [
   { value: 'foundation', label: 'Foundation' },
@@ -15,14 +14,6 @@ const PHASE_TYPES: { value: PhaseType; label: string }[] = [
   { value: 'deload',     label: 'Deload'     },
   { value: 'recovery',   label: 'Recovery'   },
 ]
-
-const labelStyle: React.CSSProperties = {
-  fontFamily: FONT,
-  fontSize: '14px',
-  fontWeight: 500,
-  lineHeight: '18px',
-  color: '#111111',
-}
 
 export default function AddPhasePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -48,70 +39,29 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
     router.back()
   }
 
-  const stepperCircle: React.CSSProperties = {
-    width: '36px',
-    height: '36px',
-    borderRadius: '200px',
-    background: 'rgba(17,17,17,0.05)',
-    border: 'none',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  }
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: FONT, background: '#FFFEFA' }}>
+    <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '28px 16px 0', flexShrink: 0 }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 500, lineHeight: '30px', color: '#111111', margin: 0 }}>
-          Add new phase
-        </h1>
-        <button
-          onClick={() => router.back()}
-          style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <X size={16} color="#3B948F" />
+      <div className="flex items-center justify-between px-4 pt-7 flex-shrink-0">
+        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Add new phase</h1>
+        <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
+          <X size={16} className="text-accent" />
         </button>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}
-      >
+      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-4">
 
         {/* Name */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={labelStyle}>Name</label>
-          <input
-            autoFocus
-            placeholder="Phase name"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            style={{
-              height: '48px',
-              padding: '0 12px',
-              borderRadius: '6px',
-              border: 'none',
-              background: 'rgba(17,17,17,0.05)',
-              fontFamily: FONT,
-              fontSize: '16px',
-              fontWeight: 500,
-              lineHeight: '24px',
-              color: '#111111',
-              outline: 'none',
-              width: '100%',
-              boxSizing: 'border-box',
-            }}
-          />
+        <div className="flex flex-col gap-2">
+          <label className="text-label font-medium leading-[18px] text-text">Name</label>
+          <Input autoFocus placeholder="Phase name" value={name} onChange={e => setName(e.target.value)} />
         </div>
 
         {/* Type */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={labelStyle}>Type</label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 6px' }}>
+        <div className="flex flex-col gap-2">
+          <label className="text-label font-medium leading-[18px] text-text">Type</label>
+          <div className="flex flex-wrap gap-1.5">
             {PHASE_TYPES.map(pt => {
               const active = phaseType === pt.value
               return (
@@ -119,18 +69,7 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
                   key={pt.value}
                   type="button"
                   onClick={() => setPhaseType(pt.value)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '40px',
-                    border: active ? '1px solid #3B948F' : 'none',
-                    background: active ? '#3B948F' : 'rgba(17,17,17,0.05)',
-                    fontFamily: FONT,
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    lineHeight: '16px',
-                    color: active ? '#FFFEFA' : '#111111',
-                    cursor: 'pointer',
-                  }}
+                  className={`px-3 py-1.5 rounded-full text-caption font-medium ${active ? 'bg-accent text-accent-fg border border-accent' : 'bg-text/5 text-text border border-transparent'}`}
                 >
                   {pt.label}
                 </button>
@@ -140,64 +79,29 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
         </div>
 
         {/* Duration */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={labelStyle}>Duration</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button
-              type="button"
-              onClick={() => setWeeks(w => Math.max(1, w - 1))}
-              style={stepperCircle}
-            >
-              <Minus size={16} color="#111111" />
+        <div className="flex flex-col gap-2">
+          <label className="text-label font-medium leading-[18px] text-text">Duration</label>
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => setWeeks(w => Math.max(1, w - 1))} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+              <Minus size={16} className="text-text" />
             </button>
-            <div style={{
-              flex: 1,
-              height: '48px',
-              borderRadius: '6px',
-              background: 'rgba(17,17,17,0.05)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: FONT,
-              fontSize: '16px',
-              fontWeight: 500,
-              lineHeight: '24px',
-              color: '#111111',
-            }}>
+            <div className="flex-1 h-12 rounded-md bg-text/5 flex items-center justify-center text-body font-medium text-text">
               {weeks} {weeks === 1 ? 'week' : 'weeks'}
             </div>
-            <button
-              type="button"
-              onClick={() => setWeeks(w => Math.min(52, w + 1))}
-              style={stepperCircle}
-            >
-              <Plus size={16} color="#111111" />
+            <button type="button" onClick={() => setWeeks(w => Math.min(52, w + 1))} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+              <Plus size={16} className="text-text" />
             </button>
           </div>
         </div>
 
         {/* Submit */}
-        <div style={{ marginTop: '8px' }}>
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            style={{
-              width: '100%',
-              height: '48px',
-              borderRadius: '40px',
-              border: canSubmit ? '1px solid #3B948F' : 'none',
-              background: canSubmit ? '#3B948F' : 'rgba(17,17,17,0.1)',
-              fontFamily: FONT,
-              fontSize: '16px',
-              fontWeight: 500,
-              lineHeight: '24px',
-              color: canSubmit ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
-              cursor: canSubmit ? 'pointer' : 'default',
-            }}
-          >
-            Add phase
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSubmit ? 'border border-accent bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
+        >
+          Add phase
+        </button>
 
       </form>
     </div>

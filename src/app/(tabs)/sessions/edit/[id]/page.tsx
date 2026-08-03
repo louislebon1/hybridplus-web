@@ -2,41 +2,38 @@
 
 import { useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { useTemplateStore } from '@/stores/template-store'
-import type { ActivityType } from '@/types'
+import { useSessionWizard, type WizardBlock } from '@/stores/session-wizard-store'
+import { Input } from '@/components/ui'
+import { EXERCISE_LIBRARY } from '@/lib/exercise-library'
+import type { ActivityType, StrengthSessionTemplate } from '@/types'
 
-const FONT = 'var(--font-geist-sans)'
+function templateToWizardBlocks(template: StrengthSessionTemplate): WizardBlock[] {
+  return [...template.exerciseBlocks]
+    .sort((a, b) => a.orderIndex - b.orderIndex)
+    .map((b, i) => ({
+      id: crypto.randomUUID(),
+      exerciseId: b.exerciseId,
+      exerciseName: b.exerciseName,
+      muscles: EXERCISE_LIBRARY.find(e => e.id === b.exerciseId)?.primaryMuscles ?? [],
+      orderIndex: i,
+      sets: Array.from({ length: Math.max(1, b.targetSets) }, () => ({
+        id: crypto.randomUUID(),
+        weight: b.targetWeightKg != null ? String(b.targetWeightKg) : '',
+        reps: b.targetRepsMin != null ? String(b.targetRepsMin) : '',
+        rpe: b.targetRpe != null ? String(b.targetRpe) : '',
+      })),
+    }))
+}
 
 const ACTIVITY_TYPES: ActivityType[] = ['run', 'swim', 'cycle', 'walk', 'row']
-
-const inputStyle: React.CSSProperties = {
-  padding: '12px 16px',
-  borderRadius: '12px',
-  border: '1px solid rgba(17,17,17,0.1)',
-  background: 'rgba(17,17,17,0.03)',
-  fontFamily: FONT,
-  fontSize: '16px',
-  fontWeight: 500,
-  lineHeight: '24px',
-  color: '#111111',
-  outline: 'none',
-  width: '100%',
-  boxSizing: 'border-box',
-}
-
-const labelStyle: React.CSSProperties = {
-  fontFamily: FONT,
-  fontSize: '14px',
-  fontWeight: 500,
-  lineHeight: '18px',
-  color: '#111111',
-}
 
 export default function EditSessionPage() {
   const router = useRouter()
   const { id } = useParams<{ id: string }>()
   const { strengthTemplates, cardioTemplates, updateStrengthTemplate, updateCardioTemplate, deleteStrengthTemplate, deleteCardioTemplate } = useTemplateStore()
+  const loadForEdit = useSessionWizard(s => s.loadForEdit)
 
   const strength = strengthTemplates.find(t => t.id === id)
   const cardio   = cardioTemplates.find(t => t.id === id)
@@ -79,66 +76,67 @@ export default function EditSessionPage() {
     router.back()
   }
 
+  function handleEditExercises() {
+    if (!strength) return
+    loadForEdit(strength.id, templateToWizardBlocks(strength))
+    router.push('/sessions/new/configure')
+  }
+
   const canSave = strength ? sName.trim().length > 0 : cName.trim().length > 0
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: FONT }}>
+    <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '28px 16px 0', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            onClick={() => router.back()}
-            style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-          >
-            <ArrowLeft size={16} color="#3B948F" />
+      <div className="flex items-center justify-between px-4 pt-7 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+            <ArrowLeft size={16} className="text-accent" />
           </button>
-          <h1 style={{ fontSize: '24px', fontWeight: 500, lineHeight: '30px', color: '#111111', margin: 0 }}>
-            Edit Session
-          </h1>
+          <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Edit Session</h1>
         </div>
-        <button
-          onClick={handleDelete}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '8px' }}
-        >
-          <Trash2 size={20} color="rgba(17,17,17,0.4)" />
+        <button onClick={handleDelete} className="p-1 rounded-lg">
+          <Trash2 size={20} className="text-text/40" />
         </button>
       </div>
 
-      <form
-        onSubmit={handleSave}
-        style={{ flex: 1, overflowY: 'auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}
-      >
+      <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-4">
 
         {/* Strength form */}
         {strength && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={labelStyle}>Session name</label>
-            <input
-              autoFocus
-              value={sName}
-              onChange={e => setSName(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
+          <>
+            <div className="flex flex-col gap-2">
+              <label className="text-label font-medium leading-[18px] text-text">Session name</label>
+              <Input autoFocus value={sName} onChange={e => setSName(e.target.value)} />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleEditExercises}
+              className="flex items-center justify-between px-4 py-3 rounded-xl bg-bg-element text-left"
+            >
+              <div>
+                <p className="text-label font-medium text-text m-0">Edit exercises &amp; sets</p>
+                <p className="text-caption text-text/50 mt-0.5 mb-0">
+                  {strength.exerciseBlocks.length} exercise{strength.exerciseBlocks.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+              <ChevronRight size={16} className="text-text/40 flex-shrink-0" />
+            </button>
+          </>
         )}
 
         {/* Cardio form */}
         {cardio && (
           <>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={labelStyle}>Session name</label>
-              <input
-                autoFocus
-                value={cName}
-                onChange={e => setCName(e.target.value)}
-                style={inputStyle}
-              />
+            <div className="flex flex-col gap-2">
+              <label className="text-label font-medium leading-[18px] text-text">Session name</label>
+              <Input autoFocus value={cName} onChange={e => setCName(e.target.value)} />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={labelStyle}>Activity</label>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div className="flex flex-col gap-2">
+              <label className="text-label font-medium leading-[18px] text-text">Activity</label>
+              <div className="flex gap-2 flex-wrap">
                 {ACTIVITY_TYPES.map(a => {
                   const isActive = a === activityType
                   return (
@@ -146,14 +144,7 @@ export default function EditSessionPage() {
                       key={a}
                       type="button"
                       onClick={() => setActivityType(a)}
-                      style={{
-                        padding: '8px 16px', borderRadius: '40px', cursor: 'pointer',
-                        background: isActive ? '#3B948F' : 'rgba(17,17,17,0.05)',
-                        border: 'none',
-                        fontFamily: FONT, fontSize: '14px', fontWeight: 500,
-                        color: isActive ? '#FFFEFA' : '#111111',
-                        opacity: isActive ? 1 : 0.6,
-                      }}
+                      className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-accent text-accent-fg' : 'bg-text/5 text-text opacity-60'}`}
                     >
                       {a.charAt(0).toUpperCase() + a.slice(1)}
                     </button>
@@ -162,62 +153,31 @@ export default function EditSessionPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={labelStyle}>
-                  Target duration{' '}
-                  <span style={{ color: 'rgba(17,17,17,0.4)' }}>(mins)</span>
+            <div className="flex gap-3">
+              <div className="flex-1 flex flex-col gap-2">
+                <label className="text-label font-medium leading-[18px] text-text">
+                  Target duration <span className="text-text/40">(mins)</span>
                 </label>
-                <input
-                  type="number"
-                  min="1"
-                  placeholder="30"
-                  value={targetDuration}
-                  onChange={e => setTargetDuration(e.target.value)}
-                  style={inputStyle}
-                />
+                <Input type="number" min="1" placeholder="30" value={targetDuration} onChange={e => setTargetDuration(e.target.value)} />
               </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label style={labelStyle}>
-                  Target distance{' '}
-                  <span style={{ color: 'rgba(17,17,17,0.4)' }}>(km)</span>
+              <div className="flex-1 flex flex-col gap-2">
+                <label className="text-label font-medium leading-[18px] text-text">
+                  Target distance <span className="text-text/40">(km)</span>
                 </label>
-                <input
-                  type="number"
-                  min="0.1"
-                  step="0.1"
-                  placeholder="5.0"
-                  value={targetDistance}
-                  onChange={e => setTargetDistance(e.target.value)}
-                  style={inputStyle}
-                />
+                <Input type="number" min="0.1" step="0.1" placeholder="5.0" value={targetDistance} onChange={e => setTargetDistance(e.target.value)} />
               </div>
             </div>
           </>
         )}
 
         {/* Save */}
-        <div style={{ marginTop: '8px' }}>
-          <button
-            type="submit"
-            disabled={!canSave}
-            style={{
-              width: '100%',
-              height: '48px',
-              borderRadius: '40px',
-              border: 'none',
-              background: canSave ? '#3B948F' : 'rgba(17,17,17,0.1)',
-              cursor: canSave ? 'pointer' : 'default',
-              fontFamily: FONT,
-              fontSize: '16px',
-              fontWeight: 500,
-              lineHeight: '24px',
-              color: canSave ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
-            }}
-          >
-            Save Changes
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={!canSave}
+          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSave ? 'bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
+        >
+          Save Changes
+        </button>
 
       </form>
     </div>

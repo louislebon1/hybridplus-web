@@ -108,7 +108,7 @@ export default function ProgressPage() {
   return (
     <div className="flex flex-col h-full">
       <div className="px-5 pt-12 pb-4 flex-shrink-0">
-        <h1 className="text-xl font-medium text-text">Progress</h1>
+        <h1 className="text-h3 font-medium text-text">Progress</h1>
       </div>
 
       {/* Tabs */}
@@ -118,7 +118,7 @@ export default function ProgressPage() {
             key={t}
             onClick={() => setTab(t)}
             className={[
-              'flex-1 py-2 rounded-xl text-xs font-medium transition-colors capitalize',
+              'flex-1 py-2 rounded-xl text-caption font-medium transition-colors capitalize',
               tab === t ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text-secondary',
             ].join(' ')}
           >
@@ -133,8 +133,8 @@ export default function ProgressPage() {
             {/* Deload banner */}
             {consecutiveWeeks >= 4 && (
               <div className="bg-warning/10 border border-warning/30 rounded-2xl p-4">
-                <p className="text-sm font-normal text-warning">Recovery recommended</p>
-                <p className="text-xs text-text-secondary mt-1">
+                <p className="text-label font-medium text-warning">Recovery recommended</p>
+                <p className="text-caption text-text-secondary mt-1">
                   You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
                 </p>
               </div>
@@ -148,8 +148,8 @@ export default function ProgressPage() {
                 { label: 'Streak', value: `${streak}d` },
               ].map(({ label, value }) => (
                 <div key={label} className="bg-bg-element border border-border rounded-2xl p-3 text-center">
-                  <p className="text-xl font-medium text-text tabular">{value}</p>
-                  <p className="text-xs text-text-secondary mt-0.5">{label}</p>
+                  <p className="text-h3 font-medium text-text tabular">{value}</p>
+                  <p className="text-caption text-text-secondary mt-0.5">{label}</p>
                 </div>
               ))}
             </div>
@@ -169,7 +169,7 @@ export default function ProgressPage() {
                           <div className="w-full rounded-t-sm bg-accent/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
                             <div className="absolute bottom-0 left-0 right-0 bg-accent rounded-t-sm" style={{ height: '100%' }} />
                           </div>
-                          <span className="text-[10px] text-text-tertiary tabular">W{wkNum}</span>
+                          <span className="text-tag text-text-tertiary tabular">W{wkNum}</span>
                         </div>
                       )
                     })}
@@ -186,24 +186,24 @@ export default function ProgressPage() {
             {prs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2">
                 <span className="text-4xl">🏆</span>
-                <p className="text-text-secondary text-sm">No records yet — complete some workouts</p>
+                <p className="text-text-secondary text-label">No records yet — complete some workouts</p>
               </div>
             ) : (
               <div className="bg-bg-element border border-border rounded-2xl overflow-hidden">
                 {/* Table header */}
                 <div className="grid grid-cols-4 px-4 py-2 border-b border-border">
-                  <span className="text-xs font-medium text-text-tertiary col-span-2">Exercise</span>
-                  <span className="text-xs font-medium text-text-tertiary text-right">Max kg</span>
-                  <span className="text-xs font-medium text-text-tertiary text-right">e1RM</span>
+                  <span className="text-caption font-medium text-text-tertiary col-span-2">Exercise</span>
+                  <span className="text-caption font-medium text-text-tertiary text-right">Max kg</span>
+                  <span className="text-caption font-medium text-text-tertiary text-right">e1RM</span>
                 </div>
                 {prs.map((pr, i) => (
                   <div key={i} className="grid grid-cols-4 px-4 py-3 border-b border-border last:border-b-0">
                     <div className="col-span-2 min-w-0">
-                      <p className="text-sm font-medium text-text truncate">{pr.name}</p>
-                      <p className="text-xs text-text-tertiary">{fmtDate(pr.lastDate)}</p>
+                      <p className="text-label font-medium text-text truncate">{pr.name}</p>
+                      <p className="text-caption text-text-tertiary">{fmtDate(pr.lastDate)}</p>
                     </div>
-                    <p className="text-sm font-medium text-text tabular text-right self-center">{pr.maxWeight > 0 ? `${pr.maxWeight}` : '—'}</p>
-                    <p className="text-sm font-medium text-accent tabular text-right self-center">{pr.maxE1rm > 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
+                    <p className="text-label font-medium text-text tabular text-right self-center">{pr.maxWeight > 0 ? `${pr.maxWeight}` : '—'}</p>
+                    <p className="text-label font-medium text-accent tabular text-right self-center">{pr.maxE1rm > 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
                   </div>
                 ))}
               </div>
@@ -221,8 +221,8 @@ export default function ProgressPage() {
                 { label: 'Best pace', value: bestPace ? fmtPace(bestPace) : '—' },
               ].map(({ label, value }) => (
                 <div key={label} className="bg-bg-element border border-border rounded-2xl p-3 text-center">
-                  <p className="text-base font-medium text-text tabular">{value}</p>
-                  <p className="text-xs text-text-secondary mt-0.5">{label}</p>
+                  <p className="text-body font-medium text-text tabular">{value}</p>
+                  <p className="text-caption text-text-secondary mt-0.5">{label}</p>
                 </div>
               ))}
             </div>
@@ -232,8 +232,8 @@ export default function ProgressPage() {
               <div className="flex flex-wrap gap-2">
                 {Object.entries(activityCounts).map(([type, count]) => (
                   <div key={type} className="px-3 py-2 bg-bg-element border border-border rounded-xl">
-                    <p className="text-xs font-medium text-text capitalize">{type}</p>
-                    <p className="text-base font-medium text-text tabular">{count}</p>
+                    <p className="text-caption font-medium text-text capitalize">{type}</p>
+                    <p className="text-body font-medium text-text tabular">{count}</p>
                   </div>
                 ))}
               </div>
@@ -247,12 +247,12 @@ export default function ProgressPage() {
                   {recentRuns.map((s) => (
                     <div key={s.id} className="bg-bg-element border border-border rounded-2xl px-4 py-3 flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-text">{s.runType?.replace('_', ' ') ?? 'Run'}</p>
-                        <p className="text-xs text-text-secondary">{fmtDate(s.sessionDate)}</p>
+                        <p className="text-label font-medium text-text">{s.runType?.replace('_', ' ') ?? 'Run'}</p>
+                        <p className="text-caption text-text-secondary">{fmtDate(s.sessionDate)}</p>
                       </div>
                       <div className="text-right">
-                        {s.distanceKm && <p className="text-sm font-medium text-text tabular">{s.distanceKm.toFixed(2)} km</p>}
-                        {s.avgPaceSecs && <p className="text-xs text-text-secondary tabular">{fmtPace(s.avgPaceSecs)}</p>}
+                        {s.distanceKm && <p className="text-label font-medium text-text tabular">{s.distanceKm.toFixed(2)} km</p>}
+                        {s.avgPaceSecs && <p className="text-caption text-text-secondary tabular">{fmtPace(s.avgPaceSecs)}</p>}
                       </div>
                     </div>
                   ))}
@@ -263,7 +263,7 @@ export default function ProgressPage() {
             {cardioSessions.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 gap-2">
                 <span className="text-4xl">🏃</span>
-                <p className="text-text-secondary text-sm">No cardio sessions yet</p>
+                <p className="text-text-secondary text-label">No cardio sessions yet</p>
               </div>
             )}
           </>

@@ -105,6 +105,7 @@ interface SessionStore {
   addRestTime(secs: number): void
 
   setSessionNotes(notes: string): void
+  setSessionName(name: string): void
   setActiveBlock(blockId: string | null): void
   recordChange(change: Omit<SessionChange, 'id'>): void
   clearChanges(): void
@@ -594,6 +595,12 @@ export const useSessionStore = create<SessionStore>()((set, get) => ({
     const { activeSession } = get()
     if (!activeSession) return
     set({ activeSession: { ...activeSession, notes } })
+  },
+
+  setSessionName(name) {
+    const { activeSession } = get()
+    if (!activeSession) return
+    set({ activeSession: { ...activeSession, name } })
   },
 
   setActiveBlock(blockId) {

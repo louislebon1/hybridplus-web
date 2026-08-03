@@ -2,36 +2,24 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { ChevronRight, Plus } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useTemplateStore } from '@/stores/template-store'
 import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
-import Image from 'next/image'
+import { estimateDuration } from '@/lib/duration'
 import type { StrengthSessionTemplate, CardioSessionTemplate } from '@/types'
 
 type MainTab    = 'programmes' | 'sessions'
 type ProgSubTab = 'active' | 'inactive'
 type SessSubTab = 'strength' | 'cardio'
 
-const FONT = 'var(--font-geist-sans)'
-
-const tagStyle: React.CSSProperties = {
-  fontFamily: FONT, fontSize: '11px', fontWeight: 500,
-  textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: '14px',
-}
-const bodyStyle: React.CSSProperties = {
-  fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px',
-}
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function tmplDuration(tmpl: StrengthSessionTemplate): string | null {
   if (tmpl.exerciseBlocks.length === 0) return null
   const totalSets = tmpl.exerciseBlocks.reduce((s, b) => s + b.targetSets, 0)
-  const est = totalSets * 3
-  const lo = Math.max(15, Math.round(est * 0.85 / 5) * 5)
-  const hi = Math.round(est * 1.15 / 5) * 5
-  return lo === hi ? `${lo} Mins` : `${lo} – ${hi} Mins`
+  return estimateDuration(totalSets)
 }
 
 function tmplMuscles(tmpl: StrengthSessionTemplate): string[] {
@@ -49,56 +37,48 @@ function fmtStartDate(d: string): string {
     .toLowerCase()
 }
 
-// ─── Session cards ─────────────────────────────────────────────────────────────
+// ─── Shared bits ────────────────────────────────────────────────────────────────
 
-const chevronCircle: React.CSSProperties = {
-  width: '28px', height: '28px', borderRadius: '200px',
-  background: 'rgba(17,17,17,0.05)', flexShrink: 0,
-  display: 'flex', alignItems: 'center', justifyContent: 'center',
-}
+const tag = 'text-tag uppercase inline-flex items-center'
+const chevronCircle = 'w-7 h-7 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0'
+
+// ─── Session cards ─────────────────────────────────────────────────────────────
 
 function StrengthCard({ tmpl, onEdit }: { tmpl: StrengthSessionTemplate; onEdit: () => void }) {
   const dur     = tmplDuration(tmpl)
   const muscles = tmplMuscles(tmpl)
   const count   = tmpl.exerciseBlocks.length
   return (
-    <button
-      onClick={onEdit}
-      style={{
-        background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px',
-        display: 'flex', alignItems: 'flex-start', gap: '12px',
-        border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
-      }}
-    >
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ ...bodyStyle, color: '#111111' }}>{tmpl.name}</span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-            <span style={{ ...tagStyle, color: '#FFFDF5', background: '#3B948F', padding: '4px 12px', borderRadius: '200px' }}>Strength</span>
+    <button onClick={onEdit} className="bg-bg-element rounded-xl px-4 py-3 flex items-start gap-3 w-full text-left">
+      <div className="flex-1 flex flex-col gap-3 min-w-0">
+        <div className="flex flex-col gap-1">
+          <span className="text-body font-medium leading-6 text-text">{tmpl.name}</span>
+          <div className="flex flex-wrap gap-1">
+            <span className={`${tag} text-accent-fg bg-accent px-3 py-1 rounded-full`}>Strength</span>
             {muscles.map(m => (
-              <span key={m} style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{m}</span>
+              <span key={m} className={`${tag} text-accent bg-text/5 px-2 py-1 rounded`}>{m}</span>
             ))}
           </div>
         </div>
         {(dur || count > 0) && (
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <div className="flex gap-4 items-center">
             {dur && (
-              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <div className="flex items-center gap-1">
                 <Image src="/icon-clock.svg" alt="" width={12} height={12} />
-                <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{dur}</span>
+                <span className={`${tag} text-text/40`}>{dur}</span>
               </div>
             )}
             {count > 0 && (
-              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <div className="flex items-center gap-1">
                 <Image src="/icon-exercise.svg" alt="" width={12} height={12} />
-                <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{count} exercise{count !== 1 ? 's' : ''}</span>
+                <span className={`${tag} text-text/40`}>{count} exercise{count !== 1 ? 's' : ''}</span>
               </div>
             )}
           </div>
         )}
       </div>
-      <div style={chevronCircle}>
-        <ChevronRight size={14} color="#111111" />
+      <div className={chevronCircle}>
+        <ChevronRight size={14} className="text-text" />
       </div>
     </button>
   )
@@ -106,39 +86,67 @@ function StrengthCard({ tmpl, onEdit }: { tmpl: StrengthSessionTemplate; onEdit:
 
 function CardioTemplateCard({ t, onEdit }: { t: CardioSessionTemplate; onEdit: () => void }) {
   return (
-    <button
-      onClick={onEdit}
-      style={{
-        background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '12px 16px',
-        display: 'flex', alignItems: 'flex-start', gap: '12px',
-        border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
-      }}
-    >
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ ...bodyStyle, color: '#111111' }}>{t.name}</span>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-            <span style={{ ...tagStyle, color: '#FFFDF5', background: '#111111', padding: '4px 12px', borderRadius: '200px' }}>Cardio</span>
-            <span style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>{t.activityType}</span>
+    <button onClick={onEdit} className="bg-bg-element rounded-xl px-4 py-3 flex items-start gap-3 w-full text-left">
+      <div className="flex-1 flex flex-col gap-3 min-w-0">
+        <div className="flex flex-col gap-1">
+          <span className="text-body font-medium leading-6 text-text">{t.name}</span>
+          <div className="flex flex-wrap gap-1">
+            <span className={`${tag} text-accent-fg bg-text px-3 py-1 rounded-full`}>Cardio</span>
+            <span className={`${tag} text-accent bg-text/5 px-2 py-1 rounded`}>{t.activityType}</span>
           </div>
         </div>
         {(t.targetDurationMinutes || t.targetDistanceKm) && (
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <div className="flex gap-4 items-center">
             {t.targetDurationMinutes && (
-              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <div className="flex items-center gap-1">
                 <Image src="/icon-clock.svg" alt="" width={12} height={12} />
-                <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDurationMinutes} Mins</span>
+                <span className={`${tag} text-text/40`}>{t.targetDurationMinutes} Mins</span>
               </div>
             )}
-            {t.targetDistanceKm && (
-              <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.4)' }}>{t.targetDistanceKm.toFixed(1)} km</span>
-            )}
+            {t.targetDistanceKm && <span className={`${tag} text-text/40`}>{t.targetDistanceKm.toFixed(1)} km</span>}
           </div>
         )}
       </div>
-      <div style={chevronCircle}>
-        <ChevronRight size={14} color="#111111" />
+      <div className={chevronCircle}>
+        <ChevronRight size={14} className="text-text" />
       </div>
+    </button>
+  )
+}
+
+// ─── Sub-tab bar ─────────────────────────────────────────────────────────────
+
+function SubTabBar<T extends string>({ tabs, active, onChange }: {
+  tabs: readonly T[]; active: T; onChange: (t: T) => void
+}) {
+  return (
+    <div className="flex gap-4 px-4 border-b border-border flex-shrink-0">
+      {tabs.map(t => {
+        const isActive = t === active
+        return (
+          <button
+            key={t}
+            onClick={() => onChange(t)}
+            className={`pb-2 -mb-px text-body font-medium leading-6 text-text border-b-2 ${isActive ? 'border-text opacity-100' : 'border-transparent opacity-40'}`}
+          >
+            {t.charAt(0).toUpperCase() + t.slice(1)}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ─── CTA button ──────────────────────────────────────────────────────────────
+
+function CtaButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center justify-center gap-2 w-full h-12 bg-accent rounded-full"
+    >
+      <Plus size={24} className="text-accent-fg" />
+      <span className="text-body font-medium leading-6 text-accent-fg">{label}</span>
     </button>
   )
 }
@@ -158,84 +166,26 @@ export default function WorkoutsPage() {
     progSubTab === 'active' ? !!p.startDate : !p.startDate
   )
 
-  // ─── Sub-tab bar ─────────────────────────────────────────────────────────────
-
-  function SubTabBar<T extends string>({ tabs, active, onChange }: {
-    tabs: readonly T[]; active: T; onChange: (t: T) => void
-  }) {
-    return (
-      <div style={{
-        display: 'flex', gap: '16px', padding: '0 16px',
-        borderBottom: '1px solid rgba(17,17,17,0.05)', flexShrink: 0,
-      }}>
-        {tabs.map(tab => {
-          const isActive = tab === active
-          return (
-            <button
-              key={tab}
-              onClick={() => onChange(tab)}
-              style={{
-                padding: '0 0 8px', background: 'none', border: 'none',
-                borderBottom: isActive ? '2px solid #111111' : '2px solid transparent',
-                marginBottom: '-1px',
-                opacity: isActive ? 1 : 0.4, cursor: 'pointer',
-                ...bodyStyle, color: '#111111',
-              }}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          )
-        })}
-      </div>
-    )
-  }
-
-  // ─── CTA button ──────────────────────────────────────────────────────────────
-
-  function CtaButton({ label, onClick }: { label: string; onClick: () => void }) {
-    return (
-      <button
-        onClick={onClick}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-          width: '100%', height: '48px',
-          background: '#3B948F', borderRadius: '40px', border: 'none', cursor: 'pointer',
-        }}
-      >
-        <Plus size={24} color="#FFFEFA" />
-        <span style={{ ...bodyStyle, color: '#FFFEFA' }}>{label}</span>
-      </button>
-    )
-  }
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="flex flex-col h-full">
 
       {/* ── Title ── */}
-      <div style={{ padding: '28px 16px 0', flexShrink: 0 }}>
-        <h1 style={{ fontFamily: FONT, fontSize: '24px', fontWeight: 500, lineHeight: '30px', color: '#111111', margin: 0 }}>
-          Workouts
-        </h1>
+      <div className="px-4 pt-7 flex-shrink-0">
+        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Workouts</h1>
       </div>
 
       {/* ── Main tab pill switcher ── */}
-      <div style={{ margin: '20px 16px 0', flexShrink: 0 }}>
-        <div style={{ display: 'flex', padding: '4px', borderRadius: '40px', background: 'rgba(17,17,17,0.05)', gap: '4px' }}>
-          {(['programmes', 'sessions'] as const).map(tab => {
-            const isActive = tab === mainTab
+      <div className="mx-4 mt-5 flex-shrink-0">
+        <div className="flex p-1 rounded-full bg-text/5 gap-1">
+          {(['programmes', 'sessions'] as const).map(t => {
+            const isActive = t === mainTab
             return (
               <button
-                key={tab}
-                onClick={() => setMainTab(tab)}
-                style={{
-                  flex: 1, padding: '8px 24px', borderRadius: '40px',
-                  background: isActive ? '#FFFEFA' : 'transparent',
-                  border: isActive ? '1px solid rgba(252,253,255,0.04)' : '1px solid transparent',
-                  opacity: isActive ? 1 : 0.4, cursor: 'pointer',
-                  ...bodyStyle, color: isActive ? '#3B948F' : '#111111',
-                }}
+                key={t}
+                onClick={() => setMainTab(t)}
+                className={`flex-1 py-2 px-6 rounded-full text-body font-medium leading-6 ${isActive ? 'bg-bg text-accent border border-bg' : 'text-text opacity-40 border border-transparent'}`}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
             )
           })}
@@ -243,14 +193,14 @@ export default function WorkoutsPage() {
       </div>
 
       {/* ── Tab content ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', marginTop: '20px', overflow: 'hidden' }}>
+      <div className="flex-1 flex flex-col mt-5 overflow-hidden">
 
         {/* ──────────── PROGRAMMES ──────────── */}
         {mainTab === 'programmes' && (
           <>
             <SubTabBar tabs={['active', 'inactive'] as const} active={progSubTab} onChange={setProgSubTab} />
 
-            <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto' }}>
+            <div className="no-scrollbar flex-1 overflow-y-auto">
 
               {filteredProgrammes.map(p => {
                 const phases = p.phases.length
@@ -259,50 +209,37 @@ export default function WorkoutsPage() {
                   <button
                     key={p.id}
                     onClick={() => router.push(`/programmes/${p.id}`)}
-                    style={{
-                      display: 'flex', width: '100%', alignItems: 'center', gap: '16px',
-                      padding: '20px 16px', background: 'none', border: 'none',
-                      borderBottom: '1px solid rgba(17,17,17,0.05)',
-                      cursor: 'pointer', textAlign: 'left',
-                    }}
+                    className="flex w-full items-center gap-4 py-5 px-4 border-b border-border text-left"
                   >
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <span style={{ fontFamily: FONT, fontSize: '18px', fontWeight: 500, lineHeight: '24px', color: '#111111' }}>
-                          {p.name}
-                        </span>
+                    <div className="flex-1 flex flex-col gap-4 min-w-0">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-h4 font-medium leading-6 text-text">{p.name}</span>
                         {p.startDate && (
-                          <span style={{ ...tagStyle, color: 'rgba(17,17,17,0.5)' }}>
-                            Started: {fmtStartDate(p.startDate)}
-                          </span>
+                          <span className={`${tag} text-text/50`}>Started: {fmtStartDate(p.startDate)}</span>
                         )}
                       </div>
-                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                        <span style={{ ...tagStyle, color: '#FFFDF5', background: '#3B948F', padding: '4px 12px', borderRadius: '200px' }}>
+                      <div className="flex flex-wrap gap-1">
+                        <span className={`${tag} text-accent-fg bg-accent px-3 py-1 rounded-full`}>
                           {phases} phase{phases !== 1 ? 's' : ''}
                         </span>
                         {weeks > 0 && (
-                          <span style={{ ...tagStyle, color: '#3B948F', background: 'rgba(17,17,17,0.05)', padding: '4px 8px', borderRadius: '4px' }}>
+                          <span className={`${tag} text-accent bg-text/5 px-2 py-1 rounded`}>
                             {weeks} week{weeks !== 1 ? 's' : ''}
                           </span>
                         )}
                       </div>
                     </div>
-                    <div style={{
-                      width: '32px', height: '32px', borderRadius: '200px',
-                      background: 'rgba(17,17,17,0.05)', flexShrink: 0,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <ChevronRight size={16} color="#111111" />
+                    <div className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+                      <ChevronRight size={16} className="text-text" />
                     </div>
                   </button>
                 )
               })}
 
               {filteredProgrammes.length === 0 && (
-                <div style={{ padding: '16px 16px 0' }}>
-                  <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
-                    <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
+                <div className="px-4">
+                  <div className="bg-bg-element rounded-xl p-4">
+                    <p className="text-label font-medium leading-[18px] text-text/50 m-0">
                       {progSubTab === 'active'
                         ? 'No active programme – open a programme and set a start date to activate it.'
                         : 'No programmes yet – add one to get started.'}
@@ -311,11 +248,11 @@ export default function WorkoutsPage() {
                 </div>
               )}
 
-              <div style={{ padding: '16px' }}>
+              <div className="p-4">
                 <CtaButton label="Add new programme" onClick={() => router.push('/programmes/new')} />
               </div>
 
-              <div style={{ height: '88px' }} />
+              <div className="h-[88px]" />
             </div>
           </>
         )}
@@ -325,12 +262,19 @@ export default function WorkoutsPage() {
           <>
             <SubTabBar tabs={['strength', 'cardio'] as const} active={sessSubTab} onChange={setSessSubTab} />
 
-            <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 0' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="no-scrollbar flex-1 overflow-y-auto px-4 pt-4">
+              <div className="mb-3">
+                <CtaButton
+                  label={sessSubTab === 'strength' ? 'Add new session' : 'Add cardio session'}
+                  onClick={() => router.push(`/sessions/new?type=${sessSubTab}`)}
+                />
+              </div>
+
+              <div className="flex flex-col gap-3">
                 {sessSubTab === 'strength' ? (
                   strengthTemplates.length === 0 ? (
-                    <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
-                      <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
+                    <div className="bg-bg-element rounded-xl p-4">
+                      <p className="text-label font-medium leading-[18px] text-text/50 m-0">
                         No session templates yet – create a new session to get started.
                       </p>
                     </div>
@@ -339,8 +283,8 @@ export default function WorkoutsPage() {
                   )
                 ) : (
                   cardioTemplates.length === 0 ? (
-                    <div style={{ background: 'rgba(17,17,17,0.03)', borderRadius: '12px', padding: '16px' }}>
-                      <p style={{ fontFamily: FONT, fontSize: '14px', fontWeight: 500, lineHeight: '18px', color: 'rgba(17,17,17,0.5)', margin: 0 }}>
+                    <div className="bg-bg-element rounded-xl p-4">
+                      <p className="text-label font-medium leading-[18px] text-text/50 m-0">
                         No cardio templates yet – create a new cardio session to add it to a programme.
                       </p>
                     </div>
@@ -350,14 +294,7 @@ export default function WorkoutsPage() {
                 )}
               </div>
 
-              <div style={{ padding: '16px 0 0' }}>
-                <CtaButton
-                  label={sessSubTab === 'strength' ? 'Add new session' : 'Add cardio session'}
-                  onClick={() => router.push(`/sessions/new?type=${sessSubTab}`)}
-                />
-              </div>
-
-              <div style={{ height: '88px' }} />
+              <div className="h-[88px]" />
             </div>
           </>
         )}

@@ -6,27 +6,10 @@ import { useSessionWizard } from '@/stores/session-wizard-store'
 import { useTemplateStore } from '@/stores/template-store'
 import type { ExerciseTemplateBlock } from '@/types'
 
-const FONT = 'var(--font-geist-sans)'
-
-const cellStyle: React.CSSProperties = {
-  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-  padding: '6px 12px', background: 'rgba(17,17,17,0.05)', borderRadius: '4px',
-}
-
-const unitLabel: React.CSSProperties = {
-  fontFamily: FONT, fontSize: '11px', fontWeight: 500, lineHeight: '14px',
-  textTransform: 'uppercase', letterSpacing: '0.02em', color: 'rgba(17,17,17,0.4)', flexShrink: 0,
-}
-
-const numInput: React.CSSProperties = {
-  width: 0, flex: 1, border: 'none', background: 'transparent', outline: 'none',
-  fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px', color: '#111111',
-}
-
 export default function NewSessionConfigurePage() {
   const router = useRouter()
-  const { blocks, removeBlock, moveBlock, addSet, removeSet, updateSet, reset } = useSessionWizard()
-  const { addStrengthTemplate } = useTemplateStore()
+  const { blocks, editingTemplateId, removeBlock, moveBlock, addSet, removeSet, updateSet, reset } = useSessionWizard()
+  const { addStrengthTemplate, updateStrengthTemplate } = useTemplateStore()
 
   function handleClose() {
     reset()
@@ -55,15 +38,13 @@ export default function NewSessionConfigurePage() {
       }
     })
 
-    addStrengthTemplate({
-      name: blocks[0].exerciseName + ' Session',
-      notes: null,
-    })
-
-    // Attach exercise blocks to the just-created template
-    const { strengthTemplates, updateStrengthTemplate } = useTemplateStore.getState()
-    const newTemplate = strengthTemplates[strengthTemplates.length - 1]
-    if (newTemplate) {
+    if (editingTemplateId) {
+      updateStrengthTemplate(editingTemplateId, { exerciseBlocks })
+    } else {
+      const newTemplate = addStrengthTemplate({
+        name: blocks[0].exerciseName + ' Session',
+        notes: null,
+      })
       updateStrengthTemplate(newTemplate.id, { exerciseBlocks })
     }
 
@@ -72,82 +53,42 @@ export default function NewSessionConfigurePage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: FONT, background: '#FFFEFA' }}>
+    <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '28px 16px 24px', borderBottom: '1px solid rgba(17,17,17,0.05)', flexShrink: 0,
-      }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 500, lineHeight: '30px', color: '#111111', margin: 0 }}>
-          Edit session
-        </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            onClick={handleClose}
-            style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <X size={16} color="#3B948F" />
-          </button>
-        </div>
+      <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Edit session</h1>
+        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
+          <X size={16} className="text-accent" />
+        </button>
       </div>
 
       {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '88px' }}>
+      <div className="flex-1 overflow-y-auto pb-[88px]">
 
         {blocks.map((block, blockIdx) => (
-          <div
-            key={block.id}
-            style={{
-              padding: '24px 16px', borderBottom: '1px solid rgba(17,17,17,0.05)',
-              display: 'flex', flexDirection: 'column', gap: '16px',
-            }}
-          >
+          <div key={block.id} className="px-4 py-6 border-b border-border flex flex-col gap-4">
+
             {/* Exercise header */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '18px', fontWeight: 500, lineHeight: '24px', color: '#111111' }}>
-                  {block.exerciseName}
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  {/* Up */}
-                  <button
-                    onClick={() => moveBlock(block.id, 'up')}
-                    style={{
-                      width: '32px', height: '32px', borderRadius: '200px',
-                      background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: blockIdx === 0 ? 0.4 : 1,
-                    }}
-                  >
-                    <ChevronUp size={16} color="#111111" />
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-h4 font-medium leading-6 text-text">{block.exerciseName}</span>
+                <div className="flex items-center gap-1.5">
+                  <button onClick={() => moveBlock(block.id, 'up')} className={`w-8 h-8 rounded-full bg-text/5 flex items-center justify-center ${blockIdx === 0 ? 'opacity-40' : ''}`}>
+                    <ChevronUp size={16} className="text-text" />
                   </button>
-                  {/* Down */}
-                  <button
-                    onClick={() => moveBlock(block.id, 'down')}
-                    style={{
-                      width: '32px', height: '32px', borderRadius: '200px',
-                      background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: blockIdx === blocks.length - 1 ? 0.4 : 1,
-                    }}
-                  >
-                    <ChevronDown size={16} color="#111111" />
+                  <button onClick={() => moveBlock(block.id, 'down')} className={`w-8 h-8 rounded-full bg-text/5 flex items-center justify-center ${blockIdx === blocks.length - 1 ? 'opacity-40' : ''}`}>
+                    <ChevronDown size={16} className="text-text" />
                   </button>
                 </div>
               </div>
 
               {/* Muscle tags */}
               {block.muscles.length > 0 && (
-                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                <div className="flex gap-1 flex-wrap">
                   {block.muscles.map(m => (
-                    <div
-                      key={m}
-                      style={{ padding: '4px 8px', borderRadius: '4px', background: 'rgba(17,17,17,0.05)' }}
-                    >
-                      <span style={{ fontFamily: FONT, fontSize: '11px', fontWeight: 500, lineHeight: '14px', textTransform: 'uppercase', letterSpacing: '0.02em', color: '#3B948F' }}>
-                        {m}
-                      </span>
+                    <div key={m} className="px-2 py-1 rounded bg-text/5">
+                      <span className="text-tag uppercase text-accent">{m}</span>
                     </div>
                   ))}
                 </div>
@@ -155,66 +96,46 @@ export default function NewSessionConfigurePage() {
             </div>
 
             {/* Sets */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="flex flex-col gap-2">
               {block.sets.map((ws, setIdx) => (
-                <div key={ws.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {/* Set number */}
-                  <span style={{
-                    width: '32px', textAlign: 'center', flexShrink: 0,
-                    fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px', color: '#3B948F',
-                  }}>
+                <div key={ws.id} className="flex items-center gap-2">
+                  <span className="w-8 text-center flex-shrink-0 text-body font-medium leading-6 text-accent">
                     {String(setIdx + 1).padStart(2, '0')}
                   </span>
 
-                  {/* Weight */}
-                  <div style={cellStyle}>
+                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
                     <input
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      placeholder="0"
+                      type="number" min="0" step="0.5" placeholder="0"
                       value={ws.weight}
                       onChange={e => updateSet(block.id, ws.id, 'weight', e.target.value)}
-                      style={numInput}
+                      className="w-0 flex-1 border-none bg-transparent outline-none text-body font-medium text-text"
                     />
-                    <span style={unitLabel}>KG</span>
+                    <span className="text-tag uppercase text-text/40 flex-shrink-0">KG</span>
                   </div>
 
-                  {/* Reps */}
-                  <div style={cellStyle}>
+                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
                     <input
-                      type="number"
-                      min="0"
-                      placeholder="0"
+                      type="number" min="0" placeholder="0"
                       value={ws.reps}
                       onChange={e => updateSet(block.id, ws.id, 'reps', e.target.value)}
-                      style={numInput}
+                      className="w-0 flex-1 border-none bg-transparent outline-none text-body font-medium text-text"
                     />
-                    <span style={unitLabel}>reps</span>
+                    <span className="text-tag uppercase text-text/40 flex-shrink-0">reps</span>
                   </div>
 
-                  {/* RPE */}
-                  <div style={cellStyle}>
+                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
                     <input
-                      type="number"
-                      min="1"
-                      max="10"
-                      step="0.5"
-                      placeholder="0"
+                      type="number" min="1" max="10" step="0.5" placeholder="0"
                       value={ws.rpe}
                       onChange={e => updateSet(block.id, ws.id, 'rpe', e.target.value)}
-                      style={numInput}
+                      className="w-0 flex-1 border-none bg-transparent outline-none text-body font-medium text-text"
                     />
-                    <span style={unitLabel}>RPE</span>
+                    <span className="text-tag uppercase text-text/40 flex-shrink-0">RPE</span>
                   </div>
 
-                  {/* Remove set */}
                   {block.sets.length > 1 && (
-                    <button
-                      onClick={() => removeSet(block.id, ws.id)}
-                      style={{ width: '24px', height: '24px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                    >
-                      <Minus size={12} color="rgba(17,17,17,0.4)" />
+                    <button onClick={() => removeSet(block.id, ws.id)} className="w-6 h-6 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+                      <Minus size={12} className="text-text/40" />
                     </button>
                   )}
                 </div>
@@ -222,41 +143,22 @@ export default function NewSessionConfigurePage() {
             </div>
 
             {/* Add set + Delete exercise */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button
-                onClick={() => addSet(block.id)}
-                style={{
-                  flex: 1, height: '40px', borderRadius: '40px',
-                  background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer',
-                  fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px', color: '#3B948F',
-                }}
-              >
+            <div className="flex items-center gap-4">
+              <button onClick={() => addSet(block.id)} className="flex-1 h-10 rounded-full bg-text/5 text-body font-medium text-accent">
                 Add set to exercise
               </button>
-              <button
-                onClick={() => removeBlock(block.id)}
-                style={{
-                  width: '40px', height: '40px', borderRadius: '200px',
-                  background: '#D24F4F', border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                }}
-              >
-                <X size={16} color="#FFFEFA" />
+              <button onClick={() => removeBlock(block.id)} className="w-10 h-10 rounded-full bg-error flex items-center justify-center flex-shrink-0">
+                <X size={16} className="text-accent-fg" />
               </button>
             </div>
           </div>
         ))}
 
         {/* Add more exercises */}
-        <div style={{ padding: '24px 16px', borderBottom: '1px solid rgba(17,17,17,0.05)' }}>
+        <div className="px-4 py-6 border-b border-border">
           <button
             onClick={() => router.push('/sessions/new/exercises')}
-            style={{
-              width: '100%', height: '48px', borderRadius: '40px',
-              border: '1px solid #3B948F', background: '#3B948F',
-              cursor: 'pointer', fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px',
-              color: '#FFFEFA',
-            }}
+            className="w-full h-12 rounded-full border border-accent bg-accent text-body font-medium text-accent-fg"
           >
             Add exercises to workout
           </button>
@@ -265,21 +167,11 @@ export default function NewSessionConfigurePage() {
       </div>
 
       {/* Save footer */}
-      <div style={{
-        position: 'fixed', bottom: 80, left: 0, right: 0,
-        padding: '16px', background: '#FFFEFA', borderTop: '1px solid rgba(17,17,17,0.05)',
-      }}>
+      <div className="fixed bottom-20 left-0 right-0 p-4 bg-bg border-t border-border">
         <button
           onClick={handleSave}
           disabled={blocks.length === 0}
-          style={{
-            width: '100%', height: '48px', borderRadius: '40px',
-            border: blocks.length > 0 ? '1px solid #3B948F' : 'none',
-            background: blocks.length > 0 ? '#3B948F' : 'rgba(17,17,17,0.1)',
-            cursor: blocks.length > 0 ? 'pointer' : 'default',
-            fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px',
-            color: blocks.length > 0 ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
-          }}
+          className={`w-full h-12 rounded-full text-body font-medium ${blocks.length > 0 ? 'border border-accent bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
         >
           Save session
         </button>

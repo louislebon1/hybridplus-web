@@ -76,7 +76,7 @@ export default function CardioPage() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-5 pt-12 pb-4 flex-shrink-0">
-        <h1 className="text-xl font-medium text-text">Cardio</h1>
+        <h1 className="text-h3 font-medium text-text">Cardio</h1>
       </div>
 
       {/* Tabs */}
@@ -86,7 +86,7 @@ export default function CardioPage() {
             key={t}
             onClick={() => setTab(t)}
             className={[
-              'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
+              'flex-1 py-2 rounded-xl text-label font-medium transition-colors',
               tab === t ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text-secondary',
             ].join(' ')}
           >
@@ -109,37 +109,37 @@ export default function CardioPage() {
               <div key={s.id} className="bg-bg-element border border-border rounded-2xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{ACTIVITY_ICONS[s.activityType]}</span>
+                    <span className="text-h2">{ACTIVITY_ICONS[s.activityType]}</span>
                     <div>
-                      <p className="text-sm font-medium text-text capitalize">
+                      <p className="text-label font-medium text-text capitalize">
                         {s.runType ? `${s.runType.replace('_', ' ')} ` : ''}{s.activityType}
                       </p>
-                      <p className="text-xs text-text-secondary">{fmtDate(s.sessionDate)}</p>
+                      <p className="text-caption text-text-secondary">{fmtDate(s.sessionDate)}</p>
                     </div>
                   </div>
-                  <button onClick={() => { if (window.confirm('Delete this session?')) deleteSession(s.id) }} className="text-xs text-error">✕</button>
+                  <button onClick={() => { if (window.confirm('Delete this session?')) deleteSession(s.id) }} className="text-caption text-error">✕</button>
                 </div>
                 <div className="flex gap-4 mt-3">
                   <div>
-                    <p className="text-xs text-text-tertiary">Duration</p>
-                    <p className="text-sm font-medium text-text tabular">{fmtDuration(s.durationSeconds)}</p>
+                    <p className="text-caption text-text-tertiary">Duration</p>
+                    <p className="text-label font-medium text-text tabular">{fmtDuration(s.durationSeconds)}</p>
                   </div>
                   {s.distanceKm && (
                     <div>
-                      <p className="text-xs text-text-tertiary">Distance</p>
-                      <p className="text-sm font-medium text-text tabular">{s.distanceKm.toFixed(2)} km</p>
+                      <p className="text-caption text-text-tertiary">Distance</p>
+                      <p className="text-label font-medium text-text tabular">{s.distanceKm.toFixed(2)} km</p>
                     </div>
                   )}
                   {s.avgPaceSecs && (
                     <div>
-                      <p className="text-xs text-text-tertiary">Avg pace</p>
-                      <p className="text-sm font-medium text-text tabular">{fmtPace(s.avgPaceSecs)}</p>
+                      <p className="text-caption text-text-tertiary">Avg pace</p>
+                      <p className="text-label font-medium text-text tabular">{fmtPace(s.avgPaceSecs)}</p>
                     </div>
                   )}
                   {s.avgHeartRate && (
                     <div>
-                      <p className="text-xs text-text-tertiary">HR</p>
-                      <p className="text-sm font-medium text-text tabular">{s.avgHeartRate} bpm</p>
+                      <p className="text-caption text-text-tertiary">HR</p>
+                      <p className="text-label font-medium text-text tabular">{s.avgHeartRate} bpm</p>
                     </div>
                   )}
                 </div>
@@ -151,7 +151,7 @@ export default function CardioPage() {
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-4">
           {/* Activity type */}
           <div>
-            <p className="text-sm font-medium text-text mb-2">Activity</p>
+            <p className="text-label font-medium text-text mb-2">Activity</p>
             <div className="flex gap-2 overflow-x-auto no-scrollbar">
               {(['run','swim','cycle','walk','row'] as ActivityType[]).map((type) => (
                 <button
@@ -159,7 +159,7 @@ export default function CardioPage() {
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, activityType: type }))}
                   className={[
-                    'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition-colors',
+                    'flex-shrink-0 px-4 py-2 rounded-full text-label font-medium border transition-colors',
                     form.activityType === type
                       ? 'bg-accent text-accent-fg border-accent'
                       : 'border-border text-text-secondary hover:bg-bg-element',
@@ -174,12 +174,12 @@ export default function CardioPage() {
           <Input label="Date" type="date" value={form.sessionDate} onChange={(e) => setForm((f) => ({ ...f, sessionDate: e.target.value }))} />
 
           <div>
-            <p className="text-sm font-medium text-text mb-2">Duration</p>
+            <p className="text-label font-medium text-text mb-2">Duration</p>
             <div className="flex gap-2">
               <Input placeholder="0" type="number" min="0" value={form.hours} onChange={(e) => setForm((f) => ({ ...f, hours: e.target.value }))} />
-              <span className="self-center text-text-secondary text-sm">h</span>
+              <span className="self-center text-text-secondary text-label">h</span>
               <Input placeholder="30" type="number" min="0" max="59" value={form.minutes} onChange={(e) => setForm((f) => ({ ...f, minutes: e.target.value }))} />
-              <span className="self-center text-text-secondary text-sm">m</span>
+              <span className="self-center text-text-secondary text-label">m</span>
             </div>
           </div>
 
@@ -189,7 +189,7 @@ export default function CardioPage() {
 
           {form.activityType === 'run' && (
             <div>
-              <p className="text-sm font-medium text-text mb-2">Run type</p>
+              <p className="text-label font-medium text-text mb-2">Run type</p>
               <div className="flex flex-wrap gap-2">
                 {(['easy','tempo','intervals','long_run','recovery','race'] as RunSessionType[]).map((type) => (
                   <button
@@ -197,7 +197,7 @@ export default function CardioPage() {
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, runType: type }))}
                     className={[
-                      'px-3 py-1.5 rounded-full text-xs font-medium border transition-colors',
+                      'px-3 py-1.5 rounded-full text-caption font-medium border transition-colors',
                       form.runType === type ? 'border-accent bg-accent/10 text-accent' : 'border-border text-text-secondary',
                     ].join(' ')}
                   >

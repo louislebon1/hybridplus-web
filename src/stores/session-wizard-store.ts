@@ -19,6 +19,7 @@ export interface WizardBlock {
 interface SessionWizardStore {
   sessionType: 'strength' | 'cardio'
   blocks: WizardBlock[]
+  editingTemplateId: string | null
   setSessionType: (type: 'strength' | 'cardio') => void
   addExercise: (ex: { id: string; name: string; muscles: string[] }) => void
   removeBlock: (id: string) => void
@@ -26,12 +27,14 @@ interface SessionWizardStore {
   addSet: (blockId: string) => void
   removeSet: (blockId: string, setId: string) => void
   updateSet: (blockId: string, setId: string, field: 'weight' | 'reps' | 'rpe', value: string) => void
+  loadForEdit: (templateId: string, blocks: WizardBlock[]) => void
   reset: () => void
 }
 
 export const useSessionWizard = create<SessionWizardStore>((set, get) => ({
   sessionType: 'strength',
   blocks: [],
+  editingTemplateId: null,
 
   setSessionType: (sessionType) => set({ sessionType }),
 
@@ -84,5 +87,7 @@ export const useSessionWizard = create<SessionWizardStore>((set, get) => ({
     }),
   })),
 
-  reset: () => set({ sessionType: 'strength', blocks: [] }),
+  loadForEdit: (templateId, blocks) => set({ editingTemplateId: templateId, blocks, sessionType: 'strength' }),
+
+  reset: () => set({ sessionType: 'strength', blocks: [], editingTemplateId: null }),
 }))

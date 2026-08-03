@@ -33,9 +33,9 @@ const buttonVariantClasses: Record<ButtonVariant, string> = {
 }
 
 const buttonSizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-9 px-4 text-sm gap-1.5 rounded-full',
-  md: 'h-12 px-5 text-base gap-2 rounded-full',
-  lg: 'h-12 px-6 text-base gap-2.5 rounded-full',
+  sm: 'h-9 px-4 text-label gap-1.5 rounded-full',
+  md: 'h-12 px-5 text-body gap-2 rounded-full',
+  lg: 'h-12 px-6 text-body gap-2.5 rounded-full',
 }
 
 export function Button({
@@ -50,7 +50,7 @@ export function Button({
     <button
       disabled={disabled}
       className={[
-        'inline-flex items-center justify-center font-semibold transition-all cursor-pointer select-none',
+        'inline-flex items-center justify-center font-medium transition-all cursor-pointer select-none',
         buttonVariantClasses[variant],
         buttonSizeClasses[size],
         className,
@@ -75,14 +75,14 @@ export function Input({ label, error, className = '', id, ...rest }: InputProps)
   return (
     <div className="flex flex-col gap-1.5 w-full">
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-text">
+        <label htmlFor={inputId} className="text-label font-medium text-text">
           {label}
         </label>
       )}
       <input
         id={inputId}
         className={[
-          'w-full h-12 px-4 rounded-xl bg-bg-element border text-text text-base',
+          'w-full h-12 px-4 rounded-xl bg-bg-element border text-text text-body',
           'placeholder:text-text-tertiary',
           'focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent',
           'transition-colors',
@@ -93,7 +93,7 @@ export function Input({ label, error, className = '', id, ...rest }: InputProps)
         ].join(' ')}
         {...rest}
       />
-      {error && <p className="text-xs text-error">{error}</p>}
+      {error && <p className="text-caption text-error">{error}</p>}
     </div>
   )
 }
@@ -117,7 +117,7 @@ export function Badge({ label, color = 'default' }: BadgeProps) {
   return (
     <span
       className={[
-        'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium',
+        'inline-flex items-center px-2 py-0.5 rounded-full text-tag font-medium',
         badgeColorClasses[color],
       ].join(' ')}
     >
@@ -226,7 +226,7 @@ export function Sheet({ visible, onClose, title, children }: SheetProps) {
 
             {title && (
               <div className="flex items-center justify-between px-5 py-3 flex-shrink-0 border-b border-border">
-                <h2 className="text-base font-semibold text-text">{title}</h2>
+                <h2 className="text-body font-medium text-text">{title}</h2>
                 <button
                   onClick={onClose}
                   className="w-8 h-8 flex items-center justify-center rounded-full bg-bg-element hover:bg-bg-hover transition-colors text-text-secondary"
@@ -290,8 +290,8 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         {icon}
       </span>
       <div className="flex flex-col gap-1.5">
-        <h3 className="text-base font-semibold text-text">{title}</h3>
-        <p className="text-sm text-text-secondary max-w-xs">{description}</p>
+        <h3 className="text-body font-medium text-text">{title}</h3>
+        <p className="text-label text-text-secondary max-w-xs">{description}</p>
       </div>
       {action && (
         <Button variant="primary" size="md" onClick={action.onClick}>

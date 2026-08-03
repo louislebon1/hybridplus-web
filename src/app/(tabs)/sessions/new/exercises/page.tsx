@@ -6,21 +6,11 @@ import { X, Check, Plus, Search } from 'lucide-react'
 import { useSessionWizard } from '@/stores/session-wizard-store'
 import { EXERCISE_LIBRARY } from '@/lib/exercise-library'
 
-const FONT = 'var(--font-geist-sans)'
-
 // One letter label per unique category in library order
 const CATEGORIES = [...new Set(EXERCISE_LIBRARY.map(e => e.category))]
 const CATEGORY_LETTER: Record<string, string> = Object.fromEntries(
   CATEGORIES.map((cat, i) => [cat, String.fromCharCode(65 + i)])
 )
-
-const rowBtn: React.CSSProperties = {
-  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-  padding: '20px 16px', background: 'transparent',
-  borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-  borderBottom: '1px solid rgba(17,17,17,0.05)',
-  cursor: 'pointer', textAlign: 'left', boxSizing: 'border-box',
-}
 
 export default function NewSessionExercisesPage() {
   const router = useRouter()
@@ -60,15 +50,15 @@ export default function NewSessionExercisesPage() {
     return (
       <button
         onClick={() => { if (!added) addExercise({ id, name, muscles }) }}
-        style={rowBtn}
+        className="w-full flex items-center justify-between px-4 py-5 border-b border-border text-left"
       >
-        <span style={{ fontSize: '18px', fontWeight: 500, lineHeight: '24px', color: '#111111', fontFamily: FONT, maxWidth: '179px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span className="text-h4 font-medium leading-6 text-text max-w-[calc(100%-32px)] overflow-hidden text-ellipsis whitespace-nowrap">
           {name}
         </span>
-        <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
           {added
-            ? <Check size={16} color="#3B948F" />
-            : <Plus size={16} color="rgba(17,17,17,0.4)" />
+            ? <Check size={16} className="text-accent" />
+            : <Plus size={16} className="text-text/40" />
           }
         </div>
       </button>
@@ -76,62 +66,39 @@ export default function NewSessionExercisesPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: FONT, background: '#FFFEFA' }}>
+    <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '28px 16px 24px', borderBottom: '1px solid rgba(17,17,17,0.05)', flexShrink: 0,
-      }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 500, lineHeight: '30px', color: '#111111', margin: 0 }}>
-          New session
-        </h1>
-        <button
-          onClick={handleClose}
-          style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <X size={16} color="#3B948F" />
+      <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">New session</h1>
+        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
+          <X size={16} className="text-accent" />
         </button>
       </div>
 
       {/* Search bar */}
-      <div style={{ display: 'flex', gap: '16px', padding: '24px 16px 12px', flexShrink: 0 }}>
-        <div style={{
-          flex: 1, display: 'flex', alignItems: 'center', gap: '8px',
-          height: '48px', padding: '8px 12px', borderRadius: '6px',
-          background: 'rgba(17,17,17,0.05)', boxSizing: 'border-box',
-        }}>
-          <Search size={16} color="rgba(17,17,17,0.4)" style={{ flexShrink: 0 }} />
+      <div className="flex gap-4 px-4 pt-6 pb-3 flex-shrink-0">
+        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-md bg-text/5">
+          <Search size={16} className="text-text/40 flex-shrink-0" />
           <input
             placeholder="Search for exercises"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{
-              flex: 1, border: 'none', background: 'transparent', outline: 'none',
-              fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px', color: '#111111',
-            }}
+            className="flex-1 border-none bg-transparent outline-none text-body font-medium text-text"
           />
         </div>
-        <button
-          onClick={() => setSearch('')}
-          style={{
-            width: '48px', height: '48px', borderRadius: '40px', background: '#3B948F',
-            border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}
-        >
-          <Check size={16} color="#FFFEFA" />
+        <button onClick={() => setSearch('')} className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+          <Check size={16} className="text-accent-fg" />
         </button>
       </div>
 
       {/* Exercise list */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '104px' }}>
+      <div className="flex-1 overflow-y-auto pb-[104px]">
         {grouped
           ? Array.from(grouped.entries()).map(([category, exercises]) => (
               <div key={category}>
-                <div style={{ padding: '20px 16px 0' }}>
-                  <span style={{ fontFamily: FONT, fontSize: '18px', fontWeight: 500, lineHeight: '24px', color: '#111111' }}>
-                    {CATEGORY_LETTER[category]}
-                  </span>
+                <div className="px-4 pt-5">
+                  <span className="text-h4 font-medium leading-6 text-text">{CATEGORY_LETTER[category]}</span>
                 </div>
                 {exercises.map(ex => (
                   <ExerciseRow key={ex.id} id={ex.id} name={ex.name} muscles={ex.primaryMuscles} />
@@ -145,22 +112,11 @@ export default function NewSessionExercisesPage() {
       </div>
 
       {/* Footer CTA */}
-      <div style={{
-        position: 'fixed', bottom: 80, left: 0, right: 0,
-        padding: '16px 16px 24px', background: '#FFFEFA',
-        borderTop: '1px solid rgba(17,17,17,0.05)',
-      }}>
+      <div className="fixed bottom-20 left-0 right-0 px-4 pt-4 pb-6 bg-bg border-t border-border">
         <button
           onClick={() => router.push('/sessions/new/configure')}
           disabled={!canProceed}
-          style={{
-            width: '100%', height: '48px', borderRadius: '40px',
-            border: canProceed ? '1px solid #3B948F' : 'none',
-            background: canProceed ? '#3B948F' : 'rgba(17,17,17,0.1)',
-            cursor: canProceed ? 'pointer' : 'default',
-            fontFamily: FONT, fontSize: '16px', fontWeight: 500, lineHeight: '24px',
-            color: canProceed ? '#FFFEFA' : 'rgba(17,17,17,0.4)',
-          }}
+          className={`w-full h-12 rounded-full text-body font-medium ${canProceed ? 'border border-accent bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
         >
           Create session plan
         </button>

@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Plus, Check, ArrowLeft } from 'lucide-react'
-import { useSessionStore, formatDuration, getElapsedSeconds, getRestRemaining } from '@/stores/session-store'
+import { X, ArrowLeft, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react'
+import { useSessionStore, formatDuration, getElapsedSeconds, getRestRemaining, getActiveSet } from '@/stores/session-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import type { ActivityType, RunSessionType } from '@/types'
 import { localDateStr } from '@/lib/date'
+import { EXERCISE_LIBRARY } from '@/lib/exercise-library'
 
 const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
 
@@ -22,38 +23,23 @@ const EMPTY_CARDIO_FORM = {
   notes: '',
 }
 
-const EXERCISES = [
-  { id: 'sq', name: 'Squat' }, { id: 'bp', name: 'Bench Press' }, { id: 'dl', name: 'Deadlift' },
-  { id: 'op', name: 'Overhead Press' }, { id: 'row', name: 'Barbell Row' }, { id: 'pull', name: 'Pull Up' },
-  { id: 'rdl', name: 'Romanian Deadlift' }, { id: 'lgp', name: 'Leg Press' }, { id: 'inc', name: 'Incline Press' },
-  { id: 'cable', name: 'Cable Fly' }, { id: 'curl', name: 'Barbell Curl' }, { id: 'tri', name: 'Tricep Pushdown' },
-  { id: 'lat', name: 'Lat Pulldown' }, { id: 'shrug', name: 'Shrug' }, { id: 'fp', name: 'Face Pull' },
-  { id: 'calf', name: 'Calf Raise' }, { id: 'lunge', name: 'Lunge' }, { id: 'dip', name: 'Dip' },
-  { id: 'hc', name: 'Hammer Curl' }, { id: 'le', name: 'Leg Extension' },
-]
+const REST_RING_RADIUS = 100
+const REST_RING_CIRCUMFERENCE = 2 * Math.PI * REST_RING_RADIUS
 
-function RestTimer() {
-  const { restTimer, dismissRestTimer, addRestTime } = useSessionStore()
-  const [remaining, setRemaining] = useState(0)
-
-  useEffect(() => {
-    if (!restTimer.isActive) return
-    const interval = setInterval(() => setRemaining(getRestRemaining(restTimer)), 500)
-    setRemaining(getRestRemaining(restTimer))
-    return () => clearInterval(interval)
-  }, [restTimer])
-
-  if (!restTimer.isActive) return null
-
+function RestRing({ pct, label, sublabel }: { pct: number; label: string; sublabel: string }) {
+  const offset = REST_RING_CIRCUMFERENCE * (1 - Math.min(1, Math.max(0, pct)))
   return (
-    <div className="flex-shrink-0 bg-accent/10 border-b border-accent/20 px-5 py-2 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span className="text-accent text-xs font-normal uppercase">Rest</span>
-        <span className="text-accent font-normal tabular text-lg">{formatDuration(remaining)}</span>
-      </div>
-      <div className="flex gap-2">
-        <button onClick={() => addRestTime(60)} className="text-xs text-accent font-normal">+60s</button>
-        <button onClick={dismissRestTimer} className="text-xs text-text-secondary">SKIP</button>
+    <div className="relative w-[220px] h-[220px] flex items-center justify-center flex-shrink-0">
+      <svg width={220} height={220} viewBox="0 0 220 220" className="-rotate-90 absolute inset-0">
+        <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="rgba(17,17,17,0.08)" strokeWidth={12} />
+        <circle
+          cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="var(--accent)" strokeWidth={12}
+          strokeDasharray={REST_RING_CIRCUMFERENCE} strokeDashoffset={offset} strokeLinecap="round"
+        />
+      </svg>
+      <div className="flex flex-col items-center gap-1">
+        <p className="font-medium text-[72px] leading-none text-text tabular">{label}</p>
+        <p className="text-caption font-medium text-text/40 uppercase tracking-wide">{sublabel}</p>
       </div>
     </div>
   )
@@ -62,16 +48,19 @@ function RestTimer() {
 export default function SessionPage() {
   const router = useRouter()
   const {
-    activeSession, startSession, finishSession, abandonSession,
-    addExerciseBlock, removeExerciseBlock, addSet, removeSet, updateSet, completeSet,
-    setSessionNotes,
+    activeSession, activeBlockId, startSession, finishSession, abandonSession,
+    addExerciseBlock, substituteExercise, updateSet, completeSet, removeSet,
+    setSessionName, setActiveBlock,
+    restTimer, dismissRestTimer, addRestTime,
   } = useSessionStore()
   const { programmes } = useProgrammeStore()
   const { addSession: addCardioSession } = useCardioStore()
   const { events: calendarEvents } = useCalendarStore()
 
   const [elapsed, setElapsed] = useState(0)
+  const [restRemaining, setRestRemaining] = useState(0)
   const [showAddExercise, setShowAddExercise] = useState(false)
+  const [showSwapExercise, setShowSwapExercise] = useState(false)
   const [exerciseSearch, setExerciseSearch] = useState('')
   const [editingName, setEditingName] = useState(false)
   const [cardioForm, setCardioForm] = useState(EMPTY_CARDIO_FORM)
@@ -123,6 +112,25 @@ export default function SessionPage() {
     return () => clearInterval(interval)
   }, [activeSession])
 
+  useEffect(() => {
+    if (!restTimer.isActive) return
+    const interval = setInterval(() => setRestRemaining(getRestRemaining(restTimer)), 500)
+    setRestRemaining(getRestRemaining(restTimer))
+    return () => clearInterval(interval)
+  }, [restTimer])
+
+  // Once every set in the current exercise is logged, jump to the next exercise that still has one
+  useEffect(() => {
+    if (!activeSession) return
+    const block = activeSession.exerciseBlocks.find(b => b.id === activeBlockId)
+    if (block && !getActiveSet(block)) {
+      const next = [...activeSession.exerciseBlocks]
+        .sort((a, b) => a.orderIndex - b.orderIndex)
+        .find(b => getActiveSet(b))
+      if (next && next.id !== activeBlockId) setActiveBlock(next.id)
+    }
+  }, [activeSession, activeBlockId, setActiveBlock])
+
   const allTemplates = programmes.flatMap((p) =>
     p.templates.map((t) => ({ ...t, programmeName: p.name, programmeId: p.id }))
   ).slice(0, 5)
@@ -141,19 +149,19 @@ export default function SessionPage() {
   const CARDIO_TYPES = new Set(['run','swim','cycle','walk','row'])
   const todayCardioEvents = todayEvents.filter(e => CARDIO_TYPES.has(e.eventType))
 
-  const filtered = exerciseSearch
-    ? EXERCISES.filter((e) => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
-    : EXERCISES
+  const filteredLibrary = exerciseSearch.trim()
+    ? EXERCISE_LIBRARY.filter((e) => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
+    : EXERCISE_LIBRARY
 
   if (!activeSession) {
     return (
       <>
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-3 px-4 pt-12 pb-4 flex-shrink-0">
-          <button onClick={() => router.back()} style={{ width: '32px', height: '32px', borderRadius: '200px', background: 'rgba(17,17,17,0.05)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <ArrowLeft size={16} color="#3B948F" />
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+            <ArrowLeft size={16} className="text-accent" />
           </button>
-          <h1 className="text-xl font-normal text-text">Start Workout</h1>
+          <h1 className="text-h3 font-medium text-text">Start Workout</h1>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-5">
@@ -162,8 +170,8 @@ export default function SessionPage() {
             onClick={() => startSession(null, 'Quick Workout')}
             className="bg-accent text-accent-fg rounded-2xl p-5 text-left"
           >
-            <p className="text-lg font-normal">Quick Start</p>
-            <p className="text-sm opacity-80 mt-1">Start an empty session — add exercises as you go</p>
+            <p className="text-h4 font-medium">Quick Start</p>
+            <p className="text-label opacity-80 mt-1">Start an empty session — add exercises as you go</p>
           </button>
 
           {/* Today's scheduled sessions */}
@@ -178,21 +186,21 @@ export default function SessionPage() {
                     const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                     const activePhase = store.getActivePhase(t.programmeId)
                     return (
-                      <button key={t.id} onClick={() => ref && startSession(ref)} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#3B948F' }} />
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFDF5', background: '#3B948F', padding: '4px 10px', borderRadius: '200px' }}>Strength</span>
-                          {activePhase && <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(17,17,17,0.4)' }}>{activePhase.name}</span>}
+                      <button key={t.id} onClick={() => ref && startSession(ref)} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full">
+                        <div className="absolute left-0 top-0 bottom-0 w-2 bg-accent" />
+                        <div className="flex items-center gap-2">
+                          <span className="text-tag uppercase text-accent-fg bg-accent px-2.5 py-1 rounded-full">Strength</span>
+                          {activePhase && <span className="text-tag uppercase text-text/40">{activePhase.name}</span>}
                         </div>
-                        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{t.name}</span>
+                        <span className="text-body leading-5 font-medium text-text">{t.name}</span>
                       </button>
                     )
                   })}
                 {todayCardioEvents.map(ev => (
-                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#111111' }} />
-                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFEFA', background: '#111111', padding: '4px 10px', borderRadius: '200px', display: 'inline-flex', alignItems: 'center' }}>{ev.eventType}</span>
-                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{ev.name ?? ev.eventType}</span>
+                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full">
+                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-text" />
+                    <span className="text-tag uppercase text-accent-fg bg-text px-2.5 py-1 rounded-full inline-flex items-center w-fit">{ev.eventType}</span>
+                    <span className="text-body leading-5 font-medium text-text">{ev.name ?? ev.eventType}</span>
                   </button>
                 ))}
               </div>
@@ -209,13 +217,13 @@ export default function SessionPage() {
                   const activePhase = store.getActivePhase(t.programmeId)
                   const isToday = todayStrengthIds.has(t.id)
                   return (
-                    <button key={t.id} onClick={() => ref && startSession(ref)} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%', opacity: isToday ? 0.4 : 1 }}>
-                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#3B948F' }} />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFDF5', background: '#3B948F', padding: '4px 10px', borderRadius: '200px' }}>Strength</span>
-                        {activePhase && <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(17,17,17,0.4)' }}>{activePhase.name}</span>}
+                    <button key={t.id} onClick={() => ref && startSession(ref)} className={`relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full ${isToday ? 'opacity-40' : ''}`}>
+                      <div className="absolute left-0 top-0 bottom-0 w-2 bg-accent" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-tag uppercase text-accent-fg bg-accent px-2.5 py-1 rounded-full">Strength</span>
+                        {activePhase && <span className="text-tag uppercase text-text/40">{activePhase.name}</span>}
                       </div>
-                      <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{t.name}</span>
+                      <span className="text-body leading-5 font-medium text-text">{t.name}</span>
                     </button>
                   )
                 })}
@@ -228,13 +236,13 @@ export default function SessionPage() {
             <p className="eyebrow mb-3">Log cardio</p>
             <div className="flex flex-col gap-2">
               {allCardioTemplates.length > 0 && allCardioTemplates.map((ct) => (
-                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} style={{ position: 'relative', overflow: 'hidden', background: 'rgba(17,17,17,0.03)', border: '1px solid rgba(17,17,17,0.08)', borderRadius: '12px', padding: '12px 20px', minHeight: '68px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '6px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '8px', background: '#111111' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: '13px', color: '#FFFEFA', background: '#111111', padding: '4px 10px', borderRadius: '200px' }}>{ct.activityType}</span>
-                    {ct.targetDurationMinutes && <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'rgba(17,17,17,0.4)' }}>{ct.targetDurationMinutes}M</span>}
+                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full">
+                  <div className="absolute left-0 top-0 bottom-0 w-2 bg-text" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-tag uppercase text-accent-fg bg-text px-2.5 py-1 rounded-full">{ct.activityType}</span>
+                    {ct.targetDurationMinutes && <span className="text-tag uppercase text-text/40">{ct.targetDurationMinutes}M</span>}
                   </div>
-                  <span style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '16px', lineHeight: '20px', fontWeight: 600, color: '#111111' }}>{ct.name}</span>
+                  <span className="text-body leading-5 font-medium text-text">{ct.name}</span>
                 </button>
               ))}
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
@@ -244,8 +252,8 @@ export default function SessionPage() {
                     onClick={() => openCardioLog({ activityType: type })}
                     className="flex-shrink-0 flex flex-col items-center gap-1 px-4 py-3 bg-bg-element border border-border rounded-2xl hover:bg-bg-hover transition-colors"
                   >
-                    <span className="text-xl">{CARDIO_ICONS[type]}</span>
-                    <span className="text-xs text-text-secondary capitalize">{type}</span>
+                    <span className="text-h3">{CARDIO_ICONS[type]}</span>
+                    <span className="text-caption text-text-secondary capitalize">{type}</span>
                   </button>
                 ))}
               </div>
@@ -264,7 +272,7 @@ export default function SessionPage() {
                 type="button"
                 onClick={() => setCardioForm(f => ({ ...f, activityType: type }))}
                 className={[
-                  'flex-shrink-0 px-4 py-2 rounded-full text-sm border transition-colors',
+                  'flex-shrink-0 px-4 py-2 rounded-full text-label border transition-colors',
                   cardioForm.activityType === type
                     ? 'bg-accent text-accent-fg border-accent'
                     : 'border-border text-text-secondary hover:bg-bg-element',
@@ -278,12 +286,12 @@ export default function SessionPage() {
           <Input label="Date" type="date" value={cardioForm.sessionDate} onChange={e => setCardioForm(f => ({ ...f, sessionDate: e.target.value }))} />
 
           <div>
-            <p className="text-sm font-normal text-text mb-2">Duration</p>
+            <p className="text-label font-medium text-text mb-2">Duration</p>
             <div className="flex gap-2 items-center">
               <Input placeholder="0" type="number" min="0" value={cardioForm.hours} onChange={e => setCardioForm(f => ({ ...f, hours: e.target.value }))} />
-              <span className="text-text-secondary text-sm flex-shrink-0">h</span>
+              <span className="text-text-secondary text-label flex-shrink-0">h</span>
               <Input placeholder="30" type="number" min="0" max="59" value={cardioForm.minutes} onChange={e => setCardioForm(f => ({ ...f, minutes: e.target.value }))} />
-              <span className="text-text-secondary text-sm flex-shrink-0">m</span>
+              <span className="text-text-secondary text-label flex-shrink-0">m</span>
             </div>
           </div>
 
@@ -293,7 +301,7 @@ export default function SessionPage() {
 
           {cardioForm.activityType === 'run' && (
             <div>
-              <p className="text-sm font-normal text-text mb-2">Run type</p>
+              <p className="text-label font-medium text-text mb-2">Run type</p>
               <div className="flex flex-wrap gap-2">
                 {(['easy', 'tempo', 'intervals', 'long_run', 'recovery', 'race'] as RunSessionType[]).map((type) => (
                   <button
@@ -301,7 +309,7 @@ export default function SessionPage() {
                     type="button"
                     onClick={() => setCardioForm(f => ({ ...f, runType: type }))}
                     className={[
-                      'px-3 py-1.5 rounded-full text-xs border transition-colors',
+                      'px-3 py-1.5 rounded-full text-caption border transition-colors',
                       cardioForm.runType === type ? 'border-accent bg-accent/10 text-accent' : 'border-border text-text-secondary',
                     ].join(' ')}
                   >
@@ -320,157 +328,213 @@ export default function SessionPage() {
     )
   }
 
+  // ── Active session: one exercise at a time ────────────────────────────────
+
+  const sortedBlocks = [...activeSession.exerciseBlocks].sort((a, b) => a.orderIndex - b.orderIndex)
+  const currentBlock = sortedBlocks.find(b => b.id === activeBlockId)
+    ?? sortedBlocks.find(b => getActiveSet(b))
+    ?? sortedBlocks[0]
+    ?? null
+  const currentIndex = currentBlock ? sortedBlocks.findIndex(b => b.id === currentBlock.id) : -1
+  const currentSet = currentBlock ? getActiveSet(currentBlock) : null
+  const prevBlock = currentIndex > 0 ? sortedBlocks[currentIndex - 1] : null
+  const nextBlock = currentIndex >= 0 && currentIndex < sortedBlocks.length - 1 ? sortedBlocks[currentIndex + 1] : null
+  const setPosition = currentBlock ? currentBlock.sets.findIndex(s => s.id === currentSet?.id) : -1
+
+  function stepWeight(delta: number) {
+    if (!currentBlock || !currentSet) return
+    const base = currentSet.weightValue ?? currentSet.targetWeightKg ?? 0
+    updateSet(currentBlock.id, currentSet.id, { weightValue: Math.max(0, base + delta) })
+  }
+  function stepReps(delta: number) {
+    if (!currentBlock || !currentSet) return
+    const base = currentSet.reps ?? currentSet.targetReps ?? 0
+    updateSet(currentBlock.id, currentSet.id, { reps: Math.max(0, base + delta) })
+  }
+  function stepRpe(delta: number) {
+    if (!currentBlock || !currentSet) return
+    const base = currentSet.rpe ?? currentSet.targetRpe ?? 5
+    updateSet(currentBlock.id, currentSet.id, { rpe: Math.min(10, Math.max(1, base + delta)) })
+  }
+
+  function handleFinish() {
+    finishSession()
+    router.replace('/session/complete')
+  }
+
+  function handleLogSet() {
+    if (!currentBlock || !currentSet) return
+    const updates: Partial<typeof currentSet> = {}
+    if (currentSet.weightValue === null) updates.weightValue = currentSet.targetWeightKg
+    if (currentSet.reps === null) updates.reps = currentSet.targetReps
+    if (currentSet.rpe === null) updates.rpe = currentSet.targetRpe
+    if (Object.keys(updates).length > 0) updateSet(currentBlock.id, currentSet.id, updates)
+    completeSet(currentBlock.id, currentSet.id)
+  }
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-bg">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-10 pb-3 flex-shrink-0 border-b border-border">
-        <button
-          onClick={() => { if (window.confirm('Abandon this session? Progress will be lost.')) { abandonSession(); router.back() } }}
-          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-bg-element text-text-secondary"
-        >
-          <X size={18} />
-        </button>
-        <div className="flex flex-col items-center">
+      <div className="flex flex-col gap-2 px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+        <div className="flex items-center justify-between w-full">
           {editingName ? (
             <input
               autoFocus
               defaultValue={activeSession.name}
-              onBlur={(e) => { useSessionStore.getState().activeSession && Object.assign(useSessionStore.getState().activeSession!, { name: e.target.value }); setEditingName(false) }}
-              onKeyDown={(e) => e.key === 'Enter' && setEditingName(false)}
-              className="bg-transparent border-b border-accent text-center focus:outline-none w-48"
-              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '20px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)' }}
+              onBlur={(e) => { setSessionName(e.target.value); setEditingName(false) }}
+              onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
+              className="text-h3 font-medium leading-[26px] text-text bg-transparent border-b border-accent outline-none flex-1 min-w-0"
             />
           ) : (
-            <button
-              onClick={() => setEditingName(true)}
-              style={{ fontFamily: 'var(--font-geist-sans)', fontSize: '20px', lineHeight: '28px', fontWeight: 400, color: 'var(--text)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >{activeSession.name}</button>
-          )}
-          <span className="text-xs text-text-secondary tabular">{formatDuration(elapsed)}</span>
-        </div>
-        <Button
-          size="sm"
-          onClick={() => { finishSession(); router.replace('/home') }}
-        >
-          FINISH
-        </Button>
-      </div>
-
-      {/* Rest timer */}
-      <RestTimer />
-
-      {/* Exercise list */}
-      <div className="flex-1 overflow-y-auto pb-24">
-        {activeSession.exerciseBlocks.map((block) => (
-          <div key={block.id} className="border-b border-border">
-            <div className="flex items-center justify-between px-5 py-3">
-              <div>
-                <p className="text-sm font-normal text-text">{block.exerciseName}</p>
-                <p className="text-xs text-text-secondary">{block.sets.filter((s) => s.isCompleted).length}/{block.sets.length} sets</p>
-              </div>
-              <button onClick={() => removeExerciseBlock(block.id)} className="text-error text-xs">✕</button>
-            </div>
-
-            {/* Set rows */}
-            <div className="px-3 pb-2">
-              <div className="grid grid-cols-[28px_1fr_1fr_1fr_32px] gap-1 px-2 mb-1">
-                {['#', 'kg', 'reps', 'RPE', ''].map((h) => (
-                  <span key={h} className="text-[10px] font-normal text-text-tertiary text-center">{h}</span>
-                ))}
-              </div>
-              {block.sets.map((set) => (
-                <div
-                  key={set.id}
-                  className={[
-                    'grid grid-cols-[28px_1fr_1fr_1fr_32px] gap-1 items-center px-1 py-0.5 rounded-lg mb-0.5',
-                    set.isCompleted ? 'bg-success/10' : '',
-                  ].join(' ')}
-                >
-                  <span className="text-xs text-text-tertiary text-center">{set.setNumber}</span>
-                  <input
-                    type="number"
-                    step="0.5"
-                    placeholder={block.targetWeightKg?.toString() ?? '—'}
-                    value={set.weightValue ?? ''}
-                    onChange={(e) => updateSet(block.id, set.id, { weightValue: e.target.value ? parseFloat(e.target.value) : null })}
-                    className="h-8 w-full text-center text-sm text-text bg-bg-element rounded-lg border border-border focus:outline-none focus:border-accent tabular"
-                  />
-                  <input
-                    type="number"
-                    placeholder={block.targetRepsMin?.toString() ?? '—'}
-                    value={set.reps ?? ''}
-                    onChange={(e) => updateSet(block.id, set.id, { reps: e.target.value ? parseInt(e.target.value) : null })}
-                    className="h-8 w-full text-center text-sm text-text bg-bg-element rounded-lg border border-border focus:outline-none focus:border-accent tabular"
-                  />
-                  <input
-                    type="number"
-                    min="1" max="10"
-                    placeholder="—"
-                    value={set.rpe ?? ''}
-                    onChange={(e) => updateSet(block.id, set.id, { rpe: e.target.value ? parseFloat(e.target.value) : null })}
-                    className="h-8 w-full text-center text-sm text-text bg-bg-element rounded-lg border border-border focus:outline-none focus:border-accent tabular"
-                  />
-                  <button
-                    onClick={() => completeSet(block.id, set.id)}
-                    className={[
-                      'w-7 h-7 rounded-full flex items-center justify-center border transition-colors',
-                      set.isCompleted
-                        ? 'bg-success border-success text-white'
-                        : 'border-border text-text-tertiary hover:border-success hover:text-success',
-                    ].join(' ')}
-                  >
-                    <Check size={14} />
-                  </button>
-                </div>
-              ))}
-              <div className="flex gap-2 mt-1 px-1">
-                <button
-                  onClick={() => addSet(block.id)}
-                  className="flex-1 text-xs text-accent font-normal py-1.5 border border-dashed border-accent/30 rounded-lg hover:bg-accent/5"
-                >
-                  + Add set
-                </button>
-                {block.sets.length > 1 && (
-                  <button
-                    onClick={() => removeSet(block.id, block.sets[block.sets.length - 1].id)}
-                    className="text-xs text-error px-2"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {activeSession.exerciseBlocks.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 gap-3 text-center px-6">
-            <span className="text-4xl">🏋️</span>
-            <p className="text-text-secondary text-sm">No exercises added yet</p>
-            <button
-              onClick={() => { setExerciseSearch(''); setShowAddExercise(true) }}
-              className="text-accent text-sm font-normal"
-            >
-              + Add your first exercise
+            <button onClick={() => setEditingName(true)} className="text-h3 font-medium leading-[26px] text-text text-left min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+              {activeSession.name}
             </button>
+          )}
+          <button
+            onClick={() => { if (window.confirm('Abandon this session? Progress will be lost.')) { abandonSession(); router.back() } }}
+            className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0 ml-3"
+          >
+            <X size={16} className="text-accent" />
+          </button>
+        </div>
+        <p className="text-caption font-medium text-accent tabular">{formatDuration(elapsed)}</p>
+      </div>
+
+      {restTimer.isActive ? (
+        /* ── Resting ── */
+        <>
+          <div className="flex-1 flex flex-col gap-6 items-center justify-center px-4 py-6">
+            <RestRing
+              pct={restTimer.durationSeconds ? restRemaining / restTimer.durationSeconds : 0}
+              label={formatDuration(restRemaining)}
+              sublabel="Resting"
+            />
+            <Button variant="primary" onClick={() => addRestTime(15)}>
+              <Plus size={16} /> Add 15 seconds
+            </Button>
+            {nextBlock && (
+              <div className="flex flex-col items-center gap-2 text-center">
+                <p className="text-tag uppercase text-accent">Next exercise</p>
+                <p className="text-h2 font-medium leading-[30px] text-text">{nextBlock.exerciseName}</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+          <div className="px-4 pb-6 flex-shrink-0">
+            <Button size="lg" className="w-full" onClick={dismissRestTimer}>
+              Skip rest <ChevronRight size={16} />
+            </Button>
+          </div>
+        </>
+      ) : currentBlock && currentSet ? (
+        /* ── Logging a set ── */
+        <>
+          <div className="flex-1 overflow-y-auto flex flex-col gap-6">
+            <div className="flex gap-4 items-center px-4 pt-6">
+              <Button variant="secondary" className="flex-1" onClick={() => setShowSwapExercise(true)}>Swap exercise</Button>
+            </div>
 
-      {/* Add exercise button */}
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-2 bg-bg border-t border-border">
-        <Button
-          variant="secondary"
-          size="lg"
-          className="w-full"
-          onClick={() => { setExerciseSearch(''); setShowAddExercise(true) }}
-        >
-          <Plus size={18} />
-          ADD EXERCISE
-        </Button>
-      </div>
+            <div className="flex flex-col gap-2 items-center text-center px-4">
+              <p className="text-h1 text-text">{currentBlock.exerciseName}</p>
+              <p className="text-tag uppercase text-accent">
+                Set {setPosition + 1} / {currentBlock.sets.length}
+              </p>
+            </div>
 
-      {/* Exercise search sheet */}
+            <div className="flex flex-col gap-2 items-center px-4">
+              {/* Weight */}
+              <div className="flex gap-3 items-center justify-center w-full">
+                <button onClick={() => stepWeight(-2.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Minus size={16} className="text-accent" /></button>
+                <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
+                  <span className="text-display text-text tabular">{currentSet.weightValue ?? currentSet.targetWeightKg ?? 0}</span>
+                </div>
+                <button onClick={() => stepWeight(2.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Plus size={16} className="text-accent" /></button>
+              </div>
+              {/* Reps */}
+              <div className="flex gap-3 items-center justify-center w-full">
+                <button onClick={() => stepReps(-1)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Minus size={16} className="text-accent" /></button>
+                <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
+                  <span className="text-display text-text tabular">{currentSet.reps ?? currentSet.targetReps ?? 0}</span>
+                </div>
+                <button onClick={() => stepReps(1)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Plus size={16} className="text-accent" /></button>
+              </div>
+              {/* RPE */}
+              <div className="flex gap-3 items-center justify-center w-full">
+                <button onClick={() => stepRpe(-0.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Minus size={16} className="text-accent" /></button>
+                <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
+                  <span className="text-display text-text tabular">{currentSet.rpe ?? currentSet.targetRpe ?? '—'}</span>
+                </div>
+                <button onClick={() => stepRpe(0.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Plus size={16} className="text-accent" /></button>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 pb-6 pt-3 flex-shrink-0 flex flex-col gap-3">
+            <Button size="lg" className="w-full" onClick={handleLogSet}>Log set</Button>
+            <Button variant="secondary" size="lg" className="w-full" onClick={() => removeSet(currentBlock.id, currentSet.id)}>Delete set</Button>
+          </div>
+
+          {/* Prev / next exercise nav */}
+          <div className="flex gap-4 p-4 flex-shrink-0">
+            <button
+              onClick={() => prevBlock && setActiveBlock(prevBlock.id)}
+              disabled={!prevBlock}
+              className={`w-12 h-12 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0 ${!prevBlock ? 'opacity-40' : ''}`}
+            >
+              <ChevronLeft size={18} className="text-accent" />
+            </button>
+            {nextBlock ? (
+              <button onClick={() => setActiveBlock(nextBlock.id)} className="flex-1 h-12 rounded-full border border-accent bg-accent flex items-center justify-between pl-6 pr-3">
+                <span className="text-body font-medium text-accent-fg">{nextBlock.exerciseName}</span>
+                <ChevronRight size={20} className="text-accent-fg" />
+              </button>
+            ) : (
+              <button onClick={handleFinish} className="flex-1 h-12 rounded-full border border-accent bg-accent flex items-center justify-between pl-6 pr-3">
+                <span className="text-body font-medium text-accent-fg">Finish workout</span>
+                <ChevronRight size={20} className="text-accent-fg" />
+              </button>
+            )}
+          </div>
+        </>
+      ) : sortedBlocks.length > 0 ? (
+        /* ── Every set logged ── */
+        <div className="flex-1 flex flex-col items-center justify-center py-16 gap-4 text-center px-6">
+          <span className="text-4xl">✅</span>
+          <p className="text-text-secondary text-label">All sets logged</p>
+          <Button size="lg" onClick={handleFinish}>Finish workout</Button>
+        </div>
+      ) : (
+        /* ── No exercises yet ── */
+        <div className="flex-1 flex flex-col items-center justify-center py-16 gap-3 text-center px-6">
+          <span className="text-4xl">🏋️</span>
+          <p className="text-text-secondary text-label">No exercises added yet</p>
+          <button onClick={() => { setExerciseSearch(''); setShowAddExercise(true) }} className="text-accent text-label font-medium">
+            + Add your first exercise
+          </button>
+        </div>
+      )}
+
+      {/* Swap exercise sheet */}
+      <Sheet visible={showSwapExercise} onClose={() => setShowSwapExercise(false)} title="Swap Exercise">
+        <div className="px-5 pt-4 pb-2">
+          <Input placeholder="Search exercises…" value={exerciseSearch} onChange={(e) => setExerciseSearch(e.target.value)} autoFocus />
+        </div>
+        <div className="divide-y divide-border max-h-[60vh] overflow-y-auto">
+          {filteredLibrary.slice(0, 50).map((ex) => (
+            <button
+              key={ex.id}
+              className="w-full text-left px-5 py-3.5 text-label text-text hover:bg-bg-element"
+              onClick={() => {
+                if (currentBlock) substituteExercise(currentBlock.id, { id: ex.id, name: ex.name, category: ex.category, equipment: ex.equipment, primaryMuscles: ex.primaryMuscles })
+                setShowSwapExercise(false)
+              }}
+            >
+              {ex.name}
+            </button>
+          ))}
+        </div>
+      </Sheet>
+
+      {/* Exercise search sheet (empty-session flow) */}
       <Sheet visible={showAddExercise} onClose={() => setShowAddExercise(false)} title="Add Exercise">
         <div className="px-5 pt-4 pb-2">
           <Input
@@ -480,13 +544,13 @@ export default function SessionPage() {
             autoFocus
           />
         </div>
-        <div className="divide-y divide-border">
-          {filtered.map((ex) => (
+        <div className="divide-y divide-border max-h-[60vh] overflow-y-auto">
+          {filteredLibrary.slice(0, 50).map((ex) => (
             <button
               key={ex.id}
-              className="w-full text-left px-5 py-3.5 text-sm text-text hover:bg-bg-element"
+              className="w-full text-left px-5 py-3.5 text-label text-text hover:bg-bg-element"
               onClick={() => {
-                addExerciseBlock({ id: ex.id, name: ex.name, category: 'full body', equipment: 'barbell', primaryMuscles: [] })
+                addExerciseBlock({ id: ex.id, name: ex.name, category: ex.category, equipment: ex.equipment, primaryMuscles: ex.primaryMuscles })
                 setShowAddExercise(false)
               }}
             >

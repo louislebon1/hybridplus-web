@@ -120,7 +120,7 @@ export default function CalendarPage() {
         <button onClick={prevMonth} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-element">
           <ChevronLeft size={20} className="text-text" />
         </button>
-        <h2 className="text-base font-medium text-text">{MONTHS[month]} {year}</h2>
+        <h2 className="text-body font-medium text-text">{MONTHS[month]} {year}</h2>
         <button onClick={nextMonth} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-element">
           <ChevronRight size={20} className="text-text" />
         </button>
@@ -129,7 +129,7 @@ export default function CalendarPage() {
       {/* Day labels */}
       <div className="grid grid-cols-7 px-3 flex-shrink-0">
         {DAYS.map((d, i) => (
-          <div key={i} className="text-center text-xs text-text-tertiary py-1">{d}</div>
+          <div key={i} className="text-center text-caption text-text-tertiary py-1">{d}</div>
         ))}
       </div>
 
@@ -146,7 +146,7 @@ export default function CalendarPage() {
               className="flex flex-col items-center py-1.5 gap-0.5"
             >
               <span className={[
-                'w-7 h-7 flex items-center justify-center rounded-full text-sm transition-colors',
+                'w-7 h-7 flex items-center justify-center rounded-full text-label transition-colors',
                 isSelected ? 'bg-accent text-accent-fg' : isToday ? 'underline text-text' : currentMonth ? 'text-text' : 'text-text-tertiary',
               ].join(' ')}>
                 {new Date(dateStr + 'T00:00:00').getDate()}
@@ -168,10 +168,10 @@ export default function CalendarPage() {
       {/* Selected day */}
       <div className="flex-1 overflow-y-auto border-t border-border mt-1">
         <div className="flex items-center justify-between px-5 py-3">
-          <p className="text-sm text-text">{formatDayHeading(selectedDate)}</p>
+          <p className="text-label text-text">{formatDayHeading(selectedDate)}</p>
           <button
             onClick={() => { setForm(EMPTY_FORM); setShowAddEvent(true) }}
-            className="flex items-center gap-1 text-accent text-sm"
+            className="flex items-center gap-1 text-accent text-label"
           >
             <Plus size={16} />
             ADD
@@ -180,16 +180,16 @@ export default function CalendarPage() {
 
         <div className="px-5 pb-6 flex flex-col gap-2">
           {selectedEvents.length === 0 ? (
-            <p className="text-text-secondary text-sm py-4 text-center">No events — rest or add one above</p>
+            <p className="text-text-secondary text-label py-4 text-center">No events — rest or add one above</p>
           ) : (
             selectedEvents.map((ev) => {
               const linkedWorkout = getTemplateName(ev.workoutTemplateId)
               return (
                 <div key={ev.id} className="bg-bg-element border border-border rounded-2xl p-3 flex items-center gap-3">
-                  <span className="text-xl">{EVENT_ICONS[ev.eventType]}</span>
+                  <span className="text-h3">{EVENT_ICONS[ev.eventType]}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-text">{ev.name ?? ev.eventType}</p>
-                    <p className="text-xs text-text-secondary">
+                    <p className="text-label text-text">{ev.name ?? ev.eventType}</p>
+                    <p className="text-caption text-text-secondary">
                       {linkedWorkout && <span className="text-accent">{linkedWorkout}</span>}
                       {linkedWorkout && ev.durationMinutes && ' · '}
                       {ev.durationMinutes && `${ev.durationMinutes} min`}
@@ -199,7 +199,7 @@ export default function CalendarPage() {
                     {!ev.isCompleted ? (
                       <button
                         onClick={() => completeEvent(ev.id, selectedDate)}
-                        className="text-xs text-text-tertiary hover:text-success transition-colors"
+                        className="text-caption text-text-tertiary hover:text-success transition-colors"
                       >
                         <Check size={16} />
                       </button>
@@ -208,7 +208,7 @@ export default function CalendarPage() {
                     )}
                     <button
                       onClick={() => deleteEvent(ev.id, selectedDate)}
-                      className="text-xs text-text-tertiary hover:text-error transition-colors"
+                      className="text-caption text-text-tertiary hover:text-error transition-colors"
                     >
                       ✕
                     </button>
@@ -233,7 +233,7 @@ export default function CalendarPage() {
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, eventType: type, workoutTemplateId: null, programmeId: null }))}
                   className={[
-                    'px-3 py-1.5 rounded-full text-sm border transition-colors',
+                    'px-3 py-1.5 rounded-full text-label border transition-colors',
                     form.eventType === type
                       ? 'border-accent bg-accent/10 text-accent'
                       : 'border-border text-text-secondary hover:bg-bg-element',
@@ -250,7 +250,7 @@ export default function CalendarPage() {
             <div>
               <p className="eyebrow mb-2">Workout</p>
               {allTemplates.length === 0 ? (
-                <p className="text-text-tertiary text-sm">No workouts yet — create one in Programmes</p>
+                <p className="text-text-tertiary text-label">No workouts yet — create one in Programmes</p>
               ) : (
                 <div className="flex flex-col gap-1.5">
                   {allTemplates.map((t) => {
@@ -268,8 +268,8 @@ export default function CalendarPage() {
                         ].join(' ')}
                       >
                         <div>
-                          <p className={`text-sm ${selected ? 'text-accent' : 'text-text'}`}>{t.name}</p>
-                          <p className="text-xs text-text-tertiary">{t.programmeName} · {t.exerciseCount} exercises</p>
+                          <p className={`text-label ${selected ? 'text-accent' : 'text-text'}`}>{t.name}</p>
+                          <p className="text-caption text-text-tertiary">{t.programmeName} · {t.exerciseCount} exercises</p>
                         </div>
                         {selected && <Check size={16} className="text-accent flex-shrink-0" />}
                       </button>

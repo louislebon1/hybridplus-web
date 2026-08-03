@@ -41,22 +41,60 @@
   --color-warning: var(--warning);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Type scale — matches the Figma text styles exactly. Every style is
+     Geist Medium (500); hierarchy comes from size, never weight. */
+  --text-display: 2rem;             /* 32px */
+  --text-display--line-height: 2.375rem;  /* 38px */
+  --text-display--font-weight: 500;
+
+  --text-h1: 1.75rem;               /* 28px */
+  --text-h1--line-height: 2.125rem; /* 34px */
+  --text-h1--font-weight: 500;
+
+  --text-h2: 1.5rem;                /* 24px */
+  --text-h2--line-height: 1.875rem; /* 30px */
+  --text-h2--font-weight: 500;
+
+  --text-h3: 1.25rem;               /* 20px */
+  --text-h3--line-height: 1.625rem; /* 26px */
+  --text-h3--font-weight: 500;
+
+  --text-h4: 1.125rem;              /* 18px */
+  --text-h4--line-height: 1.5rem;   /* 24px */
+  --text-h4--font-weight: 500;
+
+  --text-body: 1rem;                /* 16px */
+  --text-body--line-height: 1.5rem; /* 24px */
+  --text-body--font-weight: 500;
+
+  --text-label: 0.875rem;           /* 14px */
+  --text-label--line-height: 1.125rem; /* 18px */
+  --text-label--font-weight: 500;
+
+  --text-caption: 0.75rem;          /* 12px */
+  --text-caption--line-height: 1rem; /* 16px */
+  --text-caption--font-weight: 500;
+
+  --text-tag: 0.6875rem;            /* 11px */
+  --text-tag--line-height: 0.875rem; /* 14px */
+  --text-tag--font-weight: 500;
+  --text-tag--letter-spacing: 0.02em;
 }
 
 @layer utilities {
   .eyebrow {
     font-family: var(--font-geist-sans);
-    font-size: 0.625rem;
+    font-size: var(--text-tag);
+    line-height: var(--text-tag--line-height);
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: var(--text-tag--letter-spacing);
     color: var(--text-tertiary);
   }
 }
 
 * { box-sizing: border-box; }
-
-h1, h2, h3, h4, h5, h6 { font-weight: 700; }
 
 html, body {
   height: 100%;
@@ -67,7 +105,13 @@ body {
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Every text style in the app is Geist Medium (500) — no bold, no regular. */
+h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, label, a {
+  font-weight: 500;
 }
 
 .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 8px); }

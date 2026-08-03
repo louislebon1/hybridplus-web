@@ -27,8 +27,8 @@ export default function SignInPage() {
     <div className="flex flex-col h-full bg-bg items-center justify-center px-6">
       <div className="w-full max-w-xs flex flex-col gap-8">
         <div className="text-center">
-          <h1 className="text-3xl text-text tracking-tight">HybridPlus</h1>
-          <p className="text-text-secondary text-sm mt-2">Sign in to continue</p>
+          <h1 className="text-h1 text-text tracking-tight">HybridPlus</h1>
+          <p className="text-text-secondary text-label mt-2">Sign in to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -50,13 +50,13 @@ export default function SignInPage() {
             autoComplete="current-password"
             required
           />
-          {error && <p className="text-error text-sm">{error}</p>}
+          {error && <p className="text-error text-label">{error}</p>}
           <Button type="submit" size="lg" className="w-full mt-2" disabled={loading}>
             {loading ? 'Signing in…' : 'SIGN IN'}
           </Button>
         </form>
 
-        <p className="text-center text-sm text-text-secondary">
+        <p className="text-center text-label text-text-secondary">
           Don&apos;t have an account?{' '}
           <Link href="/auth/sign-up" className="text-accent">Sign up</Link>
         </p>
