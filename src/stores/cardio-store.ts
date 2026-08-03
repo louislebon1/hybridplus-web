@@ -1,15 +1,12 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { CardioSession } from '@/types'
-import { syncCardioSessions, deleteCardioSessionFromCloud, loadCardioSessions } from '@/lib/sync'
 
 interface CardioStore {
   sessions: CardioSession[]
   addSession(draft: Omit<CardioSession, 'id' | 'isPersonalRecord'>): CardioSession
   updateSession(id: string, updates: Partial<CardioSession>): void
   deleteSession(id: string): void
-  loadFromCloud(userId: string): Promise<void>
-  syncToCloud(userId: string): Promise<void>
 }
 
 function detectPR(
@@ -50,16 +47,6 @@ export const useCardioStore = create<CardioStore>()(
 
       deleteSession(id) {
         set(s => ({ sessions: s.sessions.filter(session => session.id !== id) }))
-        deleteCardioSessionFromCloud(id)
-      },
-
-      async loadFromCloud(userId) {
-        const sessions = await loadCardioSessions(userId)
-        if (sessions.length > 0) set({ sessions })
-      },
-
-      async syncToCloud(userId) {
-        await syncCardioSessions(userId, get().sessions)
       },
     }),
     {

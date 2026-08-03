@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { CalendarEventData } from '@/types'
-import { syncCalendarEvents, deleteCalendarEventFromCloud, loadCalendarEvents } from '@/lib/sync'
 import { localDateStr } from '@/lib/date'
 
 type EventMap = Record<string, CalendarEventData[]>
@@ -18,9 +17,6 @@ interface CalendarStore {
   deleteEvent(id: string, date: string): void
   completeEvent(id: string, date: string): void
   moveEvent(id: string, fromDate: string, toDate: string): void
-
-  loadFromCloud(userId: string): Promise<void>
-  syncToCloud(userId: string): Promise<void>
 }
 
 export const useCalendarStore = create<CalendarStore>()(
@@ -68,7 +64,6 @@ export const useCalendarStore = create<CalendarStore>()(
             [date]: (s.events[date] ?? []).filter(e => e.id !== id),
           },
         }))
-        deleteCalendarEventFromCloud(id)
       },
 
       completeEvent(id, date) {
@@ -91,15 +86,6 @@ export const useCalendarStore = create<CalendarStore>()(
             [toDate]: [...toEvents, updatedEvent],
           },
         }))
-      },
-
-      async loadFromCloud(userId) {
-        const events = await loadCalendarEvents(userId)
-        if (Object.keys(events).length > 0) set({ events })
-      },
-
-      async syncToCloud(userId) {
-        await syncCalendarEvents(userId, get().events)
       },
     }),
     {

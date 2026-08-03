@@ -1,20 +1,10 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { LogOut, ChevronRight } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { ChevronRight } from 'lucide-react'
 
 const row = 'flex items-center justify-between w-full px-5 py-3.5 border-b border-text/[0.06] text-left last:border-b-0'
 
 export default function ProfilePage() {
-  const router = useRouter()
-
-  async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.replace('/auth/sign-in')
-  }
-
   return (
     <div className="flex flex-col h-full">
       <div className="px-5 pt-6 pb-4 flex-shrink-0">
@@ -53,17 +43,6 @@ export default function ProfilePage() {
           <button className={row}>
             <span className="text-label font-medium text-text">Privacy Policy</span>
             <ChevronRight size={16} className="text-text/30" />
-          </button>
-        </div>
-
-        {/* Sign out */}
-        <div className="px-4 pt-5">
-          <button
-            onClick={handleSignOut}
-            className="w-full h-12 rounded-full bg-transparent border border-text flex items-center justify-center gap-2 text-label font-medium text-text"
-          >
-            <LogOut size={16} />
-            Sign Out
           </button>
         </div>
       </div>

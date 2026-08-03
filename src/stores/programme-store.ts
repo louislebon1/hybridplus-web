@@ -14,7 +14,6 @@ import type {
   PhaseType,
   TrainingFocus,
 } from '@/types'
-import { syncProgrammes, deleteProgrammeFromCloud, loadProgrammes } from '@/lib/sync'
 
 interface ProgrammeStore {
   programmes: Programme[]
@@ -67,10 +66,6 @@ interface ProgrammeStore {
   getActivePhase(programmeId: string): Phase | null
   getTemplateRef(templateId: string): WorkoutTemplateRef | null
   getTemplateRefWithOverrides(templateId: string, programmeId: string): WorkoutTemplateRef | null
-
-  // Cloud sync
-  loadFromCloud(userId: string): Promise<void>
-  syncToCloud(userId: string): Promise<void>
 }
 
 function now(): string {
@@ -116,7 +111,6 @@ export const useProgrammeStore = create<ProgrammeStore>()(
 
       deleteProgramme(id) {
         set(s => ({ programmes: s.programmes.filter(p => p.id !== id) }))
-        deleteProgrammeFromCloud(id)
       },
 
       setActiveProgramme(id) {
@@ -688,15 +682,6 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           }
         }
         return null
-      },
-
-      async loadFromCloud(userId) {
-        const programmes = await loadProgrammes(userId)
-        if (programmes.length > 0) set({ programmes })
-      },
-
-      async syncToCloud(userId) {
-        await syncProgrammes(userId, get().programmes)
       },
 
       getTemplateRefWithOverrides(templateId, programmeId) {

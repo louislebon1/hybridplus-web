@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import AuthProvider from '@/components/AuthProvider'
-import SyncProvider from '@/components/SyncProvider'
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
@@ -29,10 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="h-full overflow-hidden bg-bg text-text">
         <div className="flex justify-center h-full">
           <div className="w-full max-w-[430px] h-full relative flex flex-col overflow-hidden bg-bg">
-            <AuthProvider>
-              <SyncProvider />
-              {children}
-            </AuthProvider>
+            {children}
           </div>
         </div>
       </body>
