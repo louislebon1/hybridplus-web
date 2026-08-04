@@ -1,10 +1,13 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
 
 const row = 'flex items-center justify-between w-full px-5 py-3.5 border-b border-text/[0.06] text-left last:border-b-0'
 
 export default function ProfilePage() {
+  const router = useRouter()
+
   return (
     <div className="flex flex-col h-full">
       <div className="px-5 pt-6 pb-4 flex-shrink-0">
@@ -18,7 +21,7 @@ export default function ProfilePage() {
           <p className="eyebrow">Account</p>
         </div>
         <div className="bg-bg-element border border-text/[0.08] rounded-xl mx-4 overflow-hidden">
-          <button className={row}>
+          <button className={row} onClick={() => router.push('/profile/edit')}>
             <span className="text-label font-medium text-text">Edit Profile</span>
             <ChevronRight size={16} className="text-text/30" />
           </button>
