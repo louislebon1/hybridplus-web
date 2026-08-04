@@ -23,6 +23,8 @@ const EMPTY_CARDIO_FORM = {
   notes: '',
 }
 
+const stepperBtn = 'w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0 outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-hover active:scale-90 active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50'
+
 const REST_RING_RADIUS = 100
 const REST_RING_CIRCUMFERENCE = 2 * Math.PI * REST_RING_RADIUS
 
@@ -186,7 +188,7 @@ export default function SessionPage() {
                     const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                     const activePhase = store.getActivePhase(t.programmeId)
                     return (
-                      <button key={t.id} onClick={() => ref && startSession(ref)} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full">
+                      <button key={t.id} onClick={() => ref && startSession(ref)} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50">
                         <div className="absolute left-0 top-0 bottom-0 w-2 bg-accent" />
                         <div className="flex items-center gap-2">
                           <span className="text-tag uppercase text-accent-fg bg-accent px-2.5 py-1 rounded-full">Strength</span>
@@ -197,7 +199,7 @@ export default function SessionPage() {
                     )
                   })}
                 {todayCardioEvents.map(ev => (
-                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full">
+                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50">
                     <div className="absolute left-0 top-0 bottom-0 w-2 bg-text" />
                     <span className="text-tag uppercase text-accent-fg bg-text px-2.5 py-1 rounded-full inline-flex items-center w-fit">{ev.eventType}</span>
                     <span className="text-body leading-5 font-medium text-text">{ev.name ?? ev.eventType}</span>
@@ -217,7 +219,7 @@ export default function SessionPage() {
                   const activePhase = store.getActivePhase(t.programmeId)
                   const isToday = todayStrengthIds.has(t.id)
                   return (
-                    <button key={t.id} onClick={() => ref && startSession(ref)} className={`relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full ${isToday ? 'opacity-40' : ''}`}>
+                    <button key={t.id} onClick={() => ref && startSession(ref)} className={`relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50 ${isToday ? 'opacity-40' : ''}`}>
                       <div className="absolute left-0 top-0 bottom-0 w-2 bg-accent" />
                       <div className="flex items-center gap-2">
                         <span className="text-tag uppercase text-accent-fg bg-accent px-2.5 py-1 rounded-full">Strength</span>
@@ -236,7 +238,7 @@ export default function SessionPage() {
             <p className="eyebrow mb-3">Log cardio</p>
             <div className="flex flex-col gap-2">
               {allCardioTemplates.length > 0 && allCardioTemplates.map((ct) => (
-                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full">
+                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50">
                   <div className="absolute left-0 top-0 bottom-0 w-2 bg-text" />
                   <div className="flex items-center gap-2">
                     <span className="text-tag uppercase text-accent-fg bg-text px-2.5 py-1 rounded-full">{ct.activityType}</span>
@@ -443,27 +445,27 @@ export default function SessionPage() {
             <div className="flex flex-col gap-2 items-center px-4">
               {/* Weight */}
               <div className="flex gap-3 items-center justify-center w-full">
-                <button onClick={() => stepWeight(-2.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Minus size={16} className="text-accent" /></button>
+                <button onClick={() => stepWeight(-2.5)} className={stepperBtn}><Minus size={16} className="text-accent" /></button>
                 <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
                   <span className="text-display text-text tabular">{currentSet.weightValue ?? currentSet.targetWeightKg ?? 0}</span>
                 </div>
-                <button onClick={() => stepWeight(2.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Plus size={16} className="text-accent" /></button>
+                <button onClick={() => stepWeight(2.5)} className={stepperBtn}><Plus size={16} className="text-accent" /></button>
               </div>
               {/* Reps */}
               <div className="flex gap-3 items-center justify-center w-full">
-                <button onClick={() => stepReps(-1)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Minus size={16} className="text-accent" /></button>
+                <button onClick={() => stepReps(-1)} className={stepperBtn}><Minus size={16} className="text-accent" /></button>
                 <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
                   <span className="text-display text-text tabular">{currentSet.reps ?? currentSet.targetReps ?? 0}</span>
                 </div>
-                <button onClick={() => stepReps(1)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Plus size={16} className="text-accent" /></button>
+                <button onClick={() => stepReps(1)} className={stepperBtn}><Plus size={16} className="text-accent" /></button>
               </div>
               {/* RPE */}
               <div className="flex gap-3 items-center justify-center w-full">
-                <button onClick={() => stepRpe(-0.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Minus size={16} className="text-accent" /></button>
+                <button onClick={() => stepRpe(-0.5)} className={stepperBtn}><Minus size={16} className="text-accent" /></button>
                 <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
                   <span className="text-display text-text tabular">{currentSet.rpe ?? currentSet.targetRpe ?? '—'}</span>
                 </div>
-                <button onClick={() => stepRpe(0.5)} className="w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0"><Plus size={16} className="text-accent" /></button>
+                <button onClick={() => stepRpe(0.5)} className={stepperBtn}><Plus size={16} className="text-accent" /></button>
               </div>
             </div>
           </div>

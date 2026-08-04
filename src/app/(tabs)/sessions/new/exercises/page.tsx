@@ -61,7 +61,7 @@ export default function NewSessionExercisesPage() {
             addExercise({ id, name, muscles })
           }
         }}
-        className="w-full flex items-center justify-between px-4 py-5 border-b border-border text-left"
+        className="w-full flex items-center justify-between px-4 py-5 border-b border-border text-left outline-none transition-colors duration-150 ease-out hover:bg-bg-hover active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
       >
         <span className="text-h4 font-medium leading-6 text-text max-w-[calc(100%-32px)] overflow-hidden text-ellipsis whitespace-nowrap">
           {name}
@@ -89,7 +89,7 @@ export default function NewSessionExercisesPage() {
 
       {/* Search bar */}
       <div className="flex gap-4 px-4 pt-6 pb-3 flex-shrink-0">
-        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-md bg-text/5">
+        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-md bg-text/5 ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/50">
           <Search size={16} className="text-text/40 flex-shrink-0" />
           <input
             placeholder="Search for exercises"
@@ -102,7 +102,7 @@ export default function NewSessionExercisesPage() {
           onClick={handleAddCustom}
           disabled={!search.trim()}
           title="Add your own exercise"
-          className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 disabled:opacity-40"
+          className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-90 disabled:opacity-40 disabled:active:scale-100 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
           <Plus size={16} className="text-accent-fg" />
         </button>

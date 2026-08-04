@@ -21,15 +21,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const buttonVariantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-accent text-accent-fg hover:opacity-90 active:opacity-80 disabled:opacity-40',
+    'bg-accent text-accent-fg hover:opacity-90 active:scale-[0.97] active:opacity-80 disabled:opacity-40 disabled:active:scale-100',
   secondary:
-    'bg-transparent text-text border border-border-strong hover:bg-bg-hover active:bg-bg-selected disabled:opacity-40',
+    'bg-transparent text-text border border-border-strong hover:bg-bg-hover active:bg-bg-selected active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
   ghost:
-    'bg-transparent text-text hover:bg-bg-element active:bg-bg-hover disabled:opacity-40',
+    'bg-transparent text-text hover:bg-bg-element active:bg-bg-hover active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
   danger:
-    'bg-error text-white hover:opacity-90 active:opacity-80 disabled:opacity-40',
+    'bg-error text-white hover:opacity-90 active:scale-[0.97] active:opacity-80 disabled:opacity-40 disabled:active:scale-100',
   outline:
-    'bg-transparent text-accent border border-accent hover:bg-accent/10 active:bg-accent/20 disabled:opacity-40',
+    'bg-transparent text-accent border border-accent hover:bg-accent/10 active:bg-accent/20 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
 }
 
 const buttonSizeClasses: Record<ButtonSize, string> = {
@@ -50,7 +50,9 @@ export function Button({
     <button
       disabled={disabled}
       className={[
-        'inline-flex items-center justify-center font-medium transition-all cursor-pointer select-none',
+        'inline-flex items-center justify-center font-medium cursor-pointer select-none',
+        'transition-[background-color,opacity,transform] duration-150 ease-out',
+        'outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
         buttonVariantClasses[variant],
         buttonSizeClasses[size],
         className,
