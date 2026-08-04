@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useProgrammeStore } from '@/stores/programme-store'
+import { useSessionStore } from '@/stores/session-store'
 import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import type { CalendarEventData, Programme } from '@/types'
 import { localDateStr } from '@/lib/date'
@@ -70,7 +71,8 @@ export default function HomePage() {
   const [selectedDate, setSelectedDate] = useState(today)
 
   const { events } = useCalendarStore()
-  const { programmes } = useProgrammeStore()
+  const { programmes, getTemplateRefWithOverrides } = useProgrammeStore()
+  const { activeSession, startSession } = useSessionStore()
 
   const weekDays = getWeekDays()
 
@@ -100,19 +102,47 @@ export default function HomePage() {
     ? "Today's sessions"
     : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })
 
+  // ── Smart Start: when today has exactly one thing left to do, name it and
+  // (for strength) skip the picker entirely and jump straight into logging.
+  const todayIncomplete = (events[today] ?? []).filter(ev => !ev.isCompleted)
+  const smartTarget = !activeSession && todayIncomplete.length === 1 ? todayIncomplete[0] : null
+  const smartIsStrength = !!smartTarget && smartTarget.eventType === 'strength' && !!smartTarget.workoutTemplateId && !!smartTarget.programmeId
+
+  function startFromEvent(ev: CalendarEventData) {
+    if (ev.eventType !== 'strength' || !ev.workoutTemplateId || !ev.programmeId) return
+    const ref = getTemplateRefWithOverrides(ev.workoutTemplateId, ev.programmeId)
+    if (!ref) return
+    startSession(ref, getTemplateName(ev))
+    router.push('/session')
+  }
+
+  const ctaLabel = smartTarget
+    ? smartIsStrength
+      ? `Start ${getTemplateName(smartTarget)}`
+      : `Log ${CARDIO_LABELS[smartTarget.eventType] ?? sessionTypeName(smartTarget.eventType)}`
+    : 'Start workout'
+
+  function handleCtaClick() {
+    if (smartTarget && smartIsStrength) {
+      startFromEvent(smartTarget)
+    } else {
+      router.push('/session')
+    }
+  }
+
   return (
     <div className="flex flex-col h-[100dvh]">
 
       {/* ── Logo ── */}
       <div className="flex justify-center items-center py-7 flex-shrink-0">
         <svg width="141" height="18" viewBox="0 0 110 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 0H3.72574V5.36375H12.7126V0H16.4208V14H12.7126V8.63625H3.72574V14H0V0Z" fill="#111111"/>
-          <path d="M25.2409 9.31875L17.8655 0H22.5095L27.098 6.04917L31.6835 0H36.307L28.9491 9.31875V14H25.2409V9.31875Z" fill="#111111"/>
-          <path d="M37.74 0H48.0019C51.3708 0 52.5143 1.42917 52.5143 3.4475C52.5143 5.0925 51.5785 6.16875 50.1747 6.69667C51.8592 7.12833 53.2629 8.08792 53.2629 10.1617C53.2629 12.4512 51.9352 14 48.7885 14H37.7429V0H37.74ZM46.8584 5.775C47.9258 5.775 48.7856 5.55917 48.7856 4.2875C48.7856 3.09458 48.0545 2.83792 46.8584 2.83792H41.4657V5.775H46.8584ZM47.6071 11.1621C48.6745 11.1621 49.4056 10.9083 49.4056 9.65417C49.4056 8.4 48.5429 8.18417 47.6071 8.18417H41.4657V11.1592H47.6071V11.1621Z" fill="#111111"/>
-          <path d="M55.3657 0H66.037C69.6692 0 71.4297 1.44958 71.4297 4.19125C71.4297 6.11042 70.4383 7.36167 68.6222 7.91C70.3067 8.00917 71.3917 9.02708 71.3917 10.71V14H67.6659V11.3371C67.6659 10.0654 67.2536 9.63375 66.037 9.63375H59.0915V14H55.3657V0ZM65.1772 6.50125C66.657 6.50125 67.5548 6.11042 67.5548 4.79792C67.5548 3.48542 66.657 3.1325 65.1772 3.1325H59.0915V6.50125H65.1772Z" fill="#111111"/>
-          <path d="M73.9478 0H77.6735V14H73.9478V0Z" fill="#111111"/>
-          <path d="M80.1592 0H89.4267C93.3777 0 96.2407 2.9575 96.2407 6.99125C96.2407 11.025 93.3777 14 89.4267 14H80.1592V0ZM87.9294 10.71C90.8129 10.71 92.3863 9.35958 92.3863 6.98833C92.3863 4.61708 90.8129 3.28708 87.9294 3.28708H83.8849V10.7071H87.9294V10.71Z" fill="#111111"/>
-          <path d="M109.108 5.60016H105.833V2.3335H103.025V5.60016H99.75V8.40016H103.025V11.6668H105.833V8.40016H109.108V5.60016Z" fill="#3B948F"/>
+          <path d="M0 0H3.72574V5.36375H12.7126V0H16.4208V14H12.7126V8.63625H3.72574V14H0V0Z" fill="#F2F2F0"/>
+          <path d="M25.2409 9.31875L17.8655 0H22.5095L27.098 6.04917L31.6835 0H36.307L28.9491 9.31875V14H25.2409V9.31875Z" fill="#F2F2F0"/>
+          <path d="M37.74 0H48.0019C51.3708 0 52.5143 1.42917 52.5143 3.4475C52.5143 5.0925 51.5785 6.16875 50.1747 6.69667C51.8592 7.12833 53.2629 8.08792 53.2629 10.1617C53.2629 12.4512 51.9352 14 48.7885 14H37.7429V0H37.74ZM46.8584 5.775C47.9258 5.775 48.7856 5.55917 48.7856 4.2875C48.7856 3.09458 48.0545 2.83792 46.8584 2.83792H41.4657V5.775H46.8584ZM47.6071 11.1621C48.6745 11.1621 49.4056 10.9083 49.4056 9.65417C49.4056 8.4 48.5429 8.18417 47.6071 8.18417H41.4657V11.1592H47.6071V11.1621Z" fill="#F2F2F0"/>
+          <path d="M55.3657 0H66.037C69.6692 0 71.4297 1.44958 71.4297 4.19125C71.4297 6.11042 70.4383 7.36167 68.6222 7.91C70.3067 8.00917 71.3917 9.02708 71.3917 10.71V14H67.6659V11.3371C67.6659 10.0654 67.2536 9.63375 66.037 9.63375H59.0915V14H55.3657V0ZM65.1772 6.50125C66.657 6.50125 67.5548 6.11042 67.5548 4.79792C67.5548 3.48542 66.657 3.1325 65.1772 3.1325H59.0915V6.50125H65.1772Z" fill="#F2F2F0"/>
+          <path d="M73.9478 0H77.6735V14H73.9478V0Z" fill="#F2F2F0"/>
+          <path d="M80.1592 0H89.4267C93.3777 0 96.2407 2.9575 96.2407 6.99125C96.2407 11.025 93.3777 14 89.4267 14H80.1592V0ZM87.9294 10.71C90.8129 10.71 92.3863 9.35958 92.3863 6.98833C92.3863 4.61708 90.8129 3.28708 87.9294 3.28708H83.8849V10.7071H87.9294V10.71Z" fill="#F2F2F0"/>
+          <path d="M109.108 5.60016H105.833V2.3335H103.025V5.60016H99.75V8.40016H103.025V11.6668H105.833V8.40016H109.108V5.60016Z" fill="#4ADE80"/>
         </svg>
       </div>
 
@@ -204,9 +234,20 @@ export default function HomePage() {
               const exerciseCount  = getExerciseCount(ev, programmes)
               const muscleTags     = getMuscleGroups(ev, programmes)
               const cardioTag      = isCardio ? (CARDIO_LABELS[ev.eventType] ?? null) : null
+              const isStartable    = isStrength && selectedDate === today && !ev.isCompleted && !activeSession
+
+              const Wrapper = isStartable ? 'button' : 'div'
 
               return (
-                <div key={ev.id} className="bg-bg-element rounded-xl px-4 py-3 flex flex-col gap-4">
+                <Wrapper
+                  key={ev.id}
+                  {...(isStartable ? { type: 'button', onClick: () => startFromEvent(ev) } : {})}
+                  className={`bg-bg-element rounded-xl px-4 py-3 flex flex-col gap-4 text-left w-full ${
+                    isStartable
+                      ? 'outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-hover active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50'
+                      : ''
+                  }`}
+                >
                   {/* Name + tags group */}
                   <div className="flex flex-col gap-1.5">
                     <span className="text-body font-medium leading-6 text-text">{name}</span>
@@ -247,7 +288,7 @@ export default function HomePage() {
                       )}
                     </div>
                   )}
-                </div>
+                </Wrapper>
               )
             })}
           </div>
@@ -259,11 +300,11 @@ export default function HomePage() {
       {/* ── Start Workout — sits above floating nav pill ── */}
       <div className="px-4 pt-3 pb-[88px] flex-shrink-0">
         <button
-          onClick={() => router.push('/session')}
-          className="w-full h-12 bg-accent rounded-full flex items-center justify-center gap-2 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          onClick={handleCtaClick}
+          className="w-full h-12 bg-accent rounded-full flex items-center justify-center gap-2 px-4 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
-          <Image src="/icon-play.svg" alt="" width={24} height={24} />
-          <span className="text-body font-medium leading-6 text-accent-fg">Start workout</span>
+          <Image src="/icon-play.svg" alt="" width={24} height={24} className="flex-shrink-0" />
+          <span className="text-body font-medium leading-6 text-accent-fg truncate min-w-0">{ctaLabel}</span>
         </button>
       </div>
     </div>

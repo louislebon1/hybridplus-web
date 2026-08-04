@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { localDateStr } from '@/lib/date'
+import { EmptyState } from '@/components/ui'
 
 function fmtPace(paceSecs: number) {
   const m = Math.floor(paceSecs / 60)
@@ -186,10 +187,11 @@ export default function ProgressPage() {
           <>
             <p className="eyebrow">Personal records</p>
             {prs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 gap-2">
-                <span className="text-4xl">🏆</span>
-                <p className="text-text-secondary text-label">No records yet — complete some workouts</p>
-              </div>
+              <EmptyState
+                icon="🏆"
+                title="No records yet"
+                description="Complete some workouts to start tracking your PRs."
+              />
             ) : (
               <div className="bg-bg-element border border-border rounded-2xl overflow-hidden">
                 {/* Table header */}
@@ -263,10 +265,11 @@ export default function ProgressPage() {
             )}
 
             {cardioSessions.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 gap-2">
-                <span className="text-4xl">🏃</span>
-                <p className="text-text-secondary text-label">No cardio sessions yet</p>
-              </div>
+              <EmptyState
+                icon="🏃"
+                title="No cardio sessions yet"
+                description="Log a cardio session to see your stats here."
+              />
             )}
           </>
         )}

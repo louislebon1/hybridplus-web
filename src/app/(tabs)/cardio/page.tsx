@@ -5,10 +5,7 @@ import { useCardioStore } from '@/stores/cardio-store'
 import { Button, Input, EmptyState } from '@/components/ui'
 import type { ActivityType, RunSessionType } from '@/types'
 import { localDateStr } from '@/lib/date'
-
-const ACTIVITY_ICONS: Record<ActivityType, string> = {
-  run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣',
-}
+import { CARDIO_ICONS as ACTIVITY_ICONS } from '@/lib/activity-icons'
 
 function fmtPace(paceSecs: number | null) {
   if (!paceSecs) return '—'

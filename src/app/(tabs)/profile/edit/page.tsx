@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Trash2 } from 'lucide-react'
 import { useBodyMetricsStore } from '@/stores/body-metrics-store'
-import { Input, Button } from '@/components/ui'
+import { Input, Button, EmptyState } from '@/components/ui'
 import { localDateStr } from '@/lib/date'
 
 function fmtDate(dateStr: string) {
@@ -166,10 +166,11 @@ export default function EditProfilePage() {
         )}
 
         {sortedLogs.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-8 gap-2">
-            <span className="text-4xl">⚖️</span>
-            <p className="text-text-secondary text-label">No weight logged yet</p>
-          </div>
+          <EmptyState
+            icon="⚖️"
+            title="No weight logged yet"
+            description="Log your first entry above to start tracking."
+          />
         )}
       </div>
     </div>

@@ -7,15 +7,11 @@ import { useProgrammeStore } from '@/stores/programme-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import type { CalendarEventType } from '@/types'
 import { localDateStr } from '@/lib/date'
+import { ACTIVITY_ICONS as EVENT_ICONS } from '@/lib/activity-icons'
 
 const EVENT_COLORS: Record<CalendarEventType, string> = {
-  strength: '#3B948F', run: '#111111', swim: '#111111', cycle: '#111111',
-  walk: '#111111', row: '#111111', rest: 'rgba(17,17,17,0.3)', other: 'rgba(17,17,17,0.4)',
-}
-
-const EVENT_ICONS: Record<CalendarEventType, string> = {
-  strength: '🏋️', run: '🏃', swim: '🏊', cycle: '🚴',
-  walk: '🚶', row: '🚣', rest: '😴', other: '📅',
+  strength: '#4ADE80', run: '#F2F2F0', swim: '#F2F2F0', cycle: '#F2F2F0',
+  walk: '#F2F2F0', row: '#F2F2F0', rest: 'rgba(242,242,240,0.3)', other: 'rgba(242,242,240,0.4)',
 }
 
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
