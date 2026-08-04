@@ -34,7 +34,7 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
       durationWeeks: weeks,
       phaseType,
       trainingFocus: null,
-      colorHex:     '#3B948F',
+      colorHex:     '#2D7A76',
     })
     router.back()
   }

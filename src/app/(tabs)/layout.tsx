@@ -42,9 +42,9 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           padding: '4px',
           width: '300px',
           borderRadius: '200px',
-          border: '1px solid rgba(17, 17, 17, 0.05)',
-          background: '#FFFEFA',
-          boxShadow: '0px 0px 12px 4px rgba(17, 17, 17, 0.08)',
+          border: '1px solid var(--border)',
+          background: 'var(--bg-subtle)',
+          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.35)',
           pointerEvents: 'auto',
         }}>
           {TABS.map(({ href, inactive, active }) => {
@@ -61,7 +61,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
                   paddingTop: '8px',
                   paddingBottom: '8px',
                   borderRadius: '200px',
-                  background: isActive ? 'rgba(17, 17, 17, 0.05)' : 'transparent',
+                  background: isActive ? 'var(--bg-hover)' : 'transparent',
                   textDecoration: 'none',
                 }}
               >

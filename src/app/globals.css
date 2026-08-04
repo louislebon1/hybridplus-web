@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #FFFEFA;
-  --bg-element: rgba(17, 17, 17, 0.04);
-  --bg-hover: rgba(17, 17, 17, 0.08);
-  --bg-selected: rgba(17, 17, 17, 0.12);
-  --bg-subtle: #F5F3EC;
-  --border: rgba(17, 17, 17, 0.10);
-  --border-strong: #111111;
-  --text: #111111;
-  --text-secondary: #555555;
-  --text-tertiary: #888888;
-  --text-disabled: #C0C0C0;
-  --accent: #2d7a76;
-  --accent-hover: #23615e;
-  --accent-fg: #FFFDF5;
-  --success: #2d7a76;
-  --success-subtle: #e8f4f3;
+  --bg: #0B0C0C;
+  --bg-element: rgba(255, 255, 255, 0.06);
+  --bg-hover: rgba(255, 255, 255, 0.10);
+  --bg-selected: rgba(255, 255, 255, 0.14);
+  --bg-subtle: #141516;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: #F2F2F0;
+  --text: #F2F2F0;
+  --text-secondary: #B4B4B0;
+  --text-tertiary: #8B8B86;
+  --text-disabled: #4E4E49;
+  --accent: #4ADE80;
+  --accent-hover: #22C55E;
+  --accent-fg: #062E12;
+  --success: #4ADE80;
+  --success-subtle: rgba(74, 222, 128, 0.15);
   --warning: #d97706;
-  --warning-subtle: #fef3c7;
+  --warning-subtle: rgba(217, 119, 6, 0.15);
   --error: #dc2626;
-  --error-subtle: #fee2e2;
+  --error-subtle: rgba(220, 38, 38, 0.15);
 }
 
 @theme inline {
@@ -107,6 +107,7 @@ body {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
 }
 
 /* Every text style in the app is Geist Medium (500) — no bold, no regular. */
