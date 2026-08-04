@@ -87,7 +87,7 @@ export default function SessionCompletePage() {
             </div>
             <div className="flex-1 bg-bg-element rounded-xl p-4 flex flex-col gap-3">
               <p className="text-tag uppercase text-text/40">Personal records</p>
-              <p className="text-h3 font-medium text-accent tabular">{newPRs > 0 ? `${newPRs} NEW PR${newPRs !== 1 ? "'S" : "'S"}` : '—'}</p>
+              <p className="text-h3 font-medium text-accent tabular">{newPRs > 0 ? `${newPRs} NEW PR${newPRs !== 1 ? 'S' : ''}` : '—'}</p>
             </div>
           </div>
         </div>

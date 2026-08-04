@@ -74,7 +74,7 @@ export default function HomePage() {
 
   const weekDays = getWeekDays()
 
-  const activeProgramme = programmes.find(p => p.isActive) ?? programmes[0] ?? null
+  const activeProgramme = programmes.find(p => !!p.startDate) ?? null
   const activePhase = activeProgramme?.phases.find(ph => ph.isActive) ?? activeProgramme?.phases[0] ?? null
 
   const weekNumber = activeProgramme?.startDate
@@ -84,10 +84,10 @@ export default function HomePage() {
   const selectedEvents = events[selectedDate] ?? []
 
   function getTemplateName(ev: CalendarEventData): string {
-    if (!ev.workoutTemplateId || !ev.programmeId) return ev.name ?? sessionLabel
+    if (!ev.workoutTemplateId || !ev.programmeId) return ev.name ?? sessionTypeName(ev.eventType)
     return programmes.find(p => p.id === ev.programmeId)?.templates.find(t => t.id === ev.workoutTemplateId)?.name
       ?? ev.name
-      ?? sessionLabel
+      ?? sessionTypeName(ev.eventType)
   }
 
   function sessionTypeName(eventType: string): string {
@@ -260,7 +260,7 @@ export default function HomePage() {
       <div className="px-4 pt-3 pb-[88px] flex-shrink-0">
         <button
           onClick={() => router.push('/session')}
-          className="w-full h-12 bg-accent rounded-full flex items-center justify-center gap-2"
+          className="w-full h-12 bg-accent rounded-full flex items-center justify-center gap-2 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
           <Image src="/icon-play.svg" alt="" width={24} height={24} />
           <span className="text-body font-medium leading-6 text-accent-fg">Start workout</span>

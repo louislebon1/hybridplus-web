@@ -159,15 +159,17 @@ export default function ProgressPage() {
               <div>
                 <p className="eyebrow mb-3">Weekly volume</p>
                 <div className="bg-bg-element border border-border rounded-2xl p-4">
-                  <div className="flex items-end gap-1.5 h-24">
+                  <div className="flex items-end gap-1.5">
                     {weekKeys.map((wk) => {
                       const vol = weeklyVolumes[wk]
                       const pct = (vol / maxVol) * 100
                       const wkNum = Math.ceil((new Date(wk).getTime() - new Date(new Date(wk).getFullYear(), 0, 1).getTime()) / (7 * 86400000))
                       return (
                         <div key={wk} className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full rounded-t-sm bg-accent/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
-                            <div className="absolute bottom-0 left-0 right-0 bg-accent rounded-t-sm" style={{ height: '100%' }} />
+                          <div className="w-full h-24 flex items-end">
+                            <div className="w-full rounded-t-sm bg-accent/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
+                              <div className="absolute bottom-0 left-0 right-0 bg-accent rounded-t-sm" style={{ height: '100%' }} />
+                            </div>
                           </div>
                           <span className="text-tag text-text-tertiary tabular">W{wkNum}</span>
                         </div>
