@@ -1,12 +1,28 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { X } from 'lucide-react'
 import { useSessionWizard } from '@/stores/session-wizard-store'
 
 export default function NewSessionPage() {
+  return (
+    <Suspense fallback={null}>
+      <NewSessionPageInner />
+    </Suspense>
+  )
+}
+
+function NewSessionPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { sessionType, setSessionType, reset } = useSessionWizard()
+
+  useEffect(() => {
+    const type = searchParams.get('type')
+    if (type === 'cardio' || type === 'strength') setSessionType(type)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function handleClose() {
     reset()
@@ -45,10 +61,10 @@ export default function NewSessionPage() {
       {/* CTA */}
       <div className="px-4 pt-3 flex-shrink-0">
         <button
-          onClick={() => router.push('/sessions/new/exercises')}
+          onClick={() => router.push(sessionType === 'cardio' ? '/sessions/new/cardio' : '/sessions/new/exercises')}
           className="w-full h-12 rounded-full border border-accent bg-accent text-body font-medium text-accent-fg"
         >
-          Add exercises to workout
+          {sessionType === 'cardio' ? 'Continue' : 'Add exercises to workout'}
         </button>
       </div>
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, ChevronRight, ChevronDown, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar, RefreshCw, Trash2 } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCalendarStore } from '@/stores/calendar-store'
+import { useTemplateStore } from '@/stores/template-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import { localDateStr } from '@/lib/date'
 import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType, CalendarEventType, PhaseType } from '@/types'
@@ -39,7 +40,9 @@ function fmtSets(block: ExerciseTemplateBlock) {
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-GB', {
+  const d = new Date(dateStr + 'T00:00:00')
+  if (isNaN(d.getTime())) return 'Select start date'
+  return d.toLocaleDateString('en-GB', {
     day: 'numeric', month: 'long', year: 'numeric',
   })
 }
@@ -73,6 +76,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   } = useProgrammeStore()
 
   const { events: calendarEvents, addEvent: addCalendarEvent, deleteEvent: deleteCalendarEvent } = useCalendarStore()
+  const { strengthTemplates: libraryStrengthTemplates, cardioTemplates: libraryCardioTemplates } = useTemplateStore()
 
   const programme = programmes.find(p => p.id === id)
 
@@ -270,7 +274,42 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
   function handleAddSession() {
     if (!programme || !addSessionFor || !addSessionId) return
-    if (addSessionType === 'strength') {
+
+    if (addSessionId.startsWith('lib:')) {
+      const libraryId = addSessionId.slice('lib:'.length)
+      if (addSessionType === 'strength') {
+        const src = libraryStrengthTemplates.find(t => t.id === libraryId)
+        if (!src) return
+        const newTemplate = addTemplate(programme.id, src.name)
+        for (const b of src.exerciseBlocks) {
+          const block = addBlock(newTemplate.id, { id: b.exerciseId, name: b.exerciseName })
+          if (block) {
+            updateBlock(block.id, {
+              setType: b.setType,
+              targetSets: b.targetSets,
+              targetRepsMin: b.targetRepsMin,
+              targetRepsMax: b.targetRepsMax,
+              targetWeightKg: b.targetWeightKg,
+              targetRpe: b.targetRpe,
+              restSeconds: b.restSeconds,
+              supersetGroupId: b.supersetGroupId,
+              notes: b.notes,
+            })
+          }
+        }
+        addTemplateToPhase(programme.id, addSessionFor, newTemplate.id)
+      } else {
+        const src = libraryCardioTemplates.find(t => t.id === libraryId)
+        if (!src) return
+        const newCardioTemplate = addCardioTemplate(programme.id, {
+          name: src.name,
+          activityType: src.activityType,
+          targetDurationMinutes: src.targetDurationMinutes,
+          targetDistanceKm: src.targetDistanceKm,
+        })
+        addCardioTemplateToPhase(programme.id, addSessionFor, newCardioTemplate.id)
+      }
+    } else if (addSessionType === 'strength') {
       addTemplateToPhase(programme.id, addSessionFor, addSessionId)
     } else {
       addCardioTemplateToPhase(programme.id, addSessionFor, addSessionId)
@@ -310,8 +349,16 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
   const filteredExercises = exerciseSearch.trim()
     ? EXERCISE_LIBRARY_SORTED.filter(e => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
     : EXERCISE_LIBRARY_SORTED
-  const sessionOptions = addSessionFor
-    ? (addSessionType === 'strength' ? unassignedTemplates(addSessionFor) : unassignedCardioTemplates(addSessionFor))
+  const sessionOptions: { id: string; name: string }[] = addSessionFor
+    ? addSessionType === 'strength'
+      ? [
+          ...unassignedTemplates(addSessionFor).map(t => ({ id: t.id, name: t.name })),
+          ...libraryStrengthTemplates.map(t => ({ id: `lib:${t.id}`, name: `${t.name} (Library)` })),
+        ]
+      : [
+          ...unassignedCardioTemplates(addSessionFor).map(t => ({ id: t.id, name: t.name })),
+          ...libraryCardioTemplates.map(t => ({ id: `lib:${t.id}`, name: `${t.name} (Library)` })),
+        ]
     : []
 
   return (
