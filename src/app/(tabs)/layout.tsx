@@ -18,8 +18,8 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
-      <main style={{ flex: 1, paddingBottom: NAV_CLEARANCE }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <main style={{ flex: 1, minHeight: 0, paddingBottom: NAV_CLEARANCE, overflow: 'hidden' }}>
         {children}
       </main>
 

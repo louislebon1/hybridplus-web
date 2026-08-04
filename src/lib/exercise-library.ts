@@ -2769,6 +2769,9 @@ export const EXERCISE_LIBRARY: ExerciseLibraryItem[] = [
   },
 ]
 
+/** EXERCISE_LIBRARY sorted A-Z by name — use this anywhere exercises are listed for browsing/searching. */
+export const EXERCISE_LIBRARY_SORTED = [...EXERCISE_LIBRARY].sort((a, b) => a.name.localeCompare(b.name))
+
 export const MUSCLE_GROUP_LABELS: Record<string, string> = {
   chest:       'Chest',
   back:        'Back',

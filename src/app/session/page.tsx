@@ -10,7 +10,7 @@ import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import type { ActivityType, RunSessionType } from '@/types'
 import { localDateStr } from '@/lib/date'
-import { EXERCISE_LIBRARY } from '@/lib/exercise-library'
+import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
 
 const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
 
@@ -150,8 +150,8 @@ export default function SessionPage() {
   const todayCardioEvents = todayEvents.filter(e => CARDIO_TYPES.has(e.eventType))
 
   const filteredLibrary = exerciseSearch.trim()
-    ? EXERCISE_LIBRARY.filter((e) => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
-    : EXERCISE_LIBRARY
+    ? EXERCISE_LIBRARY_SORTED.filter((e) => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
+    : EXERCISE_LIBRARY_SORTED
 
   if (!activeSession) {
     return (

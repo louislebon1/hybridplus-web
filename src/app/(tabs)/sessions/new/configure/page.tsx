@@ -13,7 +13,7 @@ export default function NewSessionConfigurePage() {
 
   function handleClose() {
     reset()
-    router.push('/sessions')
+    router.push('/programmes?tab=sessions')
   }
 
   function handleSave() {
@@ -49,7 +49,7 @@ export default function NewSessionConfigurePage() {
     }
 
     reset()
-    router.push('/sessions')
+    router.push('/programmes?tab=sessions')
   }
 
   return (

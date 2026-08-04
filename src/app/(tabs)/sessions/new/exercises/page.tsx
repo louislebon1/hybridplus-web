@@ -4,13 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { X, Check, Plus, Search } from 'lucide-react'
 import { useSessionWizard } from '@/stores/session-wizard-store'
-import { EXERCISE_LIBRARY } from '@/lib/exercise-library'
-
-// One letter label per unique category in library order
-const CATEGORIES = [...new Set(EXERCISE_LIBRARY.map(e => e.category))]
-const CATEGORY_LETTER: Record<string, string> = Object.fromEntries(
-  CATEGORIES.map((cat, i) => [cat, String.fromCharCode(65 + i)])
-)
+import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
 
 export default function NewSessionExercisesPage() {
   const router = useRouter()
@@ -23,26 +17,28 @@ export default function NewSessionExercisesPage() {
 
   const filtered = useMemo(() =>
     query
-      ? EXERCISE_LIBRARY.filter(e =>
+      ? EXERCISE_LIBRARY_SORTED.filter(e =>
           e.name.toLowerCase().includes(query) ||
           e.primaryMuscles.some(m => m.toLowerCase().includes(query))
         )
-      : EXERCISE_LIBRARY,
+      : EXERCISE_LIBRARY_SORTED,
   [query])
 
+  // Group alphabetically by first letter, A-Z, like a contacts list
   const grouped = useMemo(() => {
     if (query) return null
-    const map = new Map<string, typeof EXERCISE_LIBRARY>()
+    const map = new Map<string, typeof EXERCISE_LIBRARY_SORTED>()
     for (const ex of filtered) {
-      if (!map.has(ex.category)) map.set(ex.category, [])
-      map.get(ex.category)!.push(ex)
+      const letter = ex.name[0].toUpperCase()
+      if (!map.has(letter)) map.set(letter, [])
+      map.get(letter)!.push(ex)
     }
     return map
   }, [filtered, query])
 
   function handleClose() {
     reset()
-    router.push('/sessions')
+    router.push('/programmes?tab=sessions')
   }
 
   const ExerciseRow = ({ id, name, muscles }: { id: string; name: string; muscles: string[] }) => {
@@ -95,10 +91,10 @@ export default function NewSessionExercisesPage() {
       {/* Exercise list */}
       <div className="flex-1 overflow-y-auto pb-[104px]">
         {grouped
-          ? Array.from(grouped.entries()).map(([category, exercises]) => (
-              <div key={category}>
+          ? Array.from(grouped.entries()).map(([letter, exercises]) => (
+              <div key={letter}>
                 <div className="px-4 pt-5">
-                  <span className="text-h4 font-medium leading-6 text-text">{CATEGORY_LETTER[category]}</span>
+                  <span className="text-h4 font-medium leading-6 text-text">{letter}</span>
                 </div>
                 {exercises.map(ex => (
                   <ExerciseRow key={ex.id} id={ex.id} name={ex.name} muscles={ex.primaryMuscles} />

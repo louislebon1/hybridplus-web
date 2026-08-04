@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { ChevronRight, Plus } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
@@ -154,11 +154,21 @@ function CtaButton({ label, onClick }: { label: string; onClick: () => void }) {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function WorkoutsPage() {
+  return (
+    <Suspense fallback={null}>
+      <WorkoutsPageInner />
+    </Suspense>
+  )
+}
+
+function WorkoutsPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { programmes } = useProgrammeStore()
   const { strengthTemplates, cardioTemplates } = useTemplateStore()
 
-  const [mainTab,    setMainTab]    = useState<MainTab>('programmes')
+  const initialTab: MainTab = searchParams.get('tab') === 'sessions' ? 'sessions' : 'programmes'
+  const [mainTab,    setMainTab]    = useState<MainTab>(initialTab)
   const [progSubTab, setProgSubTab] = useState<ProgSubTab>('active')
   const [sessSubTab, setSessSubTab] = useState<SessSubTab>('strength')
 

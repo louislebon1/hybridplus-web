@@ -8,7 +8,7 @@ import { useCalendarStore } from '@/stores/calendar-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import { localDateStr } from '@/lib/date'
 import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType, CalendarEventType, PhaseType } from '@/types'
-import { EXERCISE_LIBRARY } from '@/lib/exercise-library'
+import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
 
 const PHASE_TYPE_LABELS: Record<PhaseType, string> = {
   foundation: 'Foundation',
@@ -308,8 +308,8 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
   const sortedPhases = [...programme.phases].sort((a, b) => a.orderIndex - b.orderIndex)
   const filteredExercises = exerciseSearch.trim()
-    ? EXERCISE_LIBRARY.filter(e => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
-    : EXERCISE_LIBRARY
+    ? EXERCISE_LIBRARY_SORTED.filter(e => e.name.toLowerCase().includes(exerciseSearch.toLowerCase()))
+    : EXERCISE_LIBRARY_SORTED
   const sessionOptions = addSessionFor
     ? (addSessionType === 'strength' ? unassignedTemplates(addSessionFor) : unassignedCardioTemplates(addSessionFor))
     : []
