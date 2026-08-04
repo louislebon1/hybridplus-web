@@ -6,6 +6,7 @@ import { CheckCircle2 } from 'lucide-react'
 import { useSessionStore } from '@/stores/session-store'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { Button } from '@/components/ui'
+import { HeroGlow, StatCard, SectionLabel } from '@/components/dash'
 
 function fmtVolume(kg: number) {
   return kg >= 1000 ? `${(kg / 1000).toFixed(1)}t` : `${Math.round(kg)}kg`
@@ -57,43 +58,60 @@ export default function SessionCompletePage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-bg">
-      {/* Header */}
-      <div className="flex items-center justify-center px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
-        <p className="text-h3 font-medium leading-[26px] text-text">{activeSession.name}</p>
-      </div>
+    <div className="relative flex flex-col h-full bg-bg overflow-hidden">
+      <HeroGlow color="#4ADE80" />
 
-      <div className="flex-1 flex flex-col gap-12 items-center justify-center px-4 py-6">
-        <div className="flex flex-col gap-3 items-center">
-          <CheckCircle2 size={48} className="text-accent" />
-          <p className="text-h1 text-text text-center">Session Complete!</p>
+      <div className="relative no-scrollbar flex-1 overflow-y-auto px-5 pt-8">
+        {/* ── Hero ── */}
+        <div className="flex items-center gap-2">
+          <CheckCircle2 size={16} className="text-accent" />
+          <p className="text-tag uppercase tracking-[0.08em] text-accent m-0">Session complete</p>
         </div>
 
-        <div className="flex flex-col gap-4 w-full">
-          <div className="flex gap-4 items-center w-full">
-            <div className="flex-1 bg-bg-element rounded-xl p-4 flex flex-col gap-3">
-              <p className="text-tag uppercase text-text/40">Duration</p>
-              <p className="text-h3 font-medium text-text tabular">{fmtDuration(completed.durationSeconds)}</p>
-            </div>
-            <div className="flex-1 bg-bg-element rounded-xl p-4 flex flex-col gap-3">
-              <p className="text-tag uppercase text-text/40">Total volume</p>
-              <p className="text-h3 font-medium text-text tabular">{fmtVolume(completed.totalVolume)}</p>
-            </div>
-          </div>
-          <div className="flex gap-4 items-center w-full">
-            <div className="flex-1 bg-bg-element rounded-xl p-4 flex flex-col gap-3">
-              <p className="text-tag uppercase text-text/40">Sets completed</p>
-              <p className="text-h3 font-medium text-text tabular">{setsCompleted}</p>
-            </div>
-            <div className="flex-1 bg-bg-element rounded-xl p-4 flex flex-col gap-3">
-              <p className="text-tag uppercase text-text/40">Personal records</p>
-              <p className="text-h3 font-medium text-accent tabular">{newPRs > 0 ? `${newPRs} NEW PR${newPRs !== 1 ? 'S' : ''}` : '—'}</p>
-            </div>
+        <div className="mt-7 flex items-start gap-1">
+          <span className="text-metric font-medium text-text tabular">{fmtVolume(completed.totalVolume)}</span>
+        </div>
+
+        <h1 className="text-h2 font-medium text-text m-0 mt-3">{activeSession.name}</h1>
+        <p className="text-label text-white/70 m-0 mt-2 max-w-[34ch]">
+          {setsCompleted} set{setsCompleted !== 1 ? 's' : ''} logged in {fmtDuration(completed.durationSeconds)}
+          {newPRs > 0 ? ` — and you set ${newPRs} new personal record${newPRs !== 1 ? 's' : ''}.` : '. Volume is banked toward this week’s total.'}
+        </p>
+
+        {/* ── Compact stat row ── */}
+        <div className="mt-7 flex gap-2.5">
+          <StatCard label="Duration" value={fmtDuration(completed.durationSeconds)} caption="elapsed" />
+          <StatCard label="Sets" value={String(setsCompleted)} caption="completed" />
+          <StatCard
+            label="Records"
+            value={newPRs > 0 ? String(newPRs) : '—'}
+            caption={newPRs > 0 ? `new PR${newPRs !== 1 ? 's' : ''}` : 'no new PRs'}
+            valueColor={newPRs > 0 ? 'var(--accent)' : undefined}
+          />
+        </div>
+
+        {/* ── Per-exercise breakdown ── */}
+        <div className="mt-7">
+          <SectionLabel>Exercises</SectionLabel>
+          <div className="mt-3 flex flex-col gap-2">
+            {completed.exercises.map(ex => (
+              <div key={ex.exerciseId} className="bg-bg-card border border-border rounded-[16px] px-4 py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-label font-medium text-text m-0 truncate">{ex.exerciseName}</p>
+                  <p className="text-tag text-text-tertiary m-0 mt-0.5">
+                    {ex.sets.length} set{ex.sets.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <p className="text-label font-medium text-text tabular m-0 flex-shrink-0">{fmtVolume(ex.totalVolume)}</p>
+              </div>
+            ))}
           </div>
         </div>
+
+        <div className="h-6" />
       </div>
 
-      <div className="p-4 flex flex-col gap-3 flex-shrink-0">
+      <div className="relative px-5 pt-3 pb-6 flex flex-col gap-2.5 flex-shrink-0">
         <Button variant="secondary" size="lg" className="w-full" onClick={() => router.push('/session/complete/review')}>
           Review session
         </Button>

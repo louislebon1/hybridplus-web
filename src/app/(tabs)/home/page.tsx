@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import Link from 'next/link'
+import { User, Play, ChevronRight } from 'lucide-react'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useSessionStore } from '@/stores/session-store'
@@ -10,8 +11,10 @@ import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import type { CalendarEventData, Programme } from '@/types'
 import { localDateStr } from '@/lib/date'
 import { estimateDuration } from '@/lib/duration'
+import { ACTIVITY_ICONS } from '@/lib/activity-icons'
+import { HeroGlow, SectionLabel } from '@/components/dash'
 
-const DAY_LABELS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const CARDIO_TYPES = new Set(['run', 'swim', 'cycle', 'walk', 'row'])
 
 const CARDIO_LABELS: Record<string, string> = {
@@ -63,6 +66,50 @@ function getMuscleGroups(ev: CalendarEventData, programmes: Programme[]): string
 function getExerciseCount(ev: CalendarEventData, programmes: Programme[]): number | null {
   if (ev.eventType !== 'strength') return null
   return getTemplate(ev, programmes)?.exerciseBlocks.length ?? null
+}
+
+/** Interpretation of the week-completion metric — copy + hero accent. */
+function readWeek(pct: number | null, scheduled: number) {
+  if (scheduled === 0) {
+    return {
+      title: 'Nothing Scheduled',
+      copy: 'No sessions on your calendar this week. Add a programme or start a quick workout to begin tracking.',
+      color: '#22D3EE',
+    }
+  }
+  if (pct === 100) {
+    return {
+      title: 'Week Complete',
+      copy: "Every session on this week's plan is done. Strong consistency — hold this rhythm into next week.",
+      color: '#4ADE80',
+    }
+  }
+  if ((pct ?? 0) >= 60) {
+    return {
+      title: 'On Track',
+      copy: "You're through most of this week's plan. Keep the remaining sessions in place to finish clean.",
+      color: '#4ADE80',
+    }
+  }
+  if ((pct ?? 0) >= 30) {
+    return {
+      title: 'Building Momentum',
+      copy: "You're partway through the week. A couple more sessions keeps this block on schedule.",
+      color: '#FDE047',
+    }
+  }
+  if ((pct ?? 0) > 0) {
+    return {
+      title: 'Just Started',
+      copy: "You've opened the week. Most of the plan is still ahead — pick the next session and get moving.",
+      color: '#FB923C',
+    }
+  }
+  return {
+    title: 'Not Started',
+    copy: "This week's sessions are all still open. Start with the one scheduled for today.",
+    color: '#FB923C',
+  }
 }
 
 export default function HomePage() {
@@ -130,181 +177,203 @@ export default function HomePage() {
     }
   }
 
+  // ── Hero metric: this week's plan completion, from existing calendar data ──
+  const weekEvents = weekDays.flatMap(d => events[isoDate(d)] ?? [])
+  const weekDone = weekEvents.filter(ev => ev.isCompleted).length
+  const weekPct = weekEvents.length > 0 ? Math.round((weekDone / weekEvents.length) * 100) : null
+  const read = readWeek(weekPct, weekEvents.length)
+
+  const todayLabel = new Date(today + 'T00:00:00')
+    .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+
   return (
-    <div className="flex flex-col h-[100dvh]">
+    <div className="relative flex flex-col h-[100dvh] overflow-hidden">
+      <HeroGlow color={read.color} />
 
-      {/* ── Logo ── */}
-      <div className="flex justify-center items-center py-7 flex-shrink-0">
-        <svg width="141" height="18" viewBox="0 0 110 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 0H3.72574V5.36375H12.7126V0H16.4208V14H12.7126V8.63625H3.72574V14H0V0Z" fill="#F2F2F0"/>
-          <path d="M25.2409 9.31875L17.8655 0H22.5095L27.098 6.04917L31.6835 0H36.307L28.9491 9.31875V14H25.2409V9.31875Z" fill="#F2F2F0"/>
-          <path d="M37.74 0H48.0019C51.3708 0 52.5143 1.42917 52.5143 3.4475C52.5143 5.0925 51.5785 6.16875 50.1747 6.69667C51.8592 7.12833 53.2629 8.08792 53.2629 10.1617C53.2629 12.4512 51.9352 14 48.7885 14H37.7429V0H37.74ZM46.8584 5.775C47.9258 5.775 48.7856 5.55917 48.7856 4.2875C48.7856 3.09458 48.0545 2.83792 46.8584 2.83792H41.4657V5.775H46.8584ZM47.6071 11.1621C48.6745 11.1621 49.4056 10.9083 49.4056 9.65417C49.4056 8.4 48.5429 8.18417 47.6071 8.18417H41.4657V11.1592H47.6071V11.1621Z" fill="#F2F2F0"/>
-          <path d="M55.3657 0H66.037C69.6692 0 71.4297 1.44958 71.4297 4.19125C71.4297 6.11042 70.4383 7.36167 68.6222 7.91C70.3067 8.00917 71.3917 9.02708 71.3917 10.71V14H67.6659V11.3371C67.6659 10.0654 67.2536 9.63375 66.037 9.63375H59.0915V14H55.3657V0ZM65.1772 6.50125C66.657 6.50125 67.5548 6.11042 67.5548 4.79792C67.5548 3.48542 66.657 3.1325 65.1772 3.1325H59.0915V6.50125H65.1772Z" fill="#F2F2F0"/>
-          <path d="M73.9478 0H77.6735V14H73.9478V0Z" fill="#F2F2F0"/>
-          <path d="M80.1592 0H89.4267C93.3777 0 96.2407 2.9575 96.2407 6.99125C96.2407 11.025 93.3777 14 89.4267 14H80.1592V0ZM87.9294 10.71C90.8129 10.71 92.3863 9.35958 92.3863 6.98833C92.3863 4.61708 90.8129 3.28708 87.9294 3.28708H83.8849V10.7071H87.9294V10.71Z" fill="#F2F2F0"/>
-          <path d="M109.108 5.60016H105.833V2.3335H103.025V5.60016H99.75V8.40016H103.025V11.6668H105.833V8.40016H109.108V5.60016Z" fill="#4ADE80"/>
-        </svg>
-      </div>
+      <div className="no-scrollbar relative flex-1 overflow-y-auto">
 
-      {/* ── Scrollable content ── */}
-      <div className="no-scrollbar flex-1 overflow-y-auto px-4">
+        {/* ── Hero ── */}
+        <div className="px-5 pt-6 flex flex-col">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-h4 font-medium text-text m-0">Today</p>
+              <p className="text-label text-white/70 m-0 mt-0.5">{todayLabel}</p>
+            </div>
+            <Link
+              href="/profile"
+              aria-label="Profile"
+              className="w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 outline-none transition-colors duration-150 ease-out hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-white/40"
+            >
+              <User size={18} className="text-text" />
+            </Link>
+          </div>
 
-        {/* ── Calendar ── */}
-        <div className="flex flex-col gap-4">
+          {/* Focal metric — only when there's a plan to measure against */}
+          {weekPct !== null && (
+            <div className="mt-8 flex items-start gap-1">
+              <span className="text-metric font-medium text-text tabular">{weekPct}</span>
+              <span className="text-h2 font-medium text-text mt-3">%</span>
+            </div>
+          )}
 
-          {/* Days row */}
-          <div className="flex justify-between items-start">
+          <h1 className={`text-h2 font-medium text-text m-0 ${weekPct !== null ? 'mt-3' : 'mt-10'}`}>{read.title}</h1>
+          <p className="text-label text-white/70 m-0 mt-2 max-w-[34ch]">{read.copy}</p>
+
+          {/* Plan status card */}
+          <div className="mt-6 bg-bg-card border border-border rounded-[16px] px-4 py-3.5 flex items-center justify-between gap-3">
+            {activeProgramme ? (
+              <>
+                <div className="min-w-0">
+                  <p className="text-label font-medium text-text m-0 truncate">
+                    {activePhase ? activePhase.name : activeProgramme.name}
+                  </p>
+                  <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0 mt-1 truncate">
+                    {activeProgramme.name}
+                    {weekNumber !== null && ` · Week ${weekNumber}`}
+                  </p>
+                </div>
+                <span className="text-tag uppercase tracking-[0.06em] text-accent-fg bg-accent px-2.5 py-1 rounded-full flex-shrink-0">
+                  Active
+                </span>
+              </>
+            ) : (
+              <>
+                <p className="text-label text-text-secondary m-0">No active programme</p>
+                <button
+                  onClick={() => router.push('/programmes')}
+                  className="text-caption text-accent flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded"
+                >
+                  Set up
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ── Timeline strip ── */}
+        <div className="px-5 mt-7">
+          <SectionLabel>This week</SectionLabel>
+          <div className="mt-3 flex justify-between items-start gap-1">
             {weekDays.map((d, i) => {
-              const ds         = isoDate(d)
-              const isToday    = ds === today
-              const isSelected = ds === selectedDate
-              const dayEvs     = events[ds] ?? []
+              const ds          = isoDate(d)
+              const isToday     = ds === today
+              const isSelected  = ds === selectedDate
+              const dayEvs      = events[ds] ?? []
               const hasStrength = dayEvs.some(e => e.eventType === 'strength')
               const hasCardio   = dayEvs.some(e => CARDIO_TYPES.has(e.eventType))
               return (
                 <button
                   key={ds}
                   onClick={() => setSelectedDate(ds)}
-                  className="flex flex-col items-center gap-2 flex-1"
+                  className="flex flex-col items-center gap-2 flex-1 outline-none rounded-xl py-1 transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-accent/50"
                 >
-                  <span className={`text-tag uppercase text-center text-text ${(isToday || isSelected) ? 'opacity-100' : 'opacity-40'}`}>
+                  <span className={`text-tag uppercase ${isToday || isSelected ? 'text-text' : 'text-text-tertiary'}`}>
                     {DAY_LABELS[i]}
                   </span>
-
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isSelected ? 'bg-accent' : isToday ? 'bg-accent/10' : ''}`}>
-                    <span className={`text-body font-medium leading-6 ${isSelected ? 'text-accent-fg' : 'text-text'}`}>
+                  <div className={[
+                    'w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-150 ease-out',
+                    isSelected ? 'bg-accent' : isToday ? 'bg-white/10 border border-white/20' : 'bg-white/[0.04]',
+                  ].join(' ')}>
+                    <span className={`text-label font-medium tabular ${isSelected ? 'text-accent-fg' : 'text-text'}`}>
                       {d.getDate()}
                     </span>
                   </div>
-
-                  <div className="flex gap-0.5 h-1.5 items-center">
-                    {hasStrength && <span className="w-1.5 h-1.5 rounded-sm bg-accent block" />}
-                    {hasCardio   && <span className="w-1.5 h-1.5 rounded-sm bg-text block" />}
+                  <div className="flex gap-1 h-1.5 items-center">
+                    {hasStrength && <span className="w-1.5 h-1.5 rounded-full bg-accent block" />}
+                    {hasCardio   && <span className="w-1.5 h-1.5 rounded-full bg-zone-5 block" />}
                   </div>
                 </button>
               )
             })}
           </div>
+        </div>
 
-          <div className="h-px bg-border" />
+        {/* ── Sessions ── */}
+        <div className="px-5 mt-7">
+          <SectionLabel
+            action={
+              <button
+                onClick={() => router.push('/calendar')}
+                className="text-caption text-accent outline-none rounded focus-visible:ring-2 focus-visible:ring-accent/50"
+              >
+                View schedule
+              </button>
+            }
+          >
+            {sessionLabel}
+          </SectionLabel>
 
-          {/* Plan info row */}
-          <div className="flex justify-between items-center gap-2">
-            <div className="flex items-center gap-2">
-              {activePhase && (
-                <span className="text-tag uppercase text-accent-fg bg-accent px-3 py-1 rounded-full inline-flex items-center">
-                  {activePhase.name}
-                </span>
-              )}
-              {activeProgramme && (
-                <span className="text-tag uppercase text-text">
-                  {activeProgramme.name}
-                </span>
-              )}
-            </div>
-            {weekNumber !== null && (
-              <span className="text-tag uppercase text-accent">
-                Week {weekNumber}
-              </span>
+          <div className="mt-3 flex flex-col gap-2">
+            {selectedEvents.length === 0 ? (
+              <div className="bg-bg-card border border-border rounded-[16px] px-4 py-5">
+                <p className="text-label text-text-tertiary m-0 text-center">No sessions planned</p>
+              </div>
+            ) : (
+              selectedEvents.map(ev => {
+                const isStrength    = ev.eventType === 'strength'
+                const name          = getTemplateName(ev)
+                const duration      = getDuration(ev, programmes)
+                const exerciseCount = getExerciseCount(ev, programmes)
+                const muscleTags    = getMuscleGroups(ev, programmes)
+                const cardioTag     = CARDIO_TYPES.has(ev.eventType) ? (CARDIO_LABELS[ev.eventType] ?? null) : null
+                const isStartable   = isStrength && selectedDate === today && !ev.isCompleted && !activeSession
+                const meta = [
+                  duration,
+                  exerciseCount !== null ? `${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''}` : null,
+                  cardioTag,
+                  ...muscleTags,
+                ].filter(Boolean).join(' · ')
+
+                const Wrapper = isStartable ? 'button' : 'div'
+
+                return (
+                  <Wrapper
+                    key={ev.id}
+                    {...(isStartable ? { type: 'button' as const, onClick: () => startFromEvent(ev) } : {})}
+                    className={[
+                      'bg-bg-card border border-border rounded-[16px] px-3.5 py-3 flex items-center gap-3 w-full text-left',
+                      isStartable
+                        ? 'outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-accent/50'
+                        : '',
+                    ].join(' ')}
+                  >
+                    <span
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-[18px] flex-shrink-0"
+                      style={{ backgroundColor: isStrength ? 'rgba(74,222,128,0.14)' : 'rgba(34,211,238,0.14)' }}
+                    >
+                      {ACTIVITY_ICONS[ev.eventType] ?? '📅'}
+                    </span>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-label font-medium text-text m-0 truncate">{name}</p>
+                      {meta && <p className="text-tag text-text-tertiary m-0 mt-0.5 truncate">{meta}</p>}
+                    </div>
+
+                    {ev.isCompleted ? (
+                      <span className="text-tag uppercase tracking-[0.06em] text-accent bg-accent/15 px-2 py-1 rounded flex-shrink-0">
+                        Done
+                      </span>
+                    ) : isStartable ? (
+                      <ChevronRight size={16} className="text-text-tertiary flex-shrink-0" />
+                    ) : null}
+                  </Wrapper>
+                )
+              })
             )}
           </div>
         </div>
 
-        {/* ── Sessions header ── */}
-        <div className="flex justify-between items-baseline mt-6 mb-4">
-          <span className="text-h4 font-medium leading-6 text-text">{sessionLabel}</span>
-          <button
-            onClick={() => router.push('/calendar')}
-            className="text-label font-medium leading-[18px] text-text underline"
-          >
-            View schedule
-          </button>
-        </div>
-
-        {/* ── Session cards ── */}
-        {selectedEvents.length === 0 ? (
-          <p className="text-label text-text/40">No sessions planned</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {selectedEvents.map(ev => {
-              const isStrength     = ev.eventType === 'strength'
-              const isCardio       = CARDIO_TYPES.has(ev.eventType)
-              const name           = getTemplateName(ev)
-              const duration       = getDuration(ev, programmes)
-              const exerciseCount  = getExerciseCount(ev, programmes)
-              const muscleTags     = getMuscleGroups(ev, programmes)
-              const cardioTag      = isCardio ? (CARDIO_LABELS[ev.eventType] ?? null) : null
-              const isStartable    = isStrength && selectedDate === today && !ev.isCompleted && !activeSession
-
-              const Wrapper = isStartable ? 'button' : 'div'
-
-              return (
-                <Wrapper
-                  key={ev.id}
-                  {...(isStartable ? { type: 'button', onClick: () => startFromEvent(ev) } : {})}
-                  className={`bg-bg-element rounded-xl px-4 py-3 flex flex-col gap-4 text-left w-full ${
-                    isStartable
-                      ? 'outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-hover active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50'
-                      : ''
-                  }`}
-                >
-                  {/* Name + tags group */}
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-body font-medium leading-6 text-text">{name}</span>
-
-                    <div className="flex flex-wrap gap-1">
-                      <span className={`text-tag uppercase text-accent-fg px-3 py-1 rounded-full inline-flex items-center ${isStrength ? 'bg-accent' : 'bg-text'}`}>
-                        {sessionTypeName(ev.eventType)}
-                      </span>
-
-                      {cardioTag && (
-                        <span className="text-tag uppercase text-accent bg-text/5 px-2 py-1 rounded inline-flex items-center">
-                          {cardioTag}
-                        </span>
-                      )}
-
-                      {muscleTags.map(tag => (
-                        <span key={tag} className="text-tag uppercase text-accent bg-text/5 px-2 py-1 rounded inline-flex items-center">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Meta row */}
-                  {(duration || exerciseCount) && (
-                    <div className="flex items-center gap-4">
-                      {duration && (
-                        <div className="flex items-center gap-1">
-                          <Image src="/icon-clock.svg" alt="" width={12} height={12} />
-                          <span className="text-tag uppercase text-text/40">{duration}</span>
-                        </div>
-                      )}
-                      {exerciseCount !== null && (
-                        <div className="flex items-center gap-1">
-                          <Image src="/icon-exercise.svg" alt="" width={12} height={12} />
-                          <span className="text-tag uppercase text-text/40">{exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Wrapper>
-              )
-            })}
-          </div>
-        )}
-
-        <div className="h-2" />
+        <div className="h-6" />
       </div>
 
-      {/* ── Start Workout — sits above floating nav pill ── */}
-      <div className="px-4 pt-3 pb-[88px] flex-shrink-0">
+      {/* ── Primary CTA — sits above the floating nav ── */}
+      <div className="relative px-5 pt-3 pb-[92px] flex-shrink-0">
         <button
           onClick={handleCtaClick}
-          className="w-full h-12 bg-accent rounded-full flex items-center justify-center gap-2 px-4 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          className="w-full h-13 py-3.5 bg-accent rounded-full flex items-center justify-center gap-2 px-4 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.98] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
-          <Image src="/icon-play.svg" alt="" width={24} height={24} className="flex-shrink-0" />
-          <span className="text-body font-medium leading-6 text-accent-fg truncate min-w-0">{ctaLabel}</span>
+          <Play size={18} className="text-accent-fg flex-shrink-0" fill="currentColor" />
+          <span className="text-body font-medium text-accent-fg truncate min-w-0">{ctaLabel}</span>
         </button>
       </div>
     </div>

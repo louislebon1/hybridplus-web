@@ -1,30 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0B0C0C;
-  --bg-element: rgba(255, 255, 255, 0.06);
-  --bg-hover: rgba(255, 255, 255, 0.10);
-  --bg-selected: rgba(255, 255, 255, 0.14);
-  --bg-subtle: #141516;
-  --border: rgba(255, 255, 255, 0.12);
-  --border-strong: #F2F2F0;
-  --text: #F2F2F0;
-  --text-secondary: #B4B4B0;
-  --text-tertiary: #8B8B86;
-  --text-disabled: #4E4E49;
+  /* OLED-black canvas; cards are charcoal, never grey. */
+  --bg: #000000;
+  --bg-card: #0D0E10;
+  --bg-card-raised: #141518;
+  --bg-element: rgba(255, 255, 255, 0.05);
+  --bg-hover: rgba(255, 255, 255, 0.09);
+  --bg-selected: rgba(255, 255, 255, 0.13);
+  --bg-subtle: #0D0E10;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: #FFFFFF;
+  --text: #FFFFFF;
+  --text-secondary: #A1A1A6;
+  --text-tertiary: #6E6E73;
+  --text-disabled: #48484A;
   --accent: #4ADE80;
   --accent-hover: #22C55E;
-  --accent-fg: #062E12;
+  --accent-fg: #04220D;
   --success: #4ADE80;
   --success-subtle: rgba(74, 222, 128, 0.15);
-  --warning: #d97706;
-  --warning-subtle: rgba(217, 119, 6, 0.15);
-  --error: #dc2626;
-  --error-subtle: rgba(220, 38, 38, 0.15);
+  --warning: #FB923C;
+  --warning-subtle: rgba(251, 146, 60, 0.15);
+  --error: #F0453A;
+  --error-subtle: rgba(240, 69, 58, 0.15);
+
+  /* Categorical ramp for distribution bars and zone charts. */
+  --zone-1: #FDE047;
+  --zone-2: #FB923C;
+  --zone-3: #F0453A;
+  --zone-4: #A855F7;
+  --zone-5: #22D3EE;
+
+  --radius-card: 20px;
+  --radius-inner: 12px;
 }
 
 @theme inline {
   --color-bg: var(--bg);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-raised: var(--bg-card-raised);
+  --color-zone-1: var(--zone-1);
+  --color-zone-2: var(--zone-2);
+  --color-zone-3: var(--zone-3);
+  --color-zone-4: var(--zone-4);
+  --color-zone-5: var(--zone-5);
   --color-bg-element: var(--bg-element);
   --color-bg-hover: var(--bg-hover);
   --color-bg-selected: var(--bg-selected);
@@ -44,6 +64,12 @@
 
   /* Type scale — matches the Figma text styles exactly. Every style is
      Geist Medium (500); hierarchy comes from size, never weight. */
+  /* Hero metric — the single strongest element on a screen. */
+  --text-metric: 4.25rem;              /* 68px */
+  --text-metric--line-height: 4.25rem; /* 1.0 — tight, per reference */
+  --text-metric--font-weight: 500;
+  --text-metric--letter-spacing: -0.03em;
+
   --text-display: 2rem;             /* 32px */
   --text-display--line-height: 2.375rem;  /* 38px */
   --text-display--font-weight: 500;

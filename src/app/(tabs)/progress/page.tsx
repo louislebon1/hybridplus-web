@@ -1,10 +1,20 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { User } from 'lucide-react'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { localDateStr } from '@/lib/date'
 import { EmptyState } from '@/components/ui'
+import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
+import {
+  HeroGlow, SectionLabel, StatCard, WeekGrid, SegmentedChips,
+  DistributionSummary, Sparkline, StatusPill, ZoneRow,
+  type WeekRow, type ZoneDatum,
+} from '@/components/dash'
+
+const ZONE_COLORS = ['var(--zone-1)', 'var(--zone-3)', 'var(--zone-4)', 'var(--zone-5)', 'var(--zone-2)']
 
 function fmtPace(paceSecs: number) {
   const m = Math.floor(paceSecs / 60)
@@ -28,6 +38,14 @@ function getWeekKey(dateStr: string) {
   return localDateStr(mon)
 }
 
+/** ISO-ish week number, used only as a compact row label (W31). */
+function weekLabel(mondayStr: string) {
+  const d = new Date(mondayStr + 'T00:00:00')
+  const jan1 = new Date(d.getFullYear(), 0, 1)
+  const week = Math.ceil(((d.getTime() - jan1.getTime()) / 86400000 + jan1.getDay() + 1) / 7)
+  return `W${week}`
+}
+
 export default function ProgressPage() {
   const { sessions } = useSessionHistoryStore()
   const { sessions: cardioSessions } = useCardioStore()
@@ -44,7 +62,6 @@ export default function ProgressPage() {
     weeklyVolumes[wk] = (weeklyVolumes[wk] ?? 0) + s.totalVolume
   }
   const weekKeys = Object.keys(weeklyVolumes).sort().slice(-6)
-  const maxVol = Math.max(...weekKeys.map((k) => weeklyVolumes[k]), 1)
 
   // Streak
   const allDates = new Set([
@@ -77,6 +94,76 @@ export default function ProgressPage() {
     return count
   })()
 
+  // ── Training summary grid: last 6 weeks × 7 days ──────────────────────────
+  const volumeByDate: Record<string, number> = {}
+  for (const s of sessions) volumeByDate[s.sessionDate] = (volumeByDate[s.sessionDate] ?? 0) + s.totalVolume
+  const cardioDates = new Set(cardioSessions.map(s => s.sessionDate))
+  const maxDayVolume = Math.max(...Object.values(volumeByDate), 1)
+
+  const thisMonday = (() => {
+    const n = new Date(); n.setHours(0, 0, 0, 0)
+    n.setDate(n.getDate() - ((n.getDay() + 6) % 7))
+    return n
+  })()
+
+  const weekRows: WeekRow[] = Array.from({ length: 6 }, (_, i) => {
+    const monday = new Date(thisMonday)
+    monday.setDate(thisMonday.getDate() - (5 - i) * 7)
+    const mondayStr = localDateStr(monday)
+
+    const days = Array.from({ length: 7 }, (_, d) => {
+      const day = new Date(monday)
+      day.setDate(monday.getDate() + d)
+      const ds = localDateStr(day)
+      const vol = volumeByDate[ds] ?? 0
+      if (vol > 0) return Math.min(1, vol / maxDayVolume)
+      return cardioDates.has(ds) ? 0.32 : 0
+    })
+
+    const load = weeklyVolumes[mondayStr] ?? 0
+    const prevMonday = new Date(monday); prevMonday.setDate(monday.getDate() - 7)
+    const prevLoad = weeklyVolumes[localDateStr(prevMonday)] ?? 0
+    const pctChange = prevLoad > 0 ? Math.round(((load - prevLoad) / prevLoad) * 100) : null
+
+    return {
+      label: weekLabel(mondayStr),
+      days,
+      load: load > 0 ? fmtVolume(load) : '—',
+      change: pctChange !== null ? `${pctChange > 0 ? '+' : ''}${pctChange}%` : null,
+      changePositive: (pctChange ?? 0) >= 0,
+    }
+  })
+
+  const hasGridData = weekRows.some(r => r.days.some(d => d > 0))
+
+  // ── Training focus: share of strength volume by muscle group ──────────────
+  const volumeByGroup: Record<string, number> = {}
+  for (const s of sessions) {
+    for (const ex of s.exercises) {
+      const lib = EXERCISE_LIBRARY.find(e => e.id === ex.exerciseId)
+      if (!lib) continue
+      volumeByGroup[lib.category] = (volumeByGroup[lib.category] ?? 0) + ex.totalVolume
+    }
+  }
+  const groupTotal = Object.values(volumeByGroup).reduce((a, b) => a + b, 0)
+  const focusZones: ZoneDatum[] = Object.entries(volumeByGroup)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([group, vol], i) => ({
+      label: MUSCLE_GROUP_LABELS[group] ?? group,
+      color: ZONE_COLORS[i % ZONE_COLORS.length],
+      pct: groupTotal > 0 ? (vol / groupTotal) * 100 : 0,
+    }))
+
+  const allGroupZones: ZoneDatum[] = Object.entries(volumeByGroup)
+    .sort((a, b) => b[1] - a[1])
+    .map(([group, vol], i) => ({
+      label: MUSCLE_GROUP_LABELS[group] ?? group,
+      color: ZONE_COLORS[i % ZONE_COLORS.length],
+      pct: groupTotal > 0 ? (vol / groupTotal) * 100 : 0,
+      count: `${Math.round(vol / 1000 * 10) / 10}t`,
+    }))
+
   // ── Strength PRs ──────────────────────────────────────────────────────────
   const prMap: Record<string, { name: string; maxWeight: number; maxE1rm: number; lastDate: string }> = {}
   for (const s of sessions) {
@@ -106,173 +193,232 @@ export default function ProgressPage() {
     .sort((a, b) => b.sessionDate.localeCompare(a.sessionDate))
     .slice(0, 5)
 
+  const volumeTrend = weekKeys.map(k => weeklyVolumes[k])
+  const consistencyLabel = consecutiveWeeks >= 4 ? 'HIGH' : consecutiveWeeks >= 2 ? 'BUILDING' : 'LOW'
+  const consistencyColor = consecutiveWeeks >= 4 ? 'var(--warning)' : consecutiveWeeks >= 2 ? 'var(--accent)' : 'var(--text-tertiary)'
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-5 pt-12 pb-4 flex-shrink-0">
-        <h1 className="text-h3 font-medium text-text">Progress</h1>
-      </div>
+    <div className="relative flex flex-col h-full overflow-hidden">
+      <HeroGlow color="#4ADE80" className="opacity-40" />
 
-      {/* Tabs */}
-      <div className="flex px-5 gap-1 mb-4 flex-shrink-0">
-        {(['overview', 'strength', 'cardio'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={[
-              'flex-1 py-2 rounded-xl text-caption font-medium transition-colors capitalize',
-              tab === t ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text-secondary',
-            ].join(' ')}
+      <div className="relative no-scrollbar flex-1 overflow-y-auto pb-[96px]">
+
+        {/* ── Header ── */}
+        <div className="px-5 pt-6 flex items-center justify-between gap-3">
+          <h1 className="text-h2 font-medium text-text m-0">Progress</h1>
+          <Link
+            href="/profile"
+            aria-label="Profile"
+            className="w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 outline-none transition-colors duration-150 ease-out hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-white/40"
           >
-            {t}
-          </button>
-        ))}
-      </div>
+            <User size={18} className="text-text" />
+          </Link>
+        </div>
 
-      <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-5">
-        {tab === 'overview' && (
-          <>
-            {/* Deload banner */}
-            {consecutiveWeeks >= 4 && (
-              <div className="bg-warning/10 border border-warning/30 rounded-2xl p-4">
-                <p className="text-label font-medium text-warning">Recovery recommended</p>
-                <p className="text-caption text-text-secondary mt-1">
-                  You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
-                </p>
-              </div>
-            )}
-
-            {/* All-time stats */}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Sessions', value: totalSessions },
-                { label: 'Total volume', value: fmtVolume(totalVolume) },
-                { label: 'Streak', value: `${streak}d` },
-              ].map(({ label, value }) => (
-                <div key={label} className="bg-bg-element border border-border rounded-2xl p-3 text-center">
-                  <p className="text-h3 font-medium text-text tabular">{value}</p>
-                  <p className="text-caption text-text-secondary mt-0.5">{label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Weekly volume chart */}
-            {weekKeys.length > 0 && (
-              <div>
-                <p className="eyebrow mb-3">Weekly volume</p>
-                <div className="bg-bg-element border border-border rounded-2xl p-4">
-                  <div className="flex items-end gap-1.5">
-                    {weekKeys.map((wk) => {
-                      const vol = weeklyVolumes[wk]
-                      const pct = (vol / maxVol) * 100
-                      const wkNum = Math.ceil((new Date(wk).getTime() - new Date(new Date(wk).getFullYear(), 0, 1).getTime()) / (7 * 86400000))
-                      return (
-                        <div key={wk} className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full h-24 flex items-end">
-                            <div className="w-full rounded-t-sm bg-accent/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
-                              <div className="absolute bottom-0 left-0 right-0 bg-accent rounded-t-sm" style={{ height: '100%' }} />
-                            </div>
-                          </div>
-                          <span className="text-tag text-text-tertiary tabular">W{wkNum}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {tab === 'strength' && (
-          <>
-            <p className="eyebrow">Personal records</p>
-            {prs.length === 0 ? (
-              <EmptyState
-                icon="🏆"
-                title="No records yet"
-                description="Complete some workouts to start tracking your PRs."
-              />
+        {/* ── Training summary grid ── */}
+        <div className="px-5 mt-6">
+          <SectionLabel
+            action={<span className="text-tag text-text-tertiary">{totalSessions} session{totalSessions !== 1 ? 's' : ''}</span>}
+          >
+            Training summary
+          </SectionLabel>
+          <div className="mt-3 bg-bg-card border border-border rounded-[20px] px-3.5 py-3.5">
+            {hasGridData ? (
+              <WeekGrid rows={weekRows} />
             ) : (
-              <div className="bg-bg-element border border-border rounded-2xl overflow-hidden">
-                {/* Table header */}
-                <div className="grid grid-cols-4 px-4 py-2 border-b border-border">
-                  <span className="text-caption font-medium text-text-tertiary col-span-2">Exercise</span>
-                  <span className="text-caption font-medium text-text-tertiary text-right">Max kg</span>
-                  <span className="text-caption font-medium text-text-tertiary text-right">e1RM</span>
-                </div>
-                {prs.map((pr, i) => (
-                  <div key={i} className="grid grid-cols-4 px-4 py-3 border-b border-border last:border-b-0">
-                    <div className="col-span-2 min-w-0">
-                      <p className="text-label font-medium text-text truncate">{pr.name}</p>
-                      <p className="text-caption text-text-tertiary">{fmtDate(pr.lastDate)}</p>
-                    </div>
-                    <p className="text-label font-medium text-text tabular text-right self-center">{pr.maxWeight > 0 ? `${pr.maxWeight}` : '—'}</p>
-                    <p className="text-label font-medium text-accent tabular text-right self-center">{pr.maxE1rm > 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
-                  </div>
-                ))}
-              </div>
+              <p className="text-caption text-text-tertiary text-center py-6 m-0">
+                No training logged in the last 6 weeks
+              </p>
             )}
-          </>
-        )}
+          </div>
+        </div>
 
-        {tab === 'cardio' && (
-          <>
-            {/* Summary stats */}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Distance', value: `${totalDistKm.toFixed(1)} km` },
-                { label: 'Time', value: totalCardioSecs >= 3600 ? `${Math.floor(totalCardioSecs/3600)}h` : `${Math.floor(totalCardioSecs/60)}m` },
-                { label: 'Best pace', value: bestPace ? fmtPace(bestPace) : '—' },
-              ].map(({ label, value }) => (
-                <div key={label} className="bg-bg-element border border-border rounded-2xl p-3 text-center">
-                  <p className="text-body font-medium text-text tabular">{value}</p>
-                  <p className="text-caption text-text-secondary mt-0.5">{label}</p>
-                </div>
-              ))}
-            </div>
+        {/* ── Segmented control ── */}
+        <div className="px-5 mt-5">
+          <SegmentedChips options={['overview', 'strength', 'cardio'] as const} value={tab} onChange={setTab} />
+        </div>
 
-            {/* Activity breakdown */}
-            {Object.keys(activityCounts).length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(activityCounts).map(([type, count]) => (
-                  <div key={type} className="px-3 py-2 bg-bg-element border border-border rounded-xl">
-                    <p className="text-caption font-medium text-text capitalize">{type}</p>
-                    <p className="text-body font-medium text-text tabular">{count}</p>
-                  </div>
-                ))}
+        <div className="px-5 mt-5 flex flex-col gap-5">
+
+          {tab === 'overview' && (
+            <>
+              {/* Compact stat row */}
+              <div className="flex gap-2.5">
+                <StatCard label="Sessions" value={String(totalSessions)} caption="all time" />
+                <StatCard label="Volume" value={fmtVolume(totalVolume)} caption="lifted" />
+                <StatCard label="Streak" value={`${streak}d`} caption="current" />
               </div>
-            )}
 
-            {/* Recent runs */}
-            {recentRuns.length > 0 && (
+              {/* Training focus distribution */}
               <div>
-                <p className="eyebrow mb-3">Recent runs</p>
-                <div className="flex flex-col gap-2">
-                  {recentRuns.map((s) => (
-                    <div key={s.id} className="bg-bg-element border border-border rounded-2xl px-4 py-3 flex items-center justify-between">
-                      <div>
-                        <p className="text-label font-medium text-text">{s.runType?.replace('_', ' ') ?? 'Run'}</p>
-                        <p className="text-caption text-text-secondary">{fmtDate(s.sessionDate)}</p>
-                      </div>
-                      <div className="text-right">
-                        {s.distanceKm && <p className="text-label font-medium text-text tabular">{s.distanceKm.toFixed(2)} km</p>}
-                        {s.avgPaceSecs && <p className="text-caption text-text-secondary tabular">{fmtPace(s.avgPaceSecs)}</p>}
-                      </div>
-                    </div>
-                  ))}
+                <SectionLabel>Training focus</SectionLabel>
+                <div className="mt-3 bg-bg-card border border-border rounded-[20px] p-4">
+                  {focusZones.length > 0 ? (
+                    <DistributionSummary zones={focusZones} />
+                  ) : (
+                    <p className="text-caption text-text-tertiary text-center py-4 m-0">
+                      Log a strength session to see your split
+                    </p>
+                  )}
                 </div>
               </div>
-            )}
 
-            {cardioSessions.length === 0 && (
-              <EmptyState
-                icon="🏃"
-                title="No cardio sessions yet"
-                description="Log a cardio session to see your stats here."
-              />
-            )}
-          </>
-        )}
+              {/* Fitness cards */}
+              <div>
+                <SectionLabel>Fitness</SectionLabel>
+                <div className="mt-3 flex flex-col gap-2.5">
+                  <div className="bg-bg-card border border-border rounded-[20px] p-4 flex items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Weekly volume</p>
+                      <p className="text-h1 font-medium text-text tabular m-0 mt-1">
+                        {fmtVolume(weekKeys.length ? weeklyVolumes[weekKeys[weekKeys.length - 1]] : 0)}
+                      </p>
+                      <div className="mt-1.5">
+                        <StatusPill label={consistencyLabel} color={consistencyColor} />
+                      </div>
+                    </div>
+                    <div className="w-[104px] flex-shrink-0">
+                      {volumeTrend.length > 0
+                        ? <Sparkline values={volumeTrend} />
+                        : <p className="text-tag text-text-tertiary text-right m-0">No data</p>}
+                    </div>
+                  </div>
+
+                  <div className="bg-bg-card border border-border rounded-[20px] p-4 flex items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Consistency</p>
+                      <p className="text-h1 font-medium text-text tabular m-0 mt-1">
+                        {consecutiveWeeks}<span className="text-h4 text-text-tertiary ml-1">wk</span>
+                      </p>
+                      <p className="text-tag text-text-tertiary m-0 mt-1.5">consecutive training weeks</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {consecutiveWeeks >= 4 && (
+                <div className="rounded-[20px] p-4 border" style={{ backgroundColor: 'var(--warning-subtle)', borderColor: 'rgba(251,146,60,0.3)' }}>
+                  <p className="text-label font-medium m-0" style={{ color: 'var(--warning)' }}>Recovery recommended</p>
+                  <p className="text-caption text-text-secondary mt-1 m-0">
+                    You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+
+          {tab === 'strength' && (
+            <>
+              <div>
+                <SectionLabel>Volume by muscle group</SectionLabel>
+                <div className="mt-3 bg-bg-card border border-border rounded-[20px] p-4">
+                  {allGroupZones.length > 0 ? (
+                    <div className="flex flex-col gap-3">
+                      {allGroupZones.map(z => <ZoneRow key={z.label} zone={z} />)}
+                    </div>
+                  ) : (
+                    <p className="text-caption text-text-tertiary text-center py-4 m-0">No strength volume logged yet</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <SectionLabel>Personal records</SectionLabel>
+                {prs.length === 0 ? (
+                  <EmptyState
+                    icon="🏆"
+                    title="No records yet"
+                    description="Complete some workouts to start tracking your PRs."
+                  />
+                ) : (
+                  <div className="mt-3 bg-bg-card border border-border rounded-[20px] overflow-hidden">
+                    <div className="grid grid-cols-4 px-4 py-2.5 border-b border-border">
+                      <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary col-span-2">Exercise</span>
+                      <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary text-right">Max kg</span>
+                      <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary text-right">e1RM</span>
+                    </div>
+                    {prs.map((pr, i) => (
+                      <div key={i} className="grid grid-cols-4 px-4 py-3 border-b border-border last:border-b-0">
+                        <div className="col-span-2 min-w-0">
+                          <p className="text-label font-medium text-text truncate m-0">{pr.name}</p>
+                          <p className="text-tag text-text-tertiary m-0 mt-0.5">{fmtDate(pr.lastDate)}</p>
+                        </div>
+                        <p className="text-label font-medium text-text tabular text-right self-center m-0">{pr.maxWeight > 0 ? `${pr.maxWeight}` : '—'}</p>
+                        <p className="text-label font-medium text-accent tabular text-right self-center m-0">{pr.maxE1rm > 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {tab === 'cardio' && (
+            <>
+              <div className="flex gap-2.5">
+                <StatCard label="Distance" value={`${totalDistKm.toFixed(1)}`} caption="km total" />
+                <StatCard
+                  label="Time"
+                  value={totalCardioSecs >= 3600 ? `${Math.floor(totalCardioSecs / 3600)}h` : `${Math.floor(totalCardioSecs / 60)}m`}
+                  caption="moving"
+                />
+                <StatCard label="Best pace" value={bestPace ? fmtPace(bestPace).replace(' /km', '') : '—'} caption="per km" />
+              </div>
+
+              {Object.keys(activityCounts).length > 0 && (
+                <div>
+                  <SectionLabel>Activity split</SectionLabel>
+                  <div className="mt-3 bg-bg-card border border-border rounded-[20px] p-4 flex flex-col gap-3">
+                    {Object.entries(activityCounts)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([type, count], i) => {
+                        const total = Object.values(activityCounts).reduce((a, b) => a + b, 0)
+                        return (
+                          <ZoneRow
+                            key={type}
+                            zone={{
+                              label: type.charAt(0).toUpperCase() + type.slice(1),
+                              color: ZONE_COLORS[i % ZONE_COLORS.length],
+                              pct: (count / total) * 100,
+                              count: `${count}×`,
+                            }}
+                          />
+                        )
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {recentRuns.length > 0 && (
+                <div>
+                  <SectionLabel>Recent runs</SectionLabel>
+                  <div className="mt-3 flex flex-col gap-2.5">
+                    {recentRuns.map((s) => (
+                      <div key={s.id} className="bg-bg-card border border-border rounded-[16px] px-4 py-3 flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-label font-medium text-text m-0 capitalize truncate">{s.runType?.replace('_', ' ') ?? 'Run'}</p>
+                          <p className="text-tag text-text-tertiary m-0 mt-0.5">{fmtDate(s.sessionDate)}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          {s.distanceKm && <p className="text-label font-medium text-text tabular m-0">{s.distanceKm.toFixed(2)} km</p>}
+                          {s.avgPaceSecs && <p className="text-tag text-text-tertiary tabular m-0 mt-0.5">{fmtPace(s.avgPaceSecs)}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {cardioSessions.length === 0 && (
+                <EmptyState
+                  icon="🏃"
+                  title="No cardio sessions yet"
+                  description="Log a cardio session to see your stats here."
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
