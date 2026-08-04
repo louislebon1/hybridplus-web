@@ -8,9 +8,10 @@ import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
 
 export default function NewSessionExercisesPage() {
   const router = useRouter()
-  const { blocks, addExercise, reset } = useSessionWizard()
+  const { blocks, addExercise, removeBlock, reset } = useSessionWizard()
   const [search, setSearch] = useState('')
 
+  const blockIdByExerciseId = useMemo(() => new Map(blocks.map(b => [b.exerciseId, b.id])), [blocks])
   const addedIds = useMemo(() => new Set(blocks.map(b => b.exerciseId)), [blocks])
   const canProceed = blocks.length > 0
   const query = search.trim().toLowerCase()
@@ -41,11 +42,25 @@ export default function NewSessionExercisesPage() {
     router.push('/programmes?tab=sessions')
   }
 
+  function handleAddCustom() {
+    const name = search.trim()
+    if (!name) return
+    addExercise({ id: `custom-${Date.now()}`, name, muscles: [] })
+    setSearch('')
+  }
+
   const ExerciseRow = ({ id, name, muscles }: { id: string; name: string; muscles: string[] }) => {
     const added = addedIds.has(id)
     return (
       <button
-        onClick={() => { if (!added) addExercise({ id, name, muscles }) }}
+        onClick={() => {
+          if (added) {
+            const blockId = blockIdByExerciseId.get(id)
+            if (blockId) removeBlock(blockId)
+          } else {
+            addExercise({ id, name, muscles })
+          }
+        }}
         className="w-full flex items-center justify-between px-4 py-5 border-b border-border text-left"
       >
         <span className="text-h4 font-medium leading-6 text-text max-w-[calc(100%-32px)] overflow-hidden text-ellipsis whitespace-nowrap">
@@ -83,8 +98,13 @@ export default function NewSessionExercisesPage() {
             className="flex-1 border-none bg-transparent outline-none text-body font-medium text-text"
           />
         </div>
-        <button onClick={() => setSearch('')} className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-          <Check size={16} className="text-accent-fg" />
+        <button
+          onClick={handleAddCustom}
+          disabled={!search.trim()}
+          title="Add your own exercise"
+          className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 disabled:opacity-40"
+        >
+          <Plus size={16} className="text-accent-fg" />
         </button>
       </div>
 
