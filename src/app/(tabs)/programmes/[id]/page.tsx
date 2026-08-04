@@ -370,7 +370,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
-          <h1 className="text-h3 font-medium leading-[26px] text-text m-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+          <h1 className="text-h3 font-bold leading-[26px] text-text m-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
             {programme.name}
           </h1>
         </div>

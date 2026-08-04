@@ -59,48 +59,63 @@
   --color-success: var(--success);
   --color-error: var(--error);
   --color-warning: var(--warning);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* San Francisco via the system stack — the only licensable route to SF Pro.
+     -apple-system leads so macOS/iOS get real SF with automatic optical
+     sizing (Text below ~20px, Display above); the named families catch
+     machines where SF Pro is installed directly. */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+               'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
-  /* Type scale — matches the Figma text styles exactly. Every style is
-     Geist Medium (500); hierarchy comes from size, never weight. */
+  /* Two weights only: 700 for headings, 500 for everything else.
+     Tracking is -0.02em throughout, except uppercase tags which need
+     opening up rather than tightening. */
+
   /* Hero metric — the single strongest element on a screen. */
   --text-metric: 4.25rem;              /* 68px */
   --text-metric--line-height: 4.25rem; /* 1.0 — tight, per reference */
-  --text-metric--font-weight: 500;
-  --text-metric--letter-spacing: -0.03em;
+  --text-metric--font-weight: 700;
+  --text-metric--letter-spacing: -0.02em;
 
   --text-display: 2rem;             /* 32px */
   --text-display--line-height: 2.375rem;  /* 38px */
-  --text-display--font-weight: 500;
+  --text-display--font-weight: 700;
+  --text-display--letter-spacing: -0.02em;
 
   --text-h1: 1.75rem;               /* 28px */
   --text-h1--line-height: 2.125rem; /* 34px */
-  --text-h1--font-weight: 500;
+  --text-h1--font-weight: 700;
+  --text-h1--letter-spacing: -0.02em;
 
   --text-h2: 1.5rem;                /* 24px */
   --text-h2--line-height: 1.875rem; /* 30px */
-  --text-h2--font-weight: 500;
+  --text-h2--font-weight: 700;
+  --text-h2--letter-spacing: -0.02em;
 
   --text-h3: 1.25rem;               /* 20px */
   --text-h3--line-height: 1.625rem; /* 26px */
-  --text-h3--font-weight: 500;
+  --text-h3--font-weight: 700;
+  --text-h3--letter-spacing: -0.02em;
 
   --text-h4: 1.125rem;              /* 18px */
   --text-h4--line-height: 1.5rem;   /* 24px */
-  --text-h4--font-weight: 500;
+  --text-h4--font-weight: 700;
+  --text-h4--letter-spacing: -0.02em;
 
   --text-body: 1rem;                /* 16px */
   --text-body--line-height: 1.5rem; /* 24px */
   --text-body--font-weight: 500;
+  --text-body--letter-spacing: -0.02em;
 
   --text-label: 0.875rem;           /* 14px */
   --text-label--line-height: 1.125rem; /* 18px */
   --text-label--font-weight: 500;
+  --text-label--letter-spacing: -0.02em;
 
   --text-caption: 0.75rem;          /* 12px */
   --text-caption--line-height: 1rem; /* 16px */
   --text-caption--font-weight: 500;
+  --text-caption--letter-spacing: -0.02em;
 
   --text-tag: 0.6875rem;            /* 11px */
   --text-tag--line-height: 0.875rem; /* 14px */
@@ -110,7 +125,7 @@
 
 @layer utilities {
   .eyebrow {
-    font-family: var(--font-geist-sans);
+    font-family: var(--font-sans);
     font-size: var(--text-tag);
     line-height: var(--text-tag--line-height);
     font-weight: 500;
@@ -130,15 +145,21 @@ html, body {
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans);
   font-weight: 500;
+  letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color-scheme: dark;
 }
 
-/* Every text style in the app is Geist Medium (500) — no bold, no regular. */
-h1, h2, h3, h4, h5, h6, p, span, button, input, textarea, select, label, a {
+/* Two weights only: Bold for headings, Medium for everything else. */
+p, span, button, input, textarea, select, label, a {
   font-weight: 500;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
 }
 
 .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 8px); }

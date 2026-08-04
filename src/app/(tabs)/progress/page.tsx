@@ -205,7 +205,7 @@ export default function ProgressPage() {
 
         {/* ── Header ── */}
         <div className="px-5 pt-6 flex items-center justify-between gap-3">
-          <h1 className="text-h2 font-medium text-text m-0">Progress</h1>
+          <h1 className="text-h2 font-bold text-text m-0">Progress</h1>
           <Link
             href="/profile"
             aria-label="Profile"
@@ -270,7 +270,7 @@ export default function ProgressPage() {
                   <div className="bg-bg-card border border-border rounded-[20px] p-4 flex items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Weekly volume</p>
-                      <p className="text-h1 font-medium text-text tabular m-0 mt-1">
+                      <p className="text-h1 font-bold text-text tabular m-0 mt-1">
                         {fmtVolume(weekKeys.length ? weeklyVolumes[weekKeys[weekKeys.length - 1]] : 0)}
                       </p>
                       <div className="mt-1.5">
@@ -287,7 +287,7 @@ export default function ProgressPage() {
                   <div className="bg-bg-card border border-border rounded-[20px] p-4 flex items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Consistency</p>
-                      <p className="text-h1 font-medium text-text tabular m-0 mt-1">
+                      <p className="text-h1 font-bold text-text tabular m-0 mt-1">
                         {consecutiveWeeks}<span className="text-h4 text-text-tertiary ml-1">wk</span>
                       </p>
                       <p className="text-tag text-text-tertiary m-0 mt-1.5">consecutive training weeks</p>

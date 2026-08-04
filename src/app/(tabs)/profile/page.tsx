@@ -11,7 +11,7 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col h-full">
       <div className="px-5 pt-12 pb-4 flex-shrink-0">
-        <h1 className="text-h3 font-medium text-text">Profile</h1>
+        <h1 className="text-h3 font-bold text-text">Profile</h1>
       </div>
 
       <div className="no-scrollbar flex-1 overflow-y-auto pb-4">

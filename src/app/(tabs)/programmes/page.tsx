@@ -181,7 +181,7 @@ function WorkoutsPageInner() {
 
       {/* ── Title ── */}
       <div className="px-4 pt-7 flex-shrink-0">
-        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Workouts</h1>
+        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Workouts</h1>
       </div>
 
       {/* ── Main tab pill switcher ── */}

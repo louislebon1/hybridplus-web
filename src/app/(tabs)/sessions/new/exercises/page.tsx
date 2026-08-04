@@ -81,7 +81,7 @@ export default function NewSessionExercisesPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
-        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">New session</h1>
+        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
           <X size={16} className="text-accent" />
         </button>
@@ -114,7 +114,7 @@ export default function NewSessionExercisesPage() {
           ? Array.from(grouped.entries()).map(([letter, exercises]) => (
               <div key={letter}>
                 <div className="px-4 pt-5">
-                  <span className="text-h4 font-medium leading-6 text-text">{letter}</span>
+                  <span className="text-h4 font-bold leading-6 text-text">{letter}</span>
                 </div>
                 {exercises.map(ex => (
                   <ExerciseRow key={ex.id} id={ex.id} name={ex.name} muscles={ex.primaryMuscles} />

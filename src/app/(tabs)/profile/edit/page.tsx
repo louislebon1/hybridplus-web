@@ -59,7 +59,7 @@ export default function EditProfilePage() {
         <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
           <ArrowLeft size={16} className="text-accent" />
         </button>
-        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Edit Profile</h1>
+        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Profile</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-6">
@@ -83,13 +83,13 @@ export default function EditProfilePage() {
           <div className="flex gap-3">
             {latestWeight !== null && (
               <div className="flex-1 bg-bg-element border border-border rounded-2xl p-3 text-center">
-                <p className="text-h3 font-medium text-text tabular">{latestWeight.toFixed(1)}</p>
+                <p className="text-h3 font-bold text-text tabular">{latestWeight.toFixed(1)}</p>
                 <p className="text-caption text-text-secondary mt-0.5">Weight (kg)</p>
               </div>
             )}
             {bmi !== null && (
               <div className="flex-1 bg-bg-element border border-border rounded-2xl p-3 text-center">
-                <p className="text-h3 font-medium text-text tabular">{bmi.toFixed(1)}</p>
+                <p className="text-h3 font-bold text-text tabular">{bmi.toFixed(1)}</p>
                 <p className="text-caption text-text-secondary mt-0.5">BMI</p>
               </div>
             )}

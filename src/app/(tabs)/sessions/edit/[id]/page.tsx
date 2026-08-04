@@ -93,7 +93,7 @@ export default function EditSessionPage() {
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
-          <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Edit Session</h1>
+          <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Session</h1>
         </div>
         <button onClick={handleDelete} className="p-1 rounded-lg">
           <Trash2 size={20} className="text-text/40" />

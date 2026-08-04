@@ -30,7 +30,7 @@ export default function SessionCompleteReviewPage() {
     <div className="flex flex-col h-full bg-bg">
       {/* Header */}
       <div className="flex items-center justify-center px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
-        <p className="text-h3 font-medium leading-[26px] text-text">{activeSession.name}</p>
+        <p className="text-h3 font-bold leading-[26px] text-text">{activeSession.name}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto">

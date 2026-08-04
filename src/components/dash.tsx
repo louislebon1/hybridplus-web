@@ -100,7 +100,7 @@ export function StatCard({
     <div className="flex-1 min-w-0 bg-bg-card border border-border rounded-[16px] px-3 py-3 flex flex-col gap-1">
       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0 truncate">{label}</p>
       <p
-        className="text-h2 font-medium tabular m-0 truncate"
+        className="text-h2 font-bold tabular m-0 truncate"
         style={valueColor ? { color: valueColor } : undefined}
       >
         {value}
@@ -166,7 +166,7 @@ export function DistributionSummary({ zones }: { zones: ZoneDatum[] }) {
             <span className="text-tag uppercase tracking-[0.06em] truncate" style={{ color: z.color }}>
               {z.label}
             </span>
-            <span className="text-h3 font-medium text-text tabular">{Math.round(z.pct)}%</span>
+            <span className="text-h3 font-bold text-text tabular">{Math.round(z.pct)}%</span>
           </div>
         ))}
       </div>

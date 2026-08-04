@@ -73,7 +73,7 @@ export default function CardioPage() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-5 pt-12 pb-4 flex-shrink-0">
-        <h1 className="text-h3 font-medium text-text">Cardio</h1>
+        <h1 className="text-h3 font-bold text-text">Cardio</h1>
       </div>
 
       {/* Tabs */}

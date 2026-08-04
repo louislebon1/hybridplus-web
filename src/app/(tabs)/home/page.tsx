@@ -196,7 +196,7 @@ export default function HomePage() {
         <div className="px-5 pt-6 flex flex-col">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-h4 font-medium text-text m-0">Today</p>
+              <p className="text-h4 font-bold text-text m-0">Today</p>
               <p className="text-label text-white/70 m-0 mt-0.5">{todayLabel}</p>
             </div>
             <Link
@@ -211,12 +211,12 @@ export default function HomePage() {
           {/* Focal metric — only when there's a plan to measure against */}
           {weekPct !== null && (
             <div className="mt-8 flex items-start gap-1">
-              <span className="text-metric font-medium text-text tabular">{weekPct}</span>
-              <span className="text-h2 font-medium text-text mt-3">%</span>
+              <span className="text-metric font-bold text-text tabular">{weekPct}</span>
+              <span className="text-h2 font-bold text-text mt-3">%</span>
             </div>
           )}
 
-          <h1 className={`text-h2 font-medium text-text m-0 ${weekPct !== null ? 'mt-3' : 'mt-10'}`}>{read.title}</h1>
+          <h1 className={`text-h2 font-bold text-text m-0 ${weekPct !== null ? 'mt-3' : 'mt-10'}`}>{read.title}</h1>
           <p className="text-label text-white/70 m-0 mt-2 max-w-[34ch]">{read.copy}</p>
 
           {/* Plan status card */}

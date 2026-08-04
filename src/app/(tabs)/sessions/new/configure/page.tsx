@@ -57,7 +57,7 @@ export default function NewSessionConfigurePage() {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
-        <h1 className="text-h2 font-medium leading-[30px] text-text m-0">Edit session</h1>
+        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
           <X size={16} className="text-accent" />
         </button>

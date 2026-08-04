@@ -186,7 +186,7 @@ export default function SessionPage() {
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
-          <h1 className="text-h3 font-medium text-text">Start Workout</h1>
+          <h1 className="text-h3 font-bold text-text">Start Workout</h1>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-5">
@@ -195,7 +195,7 @@ export default function SessionPage() {
             onClick={() => startSession(null, 'Quick Workout')}
             className="bg-accent text-accent-fg rounded-2xl p-5 text-left"
           >
-            <p className="text-h4 font-medium">Quick Start</p>
+            <p className="text-h4 font-bold">Quick Start</p>
             <p className="text-label opacity-80 mt-1">Start an empty session — add exercises as you go</p>
           </button>
 
@@ -411,10 +411,10 @@ export default function SessionPage() {
               defaultValue={activeSession.name}
               onBlur={(e) => { setSessionName(e.target.value); setEditingName(false) }}
               onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
-              className="text-h3 font-medium leading-[26px] text-text bg-transparent border-b border-accent outline-none flex-1 min-w-0"
+              className="text-h3 font-bold leading-[26px] text-text bg-transparent border-b border-accent outline-none flex-1 min-w-0"
             />
           ) : (
-            <button onClick={() => setEditingName(true)} className="text-h3 font-medium leading-[26px] text-text text-left min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+            <button onClick={() => setEditingName(true)} className="text-h3 font-bold leading-[26px] text-text text-left min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
               {activeSession.name}
             </button>
           )}
@@ -443,7 +443,7 @@ export default function SessionPage() {
             {nextBlock && (
               <div className="flex flex-col items-center gap-2 text-center">
                 <p className="text-tag uppercase text-accent">Next exercise</p>
-                <p className="text-h2 font-medium leading-[30px] text-text">{nextBlock.exerciseName}</p>
+                <p className="text-h2 font-bold leading-[30px] text-text">{nextBlock.exerciseName}</p>
               </div>
             )}
           </div>
