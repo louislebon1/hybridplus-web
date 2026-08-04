@@ -134,12 +134,35 @@ function buildActiveSet(
   }
 }
 
+// Ramping warm-up percentages of the working weight, lightest first.
+const WARM_UP_PCTS = [0.4, 0.6, 0.8]
+// Warm-up sets don't need the full inter-set rest a working set does.
+const WARM_UP_REST_SECONDS = 45
+
+function roundToNearest(value: number, step: number): number {
+  return Math.round(value / step) * step
+}
+
+function buildWarmUpSets(targetWeightKg: number): ActiveSet[] {
+  return WARM_UP_PCTS.map((pct, i) =>
+    buildActiveSet(i + 1, {
+      setType: 'warm_up',
+      targetWeightKg: roundToNearest(targetWeightKg * pct, 2.5),
+    })
+  )
+}
+
 function buildBlockFromTemplate(
   tBlock: WorkoutTemplateRef['exerciseBlocks'][number],
   orderIndex: number
 ): ActiveExerciseBlock {
-  const sets: ActiveSet[] = Array.from({ length: tBlock.targetSets }, (_, i) =>
-    buildActiveSet(i + 1, {
+  const warmUpSets: ActiveSet[] =
+    tBlock.setType === 'working' && tBlock.targetWeightKg && tBlock.targetWeightKg > 0
+      ? buildWarmUpSets(tBlock.targetWeightKg)
+      : []
+
+  const workingSets: ActiveSet[] = Array.from({ length: tBlock.targetSets }, (_, i) =>
+    buildActiveSet(warmUpSets.length + i + 1, {
       setType: tBlock.setType,
       targetWeightKg: tBlock.targetWeightKg,
       targetReps: tBlock.targetRepsMin,
@@ -147,6 +170,8 @@ function buildBlockFromTemplate(
       targetRpe: tBlock.targetRpe,
     })
   )
+
+  const sets: ActiveSet[] = [...warmUpSets, ...workingSets]
 
   return {
     id: crypto.randomUUID(),
@@ -538,7 +563,8 @@ export const useSessionStore = create<SessionStore>()((set, get) => ({
 
     const updatedBlocks = activeSession.exerciseBlocks.map(block => {
       if (block.id !== blockId) return block
-      restSeconds = block.restSeconds
+      const completedSet = block.sets.find(s => s.id === setId)
+      restSeconds = completedSet?.setType === 'warm_up' ? WARM_UP_REST_SECONDS : block.restSeconds
 
       return {
         ...block,

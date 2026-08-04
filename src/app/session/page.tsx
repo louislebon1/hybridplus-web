@@ -7,12 +7,12 @@ import { useSessionStore, formatDuration, getElapsedSeconds, getRestRemaining, g
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { useCalendarStore } from '@/stores/calendar-store'
-import { Button, Input, Sheet } from '@/components/ui'
-import type { ActivityType, RunSessionType } from '@/types'
+import { useSessionHistoryStore } from '@/stores/session-history-store'
+import { Button, Input, Sheet, EmptyState } from '@/components/ui'
+import type { ActivityType, RunSessionType, CompletedSet } from '@/types'
 import { localDateStr } from '@/lib/date'
 import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
-
-const CARDIO_ICONS: Record<ActivityType, string> = { run: '🏃', swim: '🏊', cycle: '🚴', walk: '🚶', row: '🚣' }
+import { CARDIO_ICONS } from '@/lib/activity-icons'
 
 const EMPTY_CARDIO_FORM = {
   activityType: 'run' as ActivityType,
@@ -28,12 +28,34 @@ const stepperBtn = 'w-9 h-9 rounded-full bg-text/5 flex items-center justify-cen
 const REST_RING_RADIUS = 100
 const REST_RING_CIRCUMFERENCE = 2 * Math.PI * REST_RING_RADIUS
 
+/** Most recent past session's set at the same set-index for this exercise, if any. */
+function getLastTimeSet(
+  exerciseId: string,
+  setIndex: number,
+  history: { exercises: { exerciseId: string; sets: CompletedSet[] }[] }[],
+): CompletedSet | null {
+  for (const session of history) {
+    const ex = session.exercises.find(e => e.exerciseId === exerciseId)
+    const set = ex?.sets[setIndex]
+    if (set && (set.weight != null || set.reps != null)) return set
+  }
+  return null
+}
+
+function fmtLastTime(set: CompletedSet): string {
+  const parts: string[] = []
+  if (set.weight != null) parts.push(`${set.weight}kg`)
+  if (set.reps != null) parts.push(`${set.reps} reps`)
+  if (set.rpe != null) parts.push(`RPE ${set.rpe}`)
+  return parts.join(' × ')
+}
+
 function RestRing({ pct, label, sublabel }: { pct: number; label: string; sublabel: string }) {
   const offset = REST_RING_CIRCUMFERENCE * (1 - Math.min(1, Math.max(0, pct)))
   return (
     <div className="relative w-[220px] h-[220px] flex items-center justify-center flex-shrink-0">
       <svg width={220} height={220} viewBox="0 0 220 220" className="-rotate-90 absolute inset-0">
-        <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="rgba(17,17,17,0.08)" strokeWidth={12} />
+        <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="rgba(242,242,240,0.12)" strokeWidth={12} />
         <circle
           cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="var(--accent)" strokeWidth={12}
           strokeDasharray={REST_RING_CIRCUMFERENCE} strokeDashoffset={offset} strokeLinecap="round"
@@ -58,6 +80,7 @@ export default function SessionPage() {
   const { programmes } = useProgrammeStore()
   const { addSession: addCardioSession } = useCardioStore()
   const { events: calendarEvents } = useCalendarStore()
+  const { sessions: pastSessions } = useSessionHistoryStore()
 
   const [elapsed, setElapsed] = useState(0)
   const [restRemaining, setRestRemaining] = useState(0)
@@ -342,6 +365,9 @@ export default function SessionPage() {
   const prevBlock = currentIndex > 0 ? sortedBlocks[currentIndex - 1] : null
   const nextBlock = currentIndex >= 0 && currentIndex < sortedBlocks.length - 1 ? sortedBlocks[currentIndex + 1] : null
   const setPosition = currentBlock ? currentBlock.sets.findIndex(s => s.id === currentSet?.id) : -1
+  const lastTimeSet = currentBlock && currentSet && setPosition >= 0 && currentSet.setType !== 'warm_up'
+    ? getLastTimeSet(currentBlock.exerciseId, setPosition, pastSessions)
+    : null
 
   function stepWeight(delta: number) {
     if (!currentBlock || !currentSet) return
@@ -437,9 +463,20 @@ export default function SessionPage() {
 
             <div className="flex flex-col gap-2 items-center text-center px-4">
               <p className="text-h1 text-text">{currentBlock.exerciseName}</p>
-              <p className="text-tag uppercase text-accent">
-                Set {setPosition + 1} / {currentBlock.sets.length}
-              </p>
+              {currentSet.setType === 'warm_up' ? (
+                <span className="text-tag uppercase text-bg bg-text-tertiary px-3 py-1 rounded-full inline-flex items-center">
+                  Warm-up · Set {setPosition + 1} / {currentBlock.sets.length}
+                </span>
+              ) : (
+                <p className="text-tag uppercase text-accent">
+                  Set {setPosition + 1} / {currentBlock.sets.length}
+                </p>
+              )}
+              {lastTimeSet && (
+                <p className="text-caption text-text-tertiary">
+                  Last time: {fmtLastTime(lastTimeSet)}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2 items-center px-4">
@@ -499,19 +536,23 @@ export default function SessionPage() {
         </>
       ) : sortedBlocks.length > 0 ? (
         /* ── Every set logged ── */
-        <div className="flex-1 flex flex-col items-center justify-center py-16 gap-4 text-center px-6">
-          <span className="text-4xl">✅</span>
-          <p className="text-text-secondary text-label">All sets logged</p>
-          <Button size="lg" onClick={handleFinish}>Finish workout</Button>
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          <EmptyState
+            icon="✅"
+            title="All sets logged"
+            description="Nice work — ready to wrap up?"
+            action={{ label: 'Finish workout', onClick: handleFinish }}
+          />
         </div>
       ) : (
         /* ── No exercises yet ── */
-        <div className="flex-1 flex flex-col items-center justify-center py-16 gap-3 text-center px-6">
-          <span className="text-4xl">🏋️</span>
-          <p className="text-text-secondary text-label">No exercises added yet</p>
-          <button onClick={() => { setExerciseSearch(''); setShowAddExercise(true) }} className="text-accent text-label font-medium">
-            + Add your first exercise
-          </button>
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          <EmptyState
+            icon="🏋️"
+            title="No exercises added yet"
+            description="Add your first exercise to build this workout."
+            action={{ label: 'Add exercise', onClick: () => { setExerciseSearch(''); setShowAddExercise(true) } }}
+          />
         </div>
       )}
 
