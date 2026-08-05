@@ -13,6 +13,7 @@ import type {
   StrengthSession,
 } from '@/types'
 import { useSessionHistoryStore } from './session-history-store'
+import { EXERCISE_LIBRARY } from '@/lib/exercise-library'
 
 // ── Standalone pure selectors ──────────────────────────────────────────────
 
@@ -152,12 +153,24 @@ function buildWarmUpSets(targetWeightKg: number): ActiveSet[] {
   )
 }
 
+/**
+ * Warm-ups only matter on heavy compound lifts — ramping into an isolation
+ * movement adds sets without reducing injury risk. Unknown/custom exercises
+ * get none, since we can't tell what they are.
+ */
+function needsWarmUp(exerciseId: string): boolean {
+  return EXERCISE_LIBRARY.find(e => e.id === exerciseId)?.exerciseCategory === 'compound'
+}
+
 function buildBlockFromTemplate(
   tBlock: WorkoutTemplateRef['exerciseBlocks'][number],
   orderIndex: number
 ): ActiveExerciseBlock {
   const warmUpSets: ActiveSet[] =
-    tBlock.setType === 'working' && tBlock.targetWeightKg && tBlock.targetWeightKg > 0
+    tBlock.setType === 'working'
+    && tBlock.targetWeightKg
+    && tBlock.targetWeightKg > 0
+    && needsWarmUp(tBlock.exerciseId)
       ? buildWarmUpSets(tBlock.targetWeightKg)
       : []
 

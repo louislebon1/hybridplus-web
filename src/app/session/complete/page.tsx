@@ -59,7 +59,7 @@ export default function SessionCompletePage() {
 
   return (
     <div className="relative flex flex-col h-full bg-bg overflow-hidden">
-      <HeroGlow color="#4ADE80" />
+      <HeroGlow color="#00ABFE" />
 
       <div className="relative no-scrollbar flex-1 overflow-y-auto px-5 pt-8">
         {/* ── Hero ── */}

@@ -373,7 +373,7 @@ export const useProgrammeStore = create<ProgrammeStore>()(
           description: null,
           durationWeeks: 1,
           orderIndex: programme.phases.length,
-          colorHex: '#2D7A76',
+          colorHex: '#00ABFE',
           templateIds: prevPhase ? [...prevPhase.templateIds] : [],
           cardioTemplateIds: prevPhase ? [...prevPhase.cardioTemplateIds] : [],
           templateDays: prevPhase ? { ...prevPhase.templateDays } : {},

@@ -229,7 +229,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
         while (cur <= phaseEnd) {
           const dow = (cur.getDay() + 6) % 7
           if (days.includes(dow)) {
-            addCalendarEvent({ eventType: 'strength', date: localDateStr(cur), name: template.name, isCompleted: false, workoutTemplateId: template.id, programmeId: programme.id, durationMinutes: null, distanceKm: null, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#2D7A76' })
+            addCalendarEvent({ eventType: 'strength', date: localDateStr(cur), name: template.name, isCompleted: false, workoutTemplateId: template.id, programmeId: programme.id, durationMinutes: null, distanceKm: null, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#00ABFE' })
           }
           cur.setDate(cur.getDate() + 1)
         }
@@ -243,7 +243,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
         while (cur <= phaseEnd) {
           const dow = (cur.getDay() + 6) % 7
           if (days.includes(dow)) {
-            addCalendarEvent({ eventType: ct.activityType as CalendarEventType, date: localDateStr(cur), name: ct.name, isCompleted: false, workoutTemplateId: null, programmeId: programme.id, durationMinutes: ct.targetDurationMinutes, distanceKm: ct.targetDistanceKm, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#2D7A76' })
+            addCalendarEvent({ eventType: ct.activityType as CalendarEventType, date: localDateStr(cur), name: ct.name, isCompleted: false, workoutTemplateId: null, programmeId: programme.id, durationMinutes: ct.targetDurationMinutes, distanceKm: ct.targetDistanceKm, distanceMeters: null, runType: null, swimType: null, targetPaceSecs: null, notes: null, colorHex: '#00ABFE' })
           }
           cur.setDate(cur.getDate() + 1)
         }

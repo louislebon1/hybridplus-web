@@ -10,7 +10,7 @@ import { localDateStr } from '@/lib/date'
 import { ACTIVITY_ICONS as EVENT_ICONS } from '@/lib/activity-icons'
 
 const EVENT_COLORS: Record<CalendarEventType, string> = {
-  strength: '#4ADE80', run: '#F2F2F0', swim: '#F2F2F0', cycle: '#F2F2F0',
+  strength: '#00ABFE', run: '#F2F2F0', swim: '#F2F2F0', cycle: '#F2F2F0',
   walk: '#F2F2F0', row: '#F2F2F0', rest: 'rgba(242,242,240,0.3)', other: 'rgba(242,242,240,0.4)',
 }
 

@@ -81,14 +81,14 @@ function readWeek(pct: number | null, scheduled: number) {
     return {
       title: 'Week Complete',
       copy: "Every session on this week's plan is done. Strong consistency — hold this rhythm into next week.",
-      color: '#4ADE80',
+      color: '#00ABFE',
     }
   }
   if ((pct ?? 0) >= 60) {
     return {
       title: 'On Track',
       copy: "You're through most of this week's plan. Keep the remaining sessions in place to finish clean.",
-      color: '#4ADE80',
+      color: '#00ABFE',
     }
   }
   if ((pct ?? 0) >= 30) {
@@ -339,7 +339,7 @@ export default function HomePage() {
                   >
                     <span
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-[18px] flex-shrink-0"
-                      style={{ backgroundColor: isStrength ? 'rgba(74,222,128,0.14)' : 'rgba(34,211,238,0.14)' }}
+                      style={{ backgroundColor: isStrength ? 'rgba(0,171,254,0.16)' : 'rgba(45,212,191,0.16)' }}
                     >
                       {ACTIVITY_ICONS[ev.eventType] ?? '📅'}
                     </span>

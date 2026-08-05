@@ -199,7 +199,7 @@ export default function ProgressPage() {
 
   return (
     <div className="relative flex flex-col h-full overflow-hidden">
-      <HeroGlow color="#4ADE80" className="opacity-40" />
+      <HeroGlow color="#00ABFE" className="opacity-40" />
 
       <div className="relative no-scrollbar flex-1 overflow-y-auto pb-[96px]">
 

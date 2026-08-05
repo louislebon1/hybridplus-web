@@ -1,23 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  /* OLED-black canvas; cards are charcoal, never grey. */
+  /* OLED-black canvas. Surfaces are frosted glass: a translucent white
+     fill that picks up whatever gradient sits behind it, plus a backdrop
+     blur applied via the .bg-bg-card utility below. */
   --bg: #000000;
-  --bg-card: #0D0E10;
-  --bg-card-raised: #141518;
+  --bg-card: rgba(255, 255, 255, 0.055);
+  --bg-card-raised: rgba(255, 255, 255, 0.10);
   --bg-element: rgba(255, 255, 255, 0.05);
   --bg-hover: rgba(255, 255, 255, 0.09);
   --bg-selected: rgba(255, 255, 255, 0.13);
-  --bg-subtle: #0D0E10;
-  --border: rgba(255, 255, 255, 0.08);
+  --bg-subtle: rgba(255, 255, 255, 0.055);
+  --border: rgba(255, 255, 255, 0.11);
   --border-strong: #FFFFFF;
   --text: #FFFFFF;
   --text-secondary: #A1A1A6;
   --text-tertiary: #6E6E73;
   --text-disabled: #48484A;
-  --accent: #4ADE80;
-  --accent-hover: #22C55E;
-  --accent-fg: #04220D;
+  --accent: #00ABFE;
+  --accent-hover: #0090D8;
+  --accent-fg: #002133;
+  /* Success stays green — it's semantic (done/complete), not brand. */
   --success: #4ADE80;
   --success-subtle: rgba(74, 222, 128, 0.15);
   --warning: #FB923C;
@@ -25,12 +28,13 @@
   --error: #F0453A;
   --error-subtle: rgba(240, 69, 58, 0.15);
 
-  /* Categorical ramp for distribution bars and zone charts. */
+  /* Categorical ramp for distribution bars and zone charts.
+     Deliberately excludes blue so series never read as the brand accent. */
   --zone-1: #FDE047;
   --zone-2: #FB923C;
   --zone-3: #F0453A;
   --zone-4: #A855F7;
-  --zone-5: #22D3EE;
+  --zone-5: #2DD4BF;
 
   --radius-card: 20px;
   --radius-inner: 12px;
@@ -160,6 +164,17 @@ p, span, button, input, textarea, select, label, a {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
+}
+
+/* Frosted glass. The translucent fill alone looks near-black on the OLED
+   canvas; the backdrop blur is what samples the hero gradient behind a card
+   and gives it depth. Declared outside @layer so Tailwind doesn't treat it
+   as a conflicting utility definition and drop it. */
+.bg-bg-card,
+.bg-bg-card-raised,
+.bg-bg-subtle {
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
 }
 
 .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 8px); }
