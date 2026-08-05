@@ -5,8 +5,9 @@
      fill that picks up whatever gradient sits behind it, plus a backdrop
      blur applied via the .bg-bg-card utility below. */
   --bg: #000000;
-  --bg-card: rgba(255, 255, 255, 0.055);
-  --bg-card-raised: rgba(255, 255, 255, 0.10);
+  /* Fill matches the Figma glass swatch (963:376): 12% white. */
+  --bg-card: rgba(255, 255, 255, 0.12);
+  --bg-card-raised: rgba(255, 255, 255, 0.18);
   --bg-element: rgba(255, 255, 255, 0.05);
   --bg-hover: rgba(255, 255, 255, 0.09);
   --bg-selected: rgba(255, 255, 255, 0.13);
@@ -166,15 +167,26 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
-/* Frosted glass. The translucent fill alone looks near-black on the OLED
-   canvas; the backdrop blur is what samples the hero gradient behind a card
-   and gives it depth. Declared outside @layer so Tailwind doesn't treat it
-   as a conflicting utility definition and drop it. */
+/* Liquid glass.
+   The backdrop is blurred, saturated and brightened so the pane behaves like
+   a lens over the hero gradient rather than a flat tint. There is no stroke —
+   the edge is defined the way Apple's material does it: a bright specular
+   highlight along the lit (top) edge, an inner bevel shadow opposite it, and
+   a very faint rim to keep the silhouette legible against black.
+
+   Declared outside @layer so Tailwind doesn't treat it as a conflicting
+   utility definition and drop it, and the unprefixed backdrop-filter comes
+   last because lightningcss otherwise emits only the -webkit- form. */
 .bg-bg-card,
 .bg-bg-card-raised,
 .bg-bg-subtle {
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  backdrop-filter: blur(20px) saturate(150%);
+  border-color: transparent;
+  -webkit-backdrop-filter: blur(36px) saturate(180%) brightness(1.12);
+  backdrop-filter: blur(36px) saturate(180%) brightness(1.12);
+  box-shadow:
+    inset 0 1.5px 1px -1px rgba(255, 255, 255, 0.55),
+    inset 0 -1.5px 1px -1px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 8px); }

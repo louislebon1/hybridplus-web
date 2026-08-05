@@ -42,11 +42,16 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           padding: '6px',
           width: '272px',
           borderRadius: '200px',
-          border: '1px solid rgba(255, 255, 255, 0.10)',
-          background: 'rgba(20, 21, 24, 0.86)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+          // Same liquid-glass material as the card surfaces.
+          background: 'var(--bg-card)',
+          WebkitBackdropFilter: 'blur(36px) saturate(180%) brightness(1.12)',
+          backdropFilter: 'blur(36px) saturate(180%) brightness(1.12)',
+          boxShadow: [
+            'inset 0 1.5px 1px -1px rgba(255, 255, 255, 0.55)',
+            'inset 0 -1.5px 1px -1px rgba(0, 0, 0, 0.35)',
+            'inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+            '0 8px 32px rgba(0, 0, 0, 0.5)',
+          ].join(', '),
           pointerEvents: 'auto',
         }}>
           {TABS.map(({ href, inactive, active }) => {
