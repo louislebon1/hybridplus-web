@@ -365,12 +365,12 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+      <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
-          <h1 className="text-h3 font-bold leading-[26px] text-text m-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+          <h1 className="text-h2 font-bold leading-[30px] text-text m-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
             {programme.name}
           </h1>
         </div>
@@ -380,7 +380,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Start date row */}
-      <div className="flex items-center gap-3 px-4 py-6 flex-shrink-0">
+      <div className="flex items-center gap-3 px-5 py-6 flex-shrink-0">
         <div className="flex-1 relative">
           <div className="flex items-center gap-2 px-6 h-12 rounded-full bg-text/5 pointer-events-none">
             <Calendar size={20} className="text-text" />
@@ -401,7 +401,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Tabs */}
-      <div className="flex items-baseline gap-4 px-4 border-b border-border flex-shrink-0">
+      <div className="flex items-baseline gap-4 px-5 border-b border-border flex-shrink-0">
         {(['phases', 'sessions'] as const).map(tab => (
           <button
             key={tab}
@@ -414,7 +414,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 overflow-y-auto px-5 py-6">
 
         {/* ── PHASES TAB ──────────────────────────────────────────────────── */}
         {detailTab === 'phases' && (

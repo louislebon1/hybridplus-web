@@ -112,11 +112,11 @@ export default function CalendarPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Month nav */}
-      <div className="flex items-center justify-between px-5 pt-12 pb-3 flex-shrink-0">
+      <div className="flex items-center justify-between px-5 screen-top pb-3 flex-shrink-0">
         <button onClick={prevMonth} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-element">
           <ChevronLeft size={20} className="text-text" />
         </button>
-        <h2 className="text-body font-medium text-text">{MONTHS[month]} {year}</h2>
+        <h2 className="text-h2 text-text m-0">{MONTHS[month]} {year}</h2>
         <button onClick={nextMonth} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-element">
           <ChevronRight size={20} className="text-text" />
         </button>

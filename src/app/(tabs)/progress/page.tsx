@@ -201,10 +201,10 @@ export default function ProgressPage() {
     <div className="relative flex flex-col h-full overflow-hidden">
       <HeroGlow color="#00ABFE" className="opacity-40" />
 
-      <div className="relative no-scrollbar flex-1 overflow-y-auto pb-[96px]">
+      <div className="relative no-scrollbar flex-1 overflow-y-auto">
 
         {/* ── Header ── */}
-        <div className="px-5 pt-6 flex items-center justify-between gap-3">
+        <div className="px-5 screen-top flex items-center justify-between gap-3">
           <h1 className="text-h2 font-bold text-text m-0">Progress</h1>
           <Link
             href="/profile"

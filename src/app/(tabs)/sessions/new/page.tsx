@@ -33,7 +33,7 @@ function NewSessionPageInner() {
     <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+      <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
           <X size={16} className="text-accent" />
@@ -41,7 +41,7 @@ function NewSessionPageInner() {
       </div>
 
       {/* Type toggle */}
-      <div className="px-4 pt-6 pb-3 flex-shrink-0">
+      <div className="px-5 pt-6 pb-3 flex-shrink-0">
         <div className="flex p-1 rounded-full bg-text/5 gap-1">
           {(['strength', 'cardio'] as const).map(t => {
             const active = t === sessionType
@@ -59,7 +59,7 @@ function NewSessionPageInner() {
       </div>
 
       {/* CTA */}
-      <div className="px-4 pt-3 flex-shrink-0">
+      <div className="px-5 pt-3 flex-shrink-0">
         <button
           onClick={() => router.push(sessionType === 'cardio' ? '/sessions/new/cardio' : '/sessions/new/exercises')}
           className="w-full h-12 rounded-full border border-accent bg-accent text-body font-medium text-accent-fg"

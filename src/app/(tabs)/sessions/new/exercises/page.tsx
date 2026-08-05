@@ -80,7 +80,7 @@ export default function NewSessionExercisesPage() {
     <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+      <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
           <X size={16} className="text-accent" />
@@ -88,7 +88,7 @@ export default function NewSessionExercisesPage() {
       </div>
 
       {/* Search bar */}
-      <div className="flex gap-4 px-4 pt-6 pb-3 flex-shrink-0">
+      <div className="flex gap-4 px-5 pt-6 pb-3 flex-shrink-0">
         <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-md bg-text/5 ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/50">
           <Search size={16} className="text-text/40 flex-shrink-0" />
           <input
@@ -109,11 +109,11 @@ export default function NewSessionExercisesPage() {
       </div>
 
       {/* Exercise list */}
-      <div className="flex-1 overflow-y-auto pb-[104px]">
+      <div className="flex-1 overflow-y-auto pb-[96px]">
         {grouped
           ? Array.from(grouped.entries()).map(([letter, exercises]) => (
               <div key={letter}>
-                <div className="px-4 pt-5">
+                <div className="px-5 pt-5">
                   <span className="text-h4 font-bold leading-6 text-text">{letter}</span>
                 </div>
                 {exercises.map(ex => (
@@ -128,7 +128,7 @@ export default function NewSessionExercisesPage() {
       </div>
 
       {/* Footer CTA */}
-      <div className="fixed bottom-20 left-0 right-0 px-4 pt-4 pb-6 bg-bg border-t border-border">
+      <div className="fixed bottom-20 left-0 right-0 px-5 pt-4 pb-6 bg-bg border-t border-border">
         <button
           onClick={() => router.push('/sessions/new/configure')}
           disabled={!canProceed}

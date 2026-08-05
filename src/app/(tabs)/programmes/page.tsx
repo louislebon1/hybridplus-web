@@ -120,7 +120,7 @@ function SubTabBar<T extends string>({ tabs, active, onChange }: {
   tabs: readonly T[]; active: T; onChange: (t: T) => void
 }) {
   return (
-    <div className="flex gap-4 px-4 border-b border-border flex-shrink-0">
+    <div className="flex gap-4 px-5 border-b border-border flex-shrink-0">
       {tabs.map(t => {
         const isActive = t === active
         return (
@@ -180,12 +180,12 @@ function WorkoutsPageInner() {
     <div className="flex flex-col h-full">
 
       {/* ── Title ── */}
-      <div className="px-4 pt-7 flex-shrink-0">
+      <div className="px-5 screen-top flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Workouts</h1>
       </div>
 
       {/* ── Main tab pill switcher ── */}
-      <div className="mx-4 mt-5 flex-shrink-0">
+      <div className="mx-5 mt-5 flex-shrink-0">
         <div className="flex p-1 rounded-full bg-text/5 gap-1">
           {(['programmes', 'sessions'] as const).map(t => {
             const isActive = t === mainTab
@@ -272,7 +272,7 @@ function WorkoutsPageInner() {
           <>
             <SubTabBar tabs={['strength', 'cardio'] as const} active={sessSubTab} onChange={setSessSubTab} />
 
-            <div className="no-scrollbar flex-1 overflow-y-auto px-4 pt-4">
+            <div className="no-scrollbar flex-1 overflow-y-auto px-5 pt-4">
               <div className="mb-3">
                 <CtaButton
                   label={sessSubTab === 'strength' ? 'Add new session' : 'Add cardio session'}

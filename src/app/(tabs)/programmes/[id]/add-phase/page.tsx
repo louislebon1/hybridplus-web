@@ -43,14 +43,14 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
     <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-7 flex-shrink-0">
+      <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Add new phase</h1>
         <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
           <X size={16} className="text-accent" />
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4">
 
         {/* Name */}
         <div className="flex flex-col gap-2">

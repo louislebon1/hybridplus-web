@@ -56,7 +56,7 @@ export default function NewSessionConfigurePage() {
     <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+      <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
           <X size={16} className="text-accent" />
@@ -64,7 +64,7 @@ export default function NewSessionConfigurePage() {
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto pb-[88px]">
+      <div className="flex-1 overflow-y-auto pb-[96px]">
 
         {blocks.map((block, blockIdx) => (
           <div key={block.id} className="px-4 py-6 border-b border-border flex flex-col gap-4">
@@ -167,7 +167,7 @@ export default function NewSessionConfigurePage() {
       </div>
 
       {/* Save footer */}
-      <div className="fixed bottom-20 left-0 right-0 p-4 bg-bg border-t border-border">
+      <div className="fixed bottom-20 left-0 right-0 px-5 pt-4 pb-6 bg-bg border-t border-border">
         <button
           onClick={handleSave}
           disabled={blocks.length === 0}

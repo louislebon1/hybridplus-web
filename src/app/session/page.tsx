@@ -233,11 +233,11 @@ export default function SessionPage() {
     return (
       <>
       <div className="flex flex-col h-full">
-        <div className="flex items-center gap-3 px-4 pt-12 pb-4 flex-shrink-0">
+        <div className="flex items-center gap-3 px-5 screen-top pb-4 flex-shrink-0">
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
-          <h1 className="text-h3 font-bold text-text">Start Workout</h1>
+          <h1 className="text-h2 font-bold text-text">Start Workout</h1>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-5">
@@ -489,7 +489,7 @@ export default function SessionPage() {
   return (
     <div className="flex flex-col h-full bg-bg">
       {/* Header */}
-      <div className="flex flex-col gap-2 px-4 pt-7 pb-6 border-b border-border flex-shrink-0">
+      <div className="flex flex-col gap-2 px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <div className="flex items-center justify-between w-full">
           {editingName ? (
             <input
@@ -497,10 +497,10 @@ export default function SessionPage() {
               defaultValue={activeSession.name}
               onBlur={(e) => { setSessionName(e.target.value); setEditingName(false) }}
               onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
-              className="text-h3 font-bold leading-[26px] text-text bg-transparent border-b border-accent outline-none flex-1 min-w-0"
+              className="text-h2 font-bold leading-[30px] text-text bg-transparent border-b border-accent outline-none flex-1 min-w-0"
             />
           ) : (
-            <button onClick={() => setEditingName(true)} className="text-h3 font-bold leading-[26px] text-text text-left min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+            <button onClick={() => setEditingName(true)} className="text-h2 font-bold leading-[30px] text-text text-left min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
               {activeSession.name}
             </button>
           )}
@@ -533,7 +533,7 @@ export default function SessionPage() {
               </div>
             )}
           </div>
-          <div className="px-4 pb-6 flex-shrink-0">
+          <div className="px-5 pb-6 flex-shrink-0">
             <Button size="lg" className="w-full" onClick={dismissRestTimer}>
               Skip rest <ChevronRight size={16} />
             </Button>
@@ -543,7 +543,7 @@ export default function SessionPage() {
         /* ── Logging a set ── */
         <>
           <div className="flex-1 overflow-y-auto flex flex-col gap-6">
-            <div className="flex gap-4 items-center px-4 pt-6">
+            <div className="flex gap-4 items-center px-5 pt-6">
               <Button variant="secondary" className="flex-1" onClick={() => setShowSwapExercise(true)}>Swap exercise</Button>
             </div>
 
@@ -596,7 +596,7 @@ export default function SessionPage() {
             </div>
           </div>
 
-          <div className="px-4 pb-6 pt-3 flex-shrink-0 flex flex-col gap-3">
+          <div className="px-5 pb-6 pt-3 flex-shrink-0 flex flex-col gap-3">
             <Button size="lg" className="w-full" onClick={handleLogSet}>Log set</Button>
             <div className="flex gap-3">
               <Button variant="secondary" size="lg" className="flex-1" onClick={() => addSet(currentBlock.id)}>

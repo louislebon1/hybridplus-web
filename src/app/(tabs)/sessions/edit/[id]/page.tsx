@@ -88,7 +88,7 @@ export default function EditSessionPage() {
     <div className="flex flex-col h-full bg-bg">
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-7 flex-shrink-0">
+      <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
@@ -100,7 +100,7 @@ export default function EditSessionPage() {
         </button>
       </div>
 
-      <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-4">
+      <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4">
 
         {/* Strength form */}
         {strength && (

@@ -187,13 +187,13 @@ export default function HomePage() {
     .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
-    <div className="relative flex flex-col h-[100dvh] overflow-hidden">
+    <div className="relative flex flex-col h-full overflow-hidden">
       <HeroGlow color={read.color} />
 
       <div className="no-scrollbar relative flex-1 overflow-y-auto">
 
         {/* ── Hero ── */}
-        <div className="px-5 pt-6 flex flex-col">
+        <div className="px-5 screen-top flex flex-col">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-h4 font-bold text-text m-0">Today</p>
@@ -367,7 +367,7 @@ export default function HomePage() {
       </div>
 
       {/* ── Primary CTA — sits above the floating nav ── */}
-      <div className="relative px-5 pt-3 pb-[92px] flex-shrink-0">
+      <div className="relative px-5 pt-3 pb-4 flex-shrink-0">
         <button
           onClick={handleCtaClick}
           className="w-full h-13 py-3.5 bg-accent rounded-full flex items-center justify-center gap-2 px-4 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.98] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"

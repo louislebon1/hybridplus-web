@@ -224,11 +224,23 @@ Screens follow a consistent vertical score:
 5. **Primary action** — pinned above the navigation
 6. **Floating navigation** — overlapping the content, never in flow
 
-Horizontal gutter is `20px` on recomposed screens (home, progress). Card padding is `16px`; internal stacks use `8px` within a group and `12px` between; sections separate by `28px`. Content scrolls beneath the navigation with `~92px` bottom clearance so the last card is never trapped under it.
+Every screen opens the same way, without exception:
+
+- **Top inset** — `.screen-top`, which is `env(safe-area-inset-top) + 24px`. Never a hardcoded value: the status bar is black-translucent over a fit-to-cover viewport, so on device a flat number either clips under the clock or wastes a band below it.
+- **Gutter** — `20px`, at screen level, on every screen. Card padding is a separate decision and stays `16px`.
+- **Screen title** — the `h2` role, 24px/700, as the first element inside the header.
+
+Beneath that, internal stacks use `8px` within a group and `12px` between; sections separate by `28px`.
+
+Bottom clearance belongs to the tab shell alone (`NAV_CLEARANCE`, 80px on `main`). Screens must not add their own — the only legitimate per-screen clearance is for a screen's *own* fixed footer bar, which is `96px`.
 
 ### Named Rules
 
 **The One Hero Rule.** Each screen earns exactly one 68px metric, at the top, over the gradient. A second competes with the first and both lose.
+
+**The Same Door Rule.** Top inset, gutter and title role are identical on all eighteen screens. This is Operate mode and the app is opened one-handed between sets — the eye must land in the same place every time, so recognition is the affordance and variety is the defect. A screen whose content genuinely differs (the calendar's month, the home hero) still enters through the same door at the same size. Only the content below the title varies.
+
+**The Shell Owns The Bottom Rule.** Clearance for the floating navigation is declared once, in the tabs layout. A screen that also pads its own scroll container stacks the two and strands the last card in dead space.
 
 **The Proximity Rule.** The gap inside a group is always visibly smaller than the gap between groups. When those two values converge, grouping stops communicating.
 
