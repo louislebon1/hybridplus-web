@@ -5,9 +5,11 @@
      fill that picks up whatever gradient sits behind it, plus a backdrop
      blur applied via the .bg-bg-card utility below. */
   --bg: #000000;
-  /* Fill matches the Figma glass swatch (963:376): 12% white. */
-  --bg-card: rgba(255, 255, 255, 0.12);
-  --bg-card-raised: rgba(255, 255, 255, 0.18);
+  /* Glass fill. Lighter than the Figma swatch's 12% — the backdrop blur and
+     specular edge carry the material, so the fill only needs to lift the
+     pane off black. --raised is the hover step. */
+  --bg-card: rgba(255, 255, 255, 0.06);
+  --bg-card-raised: rgba(255, 255, 255, 0.10);
   --bg-element: rgba(255, 255, 255, 0.05);
   --bg-hover: rgba(255, 255, 255, 0.09);
   --bg-selected: rgba(255, 255, 255, 0.13);
