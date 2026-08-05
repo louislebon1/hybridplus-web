@@ -82,17 +82,17 @@
   --text-metric: 4.25rem;              /* 68px */
   --text-metric--line-height: 4.25rem; /* 1.0 — tight, per reference */
   --text-metric--font-weight: 700;
-  --text-metric--letter-spacing: -0.02em;
+  --text-metric--letter-spacing: -0.03em;
 
   --text-display: 2rem;             /* 32px */
   --text-display--line-height: 2.375rem;  /* 38px */
   --text-display--font-weight: 700;
-  --text-display--letter-spacing: -0.02em;
+  --text-display--letter-spacing: -0.025em;
 
   --text-h1: 1.75rem;               /* 28px */
   --text-h1--line-height: 2.125rem; /* 34px */
   --text-h1--font-weight: 700;
-  --text-h1--letter-spacing: -0.02em;
+  --text-h1--letter-spacing: -0.022em;
 
   --text-h2: 1.5rem;                /* 24px */
   --text-h2--line-height: 1.875rem; /* 30px */
@@ -102,27 +102,35 @@
   --text-h3: 1.25rem;               /* 20px */
   --text-h3--line-height: 1.625rem; /* 26px */
   --text-h3--font-weight: 700;
-  --text-h3--letter-spacing: -0.02em;
+  --text-h3--letter-spacing: -0.018em;
 
   --text-h4: 1.125rem;              /* 18px */
   --text-h4--line-height: 1.5rem;   /* 24px */
   --text-h4--font-weight: 700;
-  --text-h4--letter-spacing: -0.02em;
+  --text-h4--letter-spacing: -0.015em;
 
   --text-body: 1rem;                /* 16px */
   --text-body--line-height: 1.5rem; /* 24px */
   --text-body--font-weight: 500;
-  --text-body--letter-spacing: -0.02em;
+  --text-body--letter-spacing: -0.01em;
 
   --text-label: 0.875rem;           /* 14px */
   --text-label--line-height: 1.125rem; /* 18px */
   --text-label--font-weight: 500;
-  --text-label--letter-spacing: -0.02em;
+  --text-label--letter-spacing: -0.005em;
+
+  /* Supporting copy that wraps. Same size as label, but label's 18px leading is
+     a single-line box — it sets too tight once the text runs to two or three
+     lines against black. */
+  --text-prose: 0.875rem;           /* 14px */
+  --text-prose--line-height: 1.25rem; /* 20px */
+  --text-prose--font-weight: 500;
+  --text-prose--letter-spacing: -0.005em;
 
   --text-caption: 0.75rem;          /* 12px */
   --text-caption--line-height: 1rem; /* 16px */
   --text-caption--font-weight: 500;
-  --text-caption--letter-spacing: -0.02em;
+  --text-caption--letter-spacing: 0.005em;
 
   --text-tag: 0.6875rem;            /* 11px */
   --text-tag--line-height: 0.875rem; /* 14px */
@@ -154,7 +162,7 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--text-body--letter-spacing);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: dark;

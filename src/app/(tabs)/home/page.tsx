@@ -217,7 +217,7 @@ export default function HomePage() {
           )}
 
           <h1 className={`text-h2 font-bold text-text m-0 ${weekPct !== null ? 'mt-3' : 'mt-10'}`}>{read.title}</h1>
-          <p className="text-label text-white/70 m-0 mt-2 max-w-[34ch]">{read.copy}</p>
+          <p className="text-prose text-white/70 m-0 mt-2 max-w-[46ch]">{read.copy}</p>
 
           {/* Plan status card */}
           <div className="mt-6 bg-bg-card border border-border rounded-[16px] px-4 py-3.5 flex items-center justify-between gap-3">

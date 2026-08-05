@@ -27,17 +27,17 @@ typography:
     fontSize: "4.25rem"
     fontWeight: 700
     lineHeight: 1
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.03em"
   display:
     fontSize: "2rem"
     fontWeight: 700
     lineHeight: "2.375rem"
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.025em"
   h1:
     fontSize: "1.75rem"
     fontWeight: 700
     lineHeight: "2.125rem"
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.022em"
   h2:
     fontSize: "1.5rem"
     fontWeight: 700
@@ -47,27 +47,32 @@ typography:
     fontSize: "1.25rem"
     fontWeight: 700
     lineHeight: "1.625rem"
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.018em"
   h4:
     fontSize: "1.125rem"
     fontWeight: 700
     lineHeight: "1.5rem"
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.015em"
   body:
     fontSize: "1rem"
     fontWeight: 500
     lineHeight: "1.5rem"
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.01em"
   label:
     fontSize: "0.875rem"
     fontWeight: 500
     lineHeight: "1.125rem"
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.005em"
+  prose:
+    fontSize: "0.875rem"
+    fontWeight: 500
+    lineHeight: "1.25rem"
+    letterSpacing: "-0.005em"
   caption:
     fontSize: "0.75rem"
     fontWeight: 500
     lineHeight: "1rem"
-    letterSpacing: "-0.02em"
+    letterSpacing: "0.005em"
   tag:
     fontSize: "0.6875rem"
     fontWeight: 500
@@ -193,7 +198,8 @@ Semantic status colours are separate and non-negotiable in meaning: **Complete G
 - **H3** (700, 20px/26px): Sub-screen titles and distribution percentages.
 - **H4** (700, 18px/24px): Section headings and alphabetical dividers.
 - **Body** (500, 16px/24px): Buttons, inputs, primary card titles.
-- **Label** (500, 14px/18px): Supporting sentences, list row names, form labels.
+- **Label** (500, 14px/18px): List row names, form labels — single-line text, where 18px is a box height rather than leading.
+- **Prose** (500, 14px/20px): Supporting sentences that wrap. Same size as Label; the extra 2px of leading is what makes two and three-line copy readable against black.
 - **Caption** (500, 12px/16px): Metadata, chip text, table values.
 - **Tag** (500, 11px/14px, +0.02em, uppercase): Section eyebrows, badges, units inside fields, column headers.
 
@@ -201,7 +207,7 @@ Semantic status colours are separate and non-negotiable in meaning: **Complete G
 
 **The Two Weight Rule.** 700 for headings and focal metrics; 500 for everything else. There is no 400 and no 600. If something needs more emphasis, it needs more size, more contrast or more space — not another weight.
 
-**The Tighten Everything But Tags Rule.** Tracking is −0.02em across the entire scale. Uppercase tags at 11px are the sole exception and open to +0.02em, because uppercase at small sizes needs air, not compression.
+**The Tracking Follows The Size Rule.** Tracking is not one number — it opens as the type gets smaller, from −0.03em at 68px to +0.02em at 11px, crossing zero between 14px and 12px. Two reasons, and they compound. SF ships its own optical tracking that is negative only at display sizes and positive at caption sizes, so a single blanket value fights the face at one end of the scale or the other. And white text on true black optically bloats, so the small end needs air rather than compression. Large type is where tightening reads as intent; small type is where it reads as a defect. Never set one tracking value across the ramp.
 
 **The List Is Not A Heading Rule.** Card titles, list rows and exercise names take 500, even at heading sizes. Bold is reserved for screen titles, section dividers and focal metrics — bolding a 200-row list flattens the hierarchy it was meant to create.
 

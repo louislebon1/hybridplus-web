@@ -111,7 +111,7 @@ function RestRing({ pct, label, sublabel }: { pct: number; label: string; sublab
         />
       </svg>
       <div className="flex flex-col items-center gap-1">
-        <p className="font-medium text-[72px] leading-none text-text tabular">{label}</p>
+        <p className="text-metric text-text tabular">{label}</p>
         <p className="text-caption font-medium text-text/40 uppercase tracking-wide">{sublabel}</p>
       </div>
     </div>
@@ -247,7 +247,7 @@ export default function SessionPage() {
             className="bg-accent text-accent-fg rounded-2xl p-5 text-left"
           >
             <p className="text-h4 font-bold">Quick Start</p>
-            <p className="text-label opacity-80 mt-1">Start an empty session — add exercises as you go</p>
+            <p className="text-prose opacity-80 mt-1">Start an empty session — add exercises as you go</p>
           </button>
 
           {/* Today's scheduled sessions */}

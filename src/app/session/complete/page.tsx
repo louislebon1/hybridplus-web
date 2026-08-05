@@ -73,7 +73,7 @@ export default function SessionCompletePage() {
         </div>
 
         <h1 className="text-h2 font-bold text-text m-0 mt-3">{activeSession.name}</h1>
-        <p className="text-label text-white/70 m-0 mt-2 max-w-[34ch]">
+        <p className="text-prose text-white/70 m-0 mt-2 max-w-[46ch]">
           {setsCompleted} set{setsCompleted !== 1 ? 's' : ''} logged in {fmtDuration(completed.durationSeconds)}
           {newPRs > 0 ? ` — and you set ${newPRs} new personal record${newPRs !== 1 ? 's' : ''}.` : '. Volume is banked toward this week’s total.'}
         </p>
