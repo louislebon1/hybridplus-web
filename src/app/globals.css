@@ -191,6 +191,15 @@ h1, h2, h3, h4, h5, h6 {
     inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
+/* Numeric fields are driven by steppers and direct entry; the native spinner
+   arrows add visual noise and are tap-targets too small to be useful. */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] { -moz-appearance: textfield; appearance: textfield; }
+
 .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 8px); }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

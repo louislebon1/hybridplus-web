@@ -14,6 +14,8 @@ import { localDateStr } from '@/lib/date'
 import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
 import { CARDIO_ICONS } from '@/lib/activity-icons'
 
+type EditableField = 'weight' | 'reps' | 'rpe'
+
 const EMPTY_CARDIO_FORM = {
   activityType: 'run' as ActivityType,
   sessionDate: '',
@@ -24,6 +26,53 @@ const EMPTY_CARDIO_FORM = {
 }
 
 const stepperBtn = 'w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0 outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-hover active:scale-90 active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50'
+
+/**
+ * One logging row: tap the steppers for quick adjustments, or type straight
+ * into the field. The unit sits inside the field, with a matching-width
+ * spacer opposite so the number stays optically centred as digits change.
+ */
+function ValueRow({
+  label, unit, display, placeholder, onDec, onInc, onChange, onFocus, onBlur,
+}: {
+  label: string
+  unit: string
+  display: string
+  placeholder?: string
+  onDec: () => void
+  onInc: () => void
+  onChange: (raw: string) => void
+  onFocus: () => void
+  onBlur: () => void
+}) {
+  return (
+    <div className="flex gap-3 items-center justify-center w-full">
+      <button onClick={onDec} aria-label={`Decrease ${label}`} className={stepperBtn}>
+        <Minus size={16} className="text-accent" />
+      </button>
+
+      <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 px-3 flex items-center gap-1 ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/60">
+        <span className="w-11 flex-shrink-0" aria-hidden />
+        <input
+          type="number"
+          inputMode="decimal"
+          aria-label={label}
+          value={display}
+          placeholder={placeholder}
+          onChange={e => onChange(e.target.value)}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          className="w-0 flex-1 min-w-0 text-center bg-transparent outline-none text-display text-text tabular placeholder:text-text-tertiary"
+        />
+        <span className="w-11 flex-shrink-0 text-tag uppercase text-text-tertiary">{unit}</span>
+      </div>
+
+      <button onClick={onInc} aria-label={`Increase ${label}`} className={stepperBtn}>
+        <Plus size={16} className="text-accent" />
+      </button>
+    </div>
+  )
+}
 
 const REST_RING_RADIUS = 100
 const REST_RING_CIRCUMFERENCE = 2 * Math.PI * REST_RING_RADIUS
@@ -73,7 +122,7 @@ export default function SessionPage() {
   const router = useRouter()
   const {
     activeSession, activeBlockId, startSession, finishSession, abandonSession,
-    addExerciseBlock, substituteExercise, updateSet, completeSet, removeSet,
+    addExerciseBlock, substituteExercise, updateSet, completeSet, addSet, removeSet,
     setSessionName, setActiveBlock,
     restTimer, dismissRestTimer, addRestTime,
   } = useSessionStore()
@@ -88,6 +137,8 @@ export default function SessionPage() {
   const [showSwapExercise, setShowSwapExercise] = useState(false)
   const [exerciseSearch, setExerciseSearch] = useState('')
   const [editingName, setEditingName] = useState(false)
+  const [editingField, setEditingField] = useState<EditableField | null>(null)
+  const [editingValue, setEditingValue] = useState('')
   const [cardioForm, setCardioForm] = useState(EMPTY_CARDIO_FORM)
   const [showLogCardio, setShowLogCardio] = useState(false)
 
@@ -369,6 +420,11 @@ export default function SessionPage() {
     ? getLastTimeSet(currentBlock.exerciseId, setPosition, pastSessions)
     : null
 
+  // Effective values shown in the fields — the logged value, else the target.
+  const weightValue = currentSet?.weightValue ?? currentSet?.targetWeightKg ?? 0
+  const repsValue = currentSet?.reps ?? currentSet?.targetReps ?? 0
+  const rpeValue = currentSet?.rpe ?? currentSet?.targetRpe ?? null
+
   function stepWeight(delta: number) {
     if (!currentBlock || !currentSet) return
     const base = currentSet.weightValue ?? currentSet.targetWeightKg ?? 0
@@ -383,6 +439,36 @@ export default function SessionPage() {
     if (!currentBlock || !currentSet) return
     const base = currentSet.rpe ?? currentSet.targetRpe ?? 5
     updateSet(currentBlock.id, currentSet.id, { rpe: Math.min(10, Math.max(1, base + delta)) })
+  }
+
+  /**
+   * Typed edits commit to the store on every keystroke so "Log set" always
+   * captures what's on screen, but the raw string is held locally while the
+   * field has focus — otherwise clearing it to retype would immediately
+   * snap back to the target value mid-entry.
+   */
+  function editField(field: EditableField, raw: string) {
+    if (!currentBlock || !currentSet) return
+    setEditingValue(raw)
+    const parsed = raw.trim() === '' ? NaN : parseFloat(raw)
+    const ok = !isNaN(parsed)
+    if (field === 'weight') {
+      updateSet(currentBlock.id, currentSet.id, { weightValue: ok ? Math.max(0, parsed) : null })
+    } else if (field === 'reps') {
+      updateSet(currentBlock.id, currentSet.id, { reps: ok ? Math.max(0, Math.round(parsed)) : null })
+    } else {
+      updateSet(currentBlock.id, currentSet.id, { rpe: ok ? Math.min(10, Math.max(1, parsed)) : null })
+    }
+  }
+
+  function beginEdit(field: EditableField, current: string) {
+    setEditingField(field)
+    setEditingValue(current)
+  }
+
+  function endEdit() {
+    setEditingField(null)
+    setEditingValue('')
   }
 
   function handleFinish() {
@@ -480,36 +566,52 @@ export default function SessionPage() {
             </div>
 
             <div className="flex flex-col gap-2 items-center px-4">
-              {/* Weight */}
-              <div className="flex gap-3 items-center justify-center w-full">
-                <button onClick={() => stepWeight(-2.5)} className={stepperBtn}><Minus size={16} className="text-accent" /></button>
-                <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
-                  <span className="text-display text-text tabular">{currentSet.weightValue ?? currentSet.targetWeightKg ?? 0}</span>
-                </div>
-                <button onClick={() => stepWeight(2.5)} className={stepperBtn}><Plus size={16} className="text-accent" /></button>
-              </div>
-              {/* Reps */}
-              <div className="flex gap-3 items-center justify-center w-full">
-                <button onClick={() => stepReps(-1)} className={stepperBtn}><Minus size={16} className="text-accent" /></button>
-                <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
-                  <span className="text-display text-text tabular">{currentSet.reps ?? currentSet.targetReps ?? 0}</span>
-                </div>
-                <button onClick={() => stepReps(1)} className={stepperBtn}><Plus size={16} className="text-accent" /></button>
-              </div>
-              {/* RPE */}
-              <div className="flex gap-3 items-center justify-center w-full">
-                <button onClick={() => stepRpe(-0.5)} className={stepperBtn}><Minus size={16} className="text-accent" /></button>
-                <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 flex items-center justify-center">
-                  <span className="text-display text-text tabular">{currentSet.rpe ?? currentSet.targetRpe ?? '—'}</span>
-                </div>
-                <button onClick={() => stepRpe(0.5)} className={stepperBtn}><Plus size={16} className="text-accent" /></button>
-              </div>
+              <ValueRow
+                label="Weight" unit="kg"
+                display={editingField === 'weight' ? editingValue : String(weightValue)}
+                onDec={() => stepWeight(-2.5)}
+                onInc={() => stepWeight(2.5)}
+                onChange={raw => editField('weight', raw)}
+                onFocus={() => beginEdit('weight', String(weightValue))}
+                onBlur={endEdit}
+              />
+              <ValueRow
+                label="Reps" unit="reps"
+                display={editingField === 'reps' ? editingValue : String(repsValue)}
+                onDec={() => stepReps(-1)}
+                onInc={() => stepReps(1)}
+                onChange={raw => editField('reps', raw)}
+                onFocus={() => beginEdit('reps', String(repsValue))}
+                onBlur={endEdit}
+              />
+              <ValueRow
+                label="RPE" unit="rpe" placeholder="—"
+                display={editingField === 'rpe' ? editingValue : (rpeValue !== null ? String(rpeValue) : '')}
+                onDec={() => stepRpe(-0.5)}
+                onInc={() => stepRpe(0.5)}
+                onChange={raw => editField('rpe', raw)}
+                onFocus={() => beginEdit('rpe', rpeValue !== null ? String(rpeValue) : '')}
+                onBlur={endEdit}
+              />
             </div>
           </div>
 
           <div className="px-4 pb-6 pt-3 flex-shrink-0 flex flex-col gap-3">
             <Button size="lg" className="w-full" onClick={handleLogSet}>Log set</Button>
-            <Button variant="secondary" size="lg" className="w-full" onClick={() => removeSet(currentBlock.id, currentSet.id)}>Delete set</Button>
+            <div className="flex gap-3">
+              <Button variant="secondary" size="lg" className="flex-1" onClick={() => addSet(currentBlock.id)}>
+                <Plus size={16} /> Add set
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                className="flex-1"
+                disabled={currentBlock.sets.length <= 1}
+                onClick={() => removeSet(currentBlock.id, currentSet.id)}
+              >
+                Delete set
+              </Button>
+            </div>
           </div>
 
           {/* Prev / next exercise nav */}
