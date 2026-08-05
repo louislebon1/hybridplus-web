@@ -177,13 +177,19 @@ body {
   color-scheme: dark;
 }
 
-/* Two weights only: Bold for headings, Medium for everything else. */
-p, span, button, input, textarea, select, label, a {
-  font-weight: 500;
-}
+/* Two weights only: Bold for headings, Medium for everything else.
+   These are defaults, so they live in @layer base and lose to an explicit
+   utility. Unlayered they would beat Tailwind's layered .font-medium, and a
+   card or sheet title that asks for 500 would silently render 700 — which is
+   The List Is Not A Heading Rule being defeated by its own enforcement. */
+@layer base {
+  p, span, button, input, textarea, select, label, a {
+    font-weight: 500;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+  }
 }
 
 /* Liquid glass.
