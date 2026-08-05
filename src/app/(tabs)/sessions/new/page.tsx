@@ -35,14 +35,14 @@ function NewSessionPageInner() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
-        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
+        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
           <X size={16} className="text-accent" />
         </button>
       </div>
 
       {/* Type toggle */}
       <div className="px-5 pt-6 pb-3 flex-shrink-0">
-        <div className="flex p-1 rounded-full bg-text/5 gap-1">
+        <div className="flex p-1 rounded-full bg-bg-element gap-1">
           {(['strength', 'cardio'] as const).map(t => {
             const active = t === sessionType
             return (

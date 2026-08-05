@@ -20,7 +20,7 @@ export default function ProfilePage() {
         <div className="px-5 pb-2">
           <p className="eyebrow">Account</p>
         </div>
-        <div className="bg-bg-element border border-text/[0.08] rounded-xl mx-5 overflow-hidden">
+        <div className="bg-bg-element border border-text/[0.08] rounded-inner mx-5 overflow-hidden">
           <button className={row} onClick={() => router.push('/profile/edit')}>
             <span className="text-label font-medium text-text">Edit Profile</span>
             <ChevronRight size={16} className="text-text/30" />
@@ -35,7 +35,7 @@ export default function ProfilePage() {
         <div className="px-5 pt-5 pb-2">
           <p className="eyebrow">App</p>
         </div>
-        <div className="bg-bg-element border border-text/[0.08] rounded-xl mx-5 overflow-hidden">
+        <div className="bg-bg-element border border-text/[0.08] rounded-inner mx-5 overflow-hidden">
           <button className={row}>
             <span className="text-label font-medium text-text">Units</span>
             <div className="flex items-center gap-1.5">

@@ -46,7 +46,7 @@ export default function NewCardioSessionPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New cardio session</h1>
-        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
+        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
           <X size={16} className="text-accent" />
         </button>
       </div>
@@ -67,7 +67,7 @@ export default function NewCardioSessionPage() {
                   key={a}
                   type="button"
                   onClick={() => setActivityType(a)}
-                  className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-accent text-accent-fg' : 'bg-text/5 text-text opacity-60'}`}
+                  className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text opacity-60'}`}
                 >
                   {a.charAt(0).toUpperCase() + a.slice(1)}
                 </button>

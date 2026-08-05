@@ -84,7 +84,7 @@ export function Input({ label, error, className = '', id, ...rest }: InputProps)
       <input
         id={inputId}
         className={[
-          'w-full h-12 px-4 rounded-xl bg-bg-element border text-text text-body',
+          'w-full h-12 px-4 rounded-inner bg-bg-element border text-text text-body',
           'placeholder:text-text-tertiary',
           'focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent',
           'transition-colors',
@@ -155,7 +155,7 @@ export function Card({ children, className = '', onClick }: CardProps) {
           : undefined
       }
       className={[
-        'bg-bg-element border border-border rounded-xl p-4',
+        'bg-bg-element border border-border rounded-inner p-4',
         interactive
           ? 'cursor-pointer hover:bg-bg-hover active:bg-bg-selected transition-colors'
           : '',

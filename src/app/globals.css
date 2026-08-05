@@ -39,11 +39,15 @@
   --zone-4: #A855F7;
   --zone-5: #2DD4BF;
 
-  --radius-card: 20px;
-  --radius-inner: 12px;
 }
 
 @theme inline {
+  /* Declared here rather than :root so Tailwind actually generates
+     `rounded-card` / `rounded-inner`. While they sat in :root they were
+     unreachable from markup, and six ad-hoc radii grew in their place. */
+  --radius-card: 20px;
+  --radius-inner: 12px;
+
   --color-bg: var(--bg);
   --color-bg-card: var(--bg-card);
   --color-bg-card-raised: var(--bg-card-raised);
@@ -190,6 +194,50 @@ body {
   h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
   }
+}
+
+/* Ambient atmosphere for the whole app.
+
+   The glass panels are lenses. Over flat black they have nothing to refract and
+   render as grey boxes, which is why every screen without a HeroGlow read flat
+   no matter how the cards were styled. This is the floor of atmosphere that
+   makes the material behave like a material, on all nineteen screens; the three
+   hero screens layer their own stronger, contextual glow on top of it.
+
+   isolation:isolate keeps the negative z-index inside this stacking context, so
+   the glows paint above the column's own background but beneath every child —
+   no wrapper element and no z-index scale needed. */
+.app-atmosphere {
+  isolation: isolate;
+}
+
+.app-atmosphere::before,
+.app-atmosphere::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.app-atmosphere::before {
+  top: -170px;
+  left: -110px;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 68%);
+  filter: blur(90px);
+  opacity: 0.2;
+}
+
+.app-atmosphere::after {
+  bottom: -150px;
+  right: -100px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+  filter: blur(100px);
+  opacity: 0.11;
 }
 
 /* Liquid glass.

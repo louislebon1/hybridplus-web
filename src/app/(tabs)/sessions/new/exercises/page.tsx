@@ -82,14 +82,14 @@ export default function NewSessionExercisesPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
-        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
+        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
           <X size={16} className="text-accent" />
         </button>
       </div>
 
       {/* Search bar */}
       <div className="flex gap-4 px-5 pt-6 pb-3 flex-shrink-0">
-        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-md bg-text/5 ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/50">
+        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-inner bg-bg-element ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/50">
           <Search size={16} className="text-text/40 flex-shrink-0" />
           <input
             placeholder="Search for exercises"

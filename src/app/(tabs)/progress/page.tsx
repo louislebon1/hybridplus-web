@@ -222,7 +222,7 @@ export default function ProgressPage() {
           >
             Training summary
           </SectionLabel>
-          <div className="mt-3 bg-bg-card border border-border rounded-[20px] px-3.5 py-3.5">
+          <div className="mt-3 bg-bg-card rounded-card px-3.5 py-3.5">
             {hasGridData ? (
               <WeekGrid rows={weekRows} />
             ) : (
@@ -252,7 +252,7 @@ export default function ProgressPage() {
               {/* Training focus distribution */}
               <div>
                 <SectionLabel>Training focus</SectionLabel>
-                <div className="mt-3 bg-bg-card border border-border rounded-[20px] p-4">
+                <div className="mt-3 bg-bg-card rounded-card p-4">
                   {focusZones.length > 0 ? (
                     <DistributionSummary zones={focusZones} />
                   ) : (
@@ -267,7 +267,7 @@ export default function ProgressPage() {
               <div>
                 <SectionLabel>Fitness</SectionLabel>
                 <div className="mt-3 flex flex-col gap-2.5">
-                  <div className="bg-bg-card border border-border rounded-[20px] p-4 flex items-center gap-4">
+                  <div className="bg-bg-card rounded-card p-4 flex items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Weekly volume</p>
                       <p className="text-h1 font-bold text-text tabular m-0 mt-1">
@@ -284,7 +284,7 @@ export default function ProgressPage() {
                     </div>
                   </div>
 
-                  <div className="bg-bg-card border border-border rounded-[20px] p-4 flex items-center gap-4">
+                  <div className="bg-bg-card rounded-card p-4 flex items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Consistency</p>
                       <p className="text-h1 font-bold text-text tabular m-0 mt-1">
@@ -297,7 +297,7 @@ export default function ProgressPage() {
               </div>
 
               {consecutiveWeeks >= 4 && (
-                <div className="rounded-[20px] p-4 border" style={{ backgroundColor: 'var(--warning-subtle)', borderColor: 'rgba(251,146,60,0.3)' }}>
+                <div className="rounded-card p-4 border" style={{ backgroundColor: 'var(--warning-subtle)', borderColor: 'rgba(251,146,60,0.3)' }}>
                   <p className="text-label font-medium m-0" style={{ color: 'var(--warning)' }}>Recovery recommended</p>
                   <p className="text-caption text-text-secondary mt-1 m-0">
                     You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
@@ -311,7 +311,7 @@ export default function ProgressPage() {
             <>
               <div>
                 <SectionLabel>Volume by muscle group</SectionLabel>
-                <div className="mt-3 bg-bg-card border border-border rounded-[20px] p-4">
+                <div className="mt-3 bg-bg-card rounded-card p-4">
                   {allGroupZones.length > 0 ? (
                     <div className="flex flex-col gap-3">
                       {allGroupZones.map(z => <ZoneRow key={z.label} zone={z} />)}
@@ -331,7 +331,7 @@ export default function ProgressPage() {
                     description="Complete some workouts to start tracking your PRs."
                   />
                 ) : (
-                  <div className="mt-3 bg-bg-card border border-border rounded-[20px] overflow-hidden">
+                  <div className="mt-3 bg-bg-card rounded-card overflow-hidden">
                     <div className="grid grid-cols-4 px-4 py-2.5 border-b border-border">
                       <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary col-span-2">Exercise</span>
                       <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary text-right">Max kg</span>
@@ -368,7 +368,7 @@ export default function ProgressPage() {
               {Object.keys(activityCounts).length > 0 && (
                 <div>
                   <SectionLabel>Activity split</SectionLabel>
-                  <div className="mt-3 bg-bg-card border border-border rounded-[20px] p-4 flex flex-col gap-3">
+                  <div className="mt-3 bg-bg-card rounded-card p-4 flex flex-col gap-3">
                     {Object.entries(activityCounts)
                       .sort((a, b) => b[1] - a[1])
                       .map(([type, count], i) => {
@@ -394,7 +394,7 @@ export default function ProgressPage() {
                   <SectionLabel>Recent runs</SectionLabel>
                   <div className="mt-3 flex flex-col gap-2.5">
                     {recentRuns.map((s) => (
-                      <div key={s.id} className="bg-bg-card border border-border rounded-[16px] px-4 py-3 flex items-center justify-between gap-3">
+                      <div key={s.id} className="bg-bg-card rounded-card px-4 py-3 flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-label font-medium text-text m-0 capitalize truncate">{s.runType?.replace('_', ' ') ?? 'Run'}</p>
                           <p className="text-tag text-text-tertiary m-0 mt-0.5">{fmtDate(s.sessionDate)}</p>

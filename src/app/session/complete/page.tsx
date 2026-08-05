@@ -95,7 +95,7 @@ export default function SessionCompletePage() {
           <SectionLabel>Exercises</SectionLabel>
           <div className="mt-3 flex flex-col gap-2">
             {completed.exercises.map(ex => (
-              <div key={ex.exerciseId} className="bg-bg-card border border-border rounded-[16px] px-4 py-3 flex items-center justify-between gap-3">
+              <div key={ex.exerciseId} className="bg-bg-card rounded-card px-4 py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-label font-medium text-text m-0 truncate">{ex.exerciseName}</p>
                   <p className="text-tag text-text-tertiary m-0 mt-0.5">

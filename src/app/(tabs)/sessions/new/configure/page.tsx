@@ -58,7 +58,7 @@ export default function NewSessionConfigurePage() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit session</h1>
-        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center">
+        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
           <X size={16} className="text-accent" />
         </button>
       </div>
@@ -74,10 +74,10 @@ export default function NewSessionConfigurePage() {
               <div className="flex items-center justify-between">
                 <span className="text-h4 font-medium leading-6 text-text">{block.exerciseName}</span>
                 <div className="flex items-center gap-1.5">
-                  <button onClick={() => moveBlock(block.id, 'up')} className={`w-8 h-8 rounded-full bg-text/5 flex items-center justify-center ${blockIdx === 0 ? 'opacity-40' : ''}`}>
+                  <button onClick={() => moveBlock(block.id, 'up')} className={`w-8 h-8 rounded-full bg-bg-element flex items-center justify-center ${blockIdx === 0 ? 'opacity-40' : ''}`}>
                     <ChevronUp size={16} className="text-text" />
                   </button>
-                  <button onClick={() => moveBlock(block.id, 'down')} className={`w-8 h-8 rounded-full bg-text/5 flex items-center justify-center ${blockIdx === blocks.length - 1 ? 'opacity-40' : ''}`}>
+                  <button onClick={() => moveBlock(block.id, 'down')} className={`w-8 h-8 rounded-full bg-bg-element flex items-center justify-center ${blockIdx === blocks.length - 1 ? 'opacity-40' : ''}`}>
                     <ChevronDown size={16} className="text-text" />
                   </button>
                 </div>
@@ -87,7 +87,7 @@ export default function NewSessionConfigurePage() {
               {block.muscles.length > 0 && (
                 <div className="flex gap-1 flex-wrap">
                   {block.muscles.map(m => (
-                    <div key={m} className="px-2 py-1 rounded bg-text/5">
+                    <div key={m} className="px-2 py-1 rounded bg-bg-element">
                       <span className="text-tag uppercase text-accent">{m}</span>
                     </div>
                   ))}
@@ -103,7 +103,7 @@ export default function NewSessionConfigurePage() {
                     {String(setIdx + 1).padStart(2, '0')}
                   </span>
 
-                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
+                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-bg-element rounded">
                     <input
                       type="number" min="0" step="0.5" placeholder="0"
                       value={ws.weight}
@@ -113,7 +113,7 @@ export default function NewSessionConfigurePage() {
                     <span className="text-tag uppercase text-text/40 flex-shrink-0">KG</span>
                   </div>
 
-                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
+                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-bg-element rounded">
                     <input
                       type="number" min="0" placeholder="0"
                       value={ws.reps}
@@ -123,7 +123,7 @@ export default function NewSessionConfigurePage() {
                     <span className="text-tag uppercase text-text/40 flex-shrink-0">reps</span>
                   </div>
 
-                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
+                  <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-bg-element rounded">
                     <input
                       type="number" min="1" max="10" step="0.5" placeholder="0"
                       value={ws.rpe}
@@ -134,7 +134,7 @@ export default function NewSessionConfigurePage() {
                   </div>
 
                   {block.sets.length > 1 && (
-                    <button onClick={() => removeSet(block.id, ws.id)} className="w-6 h-6 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+                    <button onClick={() => removeSet(block.id, ws.id)} className="w-6 h-6 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
                       <Minus size={12} className="text-text/40" />
                     </button>
                   )}
@@ -144,7 +144,7 @@ export default function NewSessionConfigurePage() {
 
             {/* Add set + Delete exercise */}
             <div className="flex items-center gap-4">
-              <button onClick={() => addSet(block.id)} className="flex-1 h-10 rounded-full bg-text/5 text-body font-medium text-accent">
+              <button onClick={() => addSet(block.id)} className="flex-1 h-10 rounded-full bg-bg-element text-body font-medium text-accent">
                 Add set to exercise
               </button>
               <button onClick={() => removeBlock(block.id)} className="w-10 h-10 rounded-full bg-error flex items-center justify-center flex-shrink-0">

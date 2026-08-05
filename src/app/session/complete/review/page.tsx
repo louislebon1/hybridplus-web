@@ -48,7 +48,7 @@ export default function SessionCompleteReviewPage() {
                   {tags.length > 0 && (
                     <div className="flex gap-1 flex-wrap">
                       {tags.slice(0, 2).map(t => (
-                        <span key={t} className="text-tag uppercase text-accent bg-text/5 px-2 py-1 rounded">{t}</span>
+                        <span key={t} className="text-tag uppercase text-accent bg-bg-element px-2 py-1 rounded">{t}</span>
                       ))}
                     </div>
                   )}
@@ -57,15 +57,15 @@ export default function SessionCompleteReviewPage() {
                   {ex.sets.map((set, si) => (
                     <div key={si} className="flex gap-2 items-center w-full">
                       <span className="w-8 text-center text-label text-accent flex-shrink-0">{String(si + 1).padStart(2, '0')}</span>
-                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
+                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-bg-element rounded">
                         <span className="text-label text-text">{set.weight ?? '—'}</span>
                         <span className="text-tag text-text/40 uppercase">KG</span>
                       </div>
-                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
+                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-bg-element rounded">
                         <span className="text-label text-text">{set.reps ?? '—'}</span>
                         <span className="text-tag text-text/40 uppercase">reps</span>
                       </div>
-                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-text/5 rounded">
+                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 bg-bg-element rounded">
                         <span className="text-label text-text">{set.rpe ?? '—'}</span>
                         <span className="text-tag text-text/40 uppercase">Rpe</span>
                       </div>

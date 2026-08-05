@@ -181,7 +181,7 @@ export default function CalendarPage() {
             selectedEvents.map((ev) => {
               const linkedWorkout = getTemplateName(ev.workoutTemplateId)
               return (
-                <div key={ev.id} className="bg-bg-element border border-border rounded-2xl p-3 flex items-center gap-3">
+                <div key={ev.id} className="bg-bg-card rounded-card p-3 flex items-center gap-3">
                   <span className="text-h3">{EVENT_ICONS[ev.eventType]}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-label text-text">{ev.name ?? ev.eventType}</p>
@@ -257,7 +257,7 @@ export default function CalendarPage() {
                         type="button"
                         onClick={() => selectTemplate(t.id, t.programmeId, t.name)}
                         className={[
-                          'flex items-center justify-between px-4 py-3 rounded-xl border text-left transition-colors',
+                          'flex items-center justify-between px-4 py-3 rounded-inner border text-left transition-colors',
                           selected
                             ? 'border-accent bg-accent/10'
                             : 'border-border bg-bg-element hover:bg-bg-hover',

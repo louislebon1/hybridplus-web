@@ -83,7 +83,7 @@ export default function CardioPage() {
             key={t}
             onClick={() => setTab(t)}
             className={[
-              'flex-1 py-2 rounded-xl text-label font-medium transition-colors',
+              'flex-1 py-2 rounded-inner text-label font-medium transition-colors',
               tab === t ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text-secondary',
             ].join(' ')}
           >
@@ -103,7 +103,7 @@ export default function CardioPage() {
             />
           ) : (
             sorted.map((s) => (
-              <div key={s.id} className="bg-bg-element border border-border rounded-2xl p-4">
+              <div key={s.id} className="bg-bg-card rounded-card p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-h2">{ACTIVITY_ICONS[s.activityType]}</span>

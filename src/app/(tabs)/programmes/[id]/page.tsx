@@ -54,7 +54,7 @@ function DayToggle({ days, onToggle }: { days: number[]; onToggle: (next: number
         <button
           key={i}
           onClick={() => onToggle(days.includes(i) ? days.filter(x => x !== i) : [...days, i])}
-          className={`w-8 h-8 rounded-full text-caption font-medium flex items-center justify-center ${days.includes(i) ? 'bg-accent text-accent-fg' : 'bg-text/5 text-text'}`}
+          className={`w-8 h-8 rounded-full text-caption font-medium flex items-center justify-center ${days.includes(i) ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text'}`}
         >
           {d}
         </button>
@@ -367,7 +367,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       {/* Header */}
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
           <h1 className="text-h2 font-bold leading-[30px] text-text m-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -382,7 +382,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       {/* Start date row */}
       <div className="flex items-center gap-3 px-5 py-6 flex-shrink-0">
         <div className="flex-1 relative">
-          <div className="flex items-center gap-2 px-6 h-12 rounded-full bg-text/5 pointer-events-none">
+          <div className="flex items-center gap-2 px-6 h-12 rounded-full bg-bg-element pointer-events-none">
             <Calendar size={20} className="text-text" />
             <span className="text-body font-medium leading-6 text-text">
               {programme.startDate ? formatDate(programme.startDate) : 'Select start date'}
@@ -436,7 +436,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
               }
 
               return (
-                <div key={phase.id} className="rounded-xl overflow-hidden bg-bg-element">
+                <div key={phase.id} className="rounded-inner overflow-hidden bg-bg-element">
                   {/* Card row */}
                   <button onClick={() => togglePhase(phase.id)} className="w-full px-4 py-3 flex items-center gap-4 text-left">
                     <div className="flex-1 flex flex-col gap-2">
@@ -447,7 +447,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             {phase.phaseType ? PHASE_TYPE_LABELS[phase.phaseType] : 'Deload'}
                           </span>
                         )}
-                        <span className={`${tag} bg-text/5 text-accent px-2 py-1 rounded`}>
+                        <span className={`${tag} bg-bg-element text-accent px-2 py-1 rounded`}>
                           {phase.durationWeeks} {phase.durationWeeks === 1 ? 'week' : 'weeks'}
                         </span>
                         {phase.isActive && (
@@ -613,7 +613,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   const ssLabels = getSupersetLabels(t.exerciseBlocks)
                   const sortedBlocks = [...t.exerciseBlocks].sort((a, b) => a.orderIndex - b.orderIndex)
                   return (
-                    <div key={t.id} className="rounded-xl overflow-hidden bg-bg-element">
+                    <div key={t.id} className="rounded-inner overflow-hidden bg-bg-element">
                       <button onClick={() => toggleTemplate(t.id)} className="w-full px-4 py-3 flex items-center justify-between text-left">
                         <div>
                           <p className="text-h4 font-medium leading-6 text-text m-0">{t.name}</p>
@@ -649,7 +649,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                   type="number" min="1" max="20"
                                   value={block.targetSets || ''}
                                   onChange={e => updateBlock(block.id, { targetSets: e.target.value === '' ? 0 : parseInt(e.target.value) })}
-                                  className="h-7 text-center text-caption text-text bg-text/5 border border-text/10 rounded-md outline-none w-full"
+                                  className="h-7 text-center text-caption text-text bg-bg-element border border-text/10 rounded-inner outline-none w-full"
                                 />
                                 <input
                                   type="number" min="1" max="100"
@@ -658,14 +658,14 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                     const v = e.target.value === '' ? 0 : parseInt(e.target.value)
                                     updateBlock(block.id, { targetRepsMin: v, targetRepsMax: v })
                                   }}
-                                  className="h-7 text-center text-caption text-text bg-text/5 border border-text/10 rounded-md outline-none w-full"
+                                  className="h-7 text-center text-caption text-text bg-bg-element border border-text/10 rounded-inner outline-none w-full"
                                 />
                                 <input
                                   type="number" min="0" step="0.5"
                                   value={block.targetWeightKg ?? ''}
                                   placeholder="—"
                                   onChange={e => updateBlock(block.id, { targetWeightKg: e.target.value ? parseFloat(e.target.value) : null })}
-                                  className="h-7 text-center text-caption text-text bg-text/5 border border-text/10 rounded-md outline-none w-full"
+                                  className="h-7 text-center text-caption text-text bg-bg-element border border-text/10 rounded-inner outline-none w-full"
                                 />
                                 <button onClick={() => removeBlock(block.id)} className="h-7 w-7 flex items-center justify-center text-text/40 text-label">
                                   ✕
@@ -680,7 +680,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             )
                           })}
                           <div className="flex gap-2 px-4 py-3 border-t border-border/60">
-                            <button onClick={() => { setAddExerciseFor(t.id); setExerciseSearch('') }} className="flex-1 text-caption text-accent p-2 border border-dashed border-accent/40 rounded-lg">
+                            <button onClick={() => { setAddExerciseFor(t.id); setExerciseSearch('') }} className="flex-1 text-caption text-accent p-2 border border-dashed border-accent/40 rounded-inner">
                               + Add exercise
                             </button>
                             <button onClick={() => { if (window.confirm('Delete this workout?')) deleteTemplate(t.id) }} className="text-caption text-error p-2">
@@ -701,7 +701,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
             {/* Inline add-template form */}
             {showAddTemplate && (
-              <form onSubmit={handleAddTemplate} className="bg-bg-element rounded-xl p-4 flex flex-col gap-3">
+              <form onSubmit={handleAddTemplate} className="bg-bg-element rounded-inner p-4 flex flex-col gap-3">
                 <Input placeholder="Workout name (e.g. Upper A)" value={templateName} onChange={e => setTemplateName(e.target.value)} autoFocus />
                 <div className="flex gap-2">
                   <Button type="submit" size="sm" className="flex-1" disabled={!templateName.trim()}>Create</Button>
@@ -717,7 +717,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                 <button onClick={() => setShowAddCardio(true)} className="text-caption text-accent">+ Add</button>
               </div>
               {(programme.cardioTemplates ?? []).map(ct => (
-                <div key={ct.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-bg-element mb-2">
+                <div key={ct.id} className="flex items-center justify-between px-4 py-3 rounded-inner bg-bg-element mb-2">
                   <div className="flex items-center gap-3">
                     <span className="text-h3">{CARDIO_ICONS[ct.activityType]}</span>
                     <div>
@@ -733,12 +733,12 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                 </div>
               ))}
               {showAddCardio && (
-                <form onSubmit={handleAddCardio} className="bg-bg-element rounded-xl p-4 flex flex-col gap-3">
+                <form onSubmit={handleAddCardio} className="bg-bg-element rounded-inner p-4 flex flex-col gap-3">
                   <Input placeholder="Session name (e.g. Easy Run)" value={cardioName} onChange={e => setCardioName(e.target.value)} autoFocus />
                   <div className="flex gap-1.5 flex-wrap">
                     {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map(type => (
                       <button key={type} type="button" onClick={() => setCardioType(type)}
-                        className={`px-3 py-1 rounded-full text-caption ${cardioType === type ? 'bg-accent text-accent-fg' : 'bg-text/5 text-text'}`}>
+                        className={`px-3 py-1 rounded-full text-caption ${cardioType === type ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text'}`}>
                         {CARDIO_ICONS[type]} {type}
                       </button>
                     ))}
@@ -764,7 +764,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       <Sheet visible={!!addSessionFor} onClose={() => setAddSessionFor(null)} title="Add session">
         {addSessionFor && (
           <div className="px-5 py-4 flex flex-col gap-4 pb-8">
-            <div className="flex p-1 rounded-full bg-text/5 gap-1">
+            <div className="flex p-1 rounded-full bg-bg-element gap-1">
               {(['strength', 'cardio'] as const).map(type => (
                 <button
                   key={type}
@@ -780,7 +780,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
               <select
                 value={addSessionId}
                 onChange={e => setAddSessionId(e.target.value)}
-                className="w-full h-12 px-3 rounded-md bg-text/5 text-text text-body appearance-none outline-none"
+                className="w-full h-12 px-3 rounded-inner bg-bg-element text-text text-body appearance-none outline-none"
               >
                 <option value="">Select session</option>
                 {sessionOptions.map(opt => (

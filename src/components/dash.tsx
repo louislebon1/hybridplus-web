@@ -76,7 +76,7 @@ export function Card({
 } & React.HTMLAttributes<HTMLElement>) {
   return (
     <Tag
-      className={`bg-bg-card border border-border rounded-[20px] ${className}`}
+      className={`bg-bg-card rounded-card ${className}`}
       {...rest}
     >
       {children}
@@ -97,7 +97,7 @@ export function StatCard({
   valueColor?: string
 }) {
   return (
-    <div className="flex-1 min-w-0 bg-bg-card border border-border rounded-[16px] px-3 py-3 flex flex-col gap-1">
+    <div className="flex-1 min-w-0 bg-bg-card rounded-card px-3 py-3 flex flex-col gap-1">
       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0 truncate">{label}</p>
       <p
         className="text-h2 font-bold tabular m-0 truncate"
@@ -324,7 +324,7 @@ export function SegmentedChips<T extends string>({
               'focus-visible:ring-2 focus-visible:ring-accent/50',
               active
                 ? 'bg-accent text-accent-fg'
-                : 'bg-bg-card border border-border text-text-secondary hover:bg-bg-hover',
+                : 'bg-bg-card text-text-secondary hover:bg-bg-hover',
             ].join(' ')}
           >
             {opt}

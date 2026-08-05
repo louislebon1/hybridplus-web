@@ -40,7 +40,7 @@ function fmtStartDate(d: string): string {
 // ─── Shared bits ────────────────────────────────────────────────────────────────
 
 const tag = 'text-tag uppercase inline-flex items-center'
-const chevronCircle = 'w-7 h-7 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0'
+const chevronCircle = 'w-7 h-7 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0'
 
 // ─── Session cards ─────────────────────────────────────────────────────────────
 
@@ -49,14 +49,14 @@ function StrengthCard({ tmpl, onEdit }: { tmpl: StrengthSessionTemplate; onEdit:
   const muscles = tmplMuscles(tmpl)
   const count   = tmpl.exerciseBlocks.length
   return (
-    <button onClick={onEdit} className="bg-bg-element rounded-xl px-4 py-3 flex items-start gap-3 w-full text-left">
+    <button onClick={onEdit} className="bg-bg-element rounded-inner px-4 py-3 flex items-start gap-3 w-full text-left">
       <div className="flex-1 flex flex-col gap-3 min-w-0">
         <div className="flex flex-col gap-1">
           <span className="text-body font-medium leading-6 text-text">{tmpl.name}</span>
           <div className="flex flex-wrap gap-1">
             <span className={`${tag} text-accent-fg bg-accent px-3 py-1 rounded-full`}>Strength</span>
             {muscles.map(m => (
-              <span key={m} className={`${tag} text-accent bg-text/5 px-2 py-1 rounded`}>{m}</span>
+              <span key={m} className={`${tag} text-accent bg-bg-element px-2 py-1 rounded`}>{m}</span>
             ))}
           </div>
         </div>
@@ -86,13 +86,13 @@ function StrengthCard({ tmpl, onEdit }: { tmpl: StrengthSessionTemplate; onEdit:
 
 function CardioTemplateCard({ t, onEdit }: { t: CardioSessionTemplate; onEdit: () => void }) {
   return (
-    <button onClick={onEdit} className="bg-bg-element rounded-xl px-4 py-3 flex items-start gap-3 w-full text-left">
+    <button onClick={onEdit} className="bg-bg-element rounded-inner px-4 py-3 flex items-start gap-3 w-full text-left">
       <div className="flex-1 flex flex-col gap-3 min-w-0">
         <div className="flex flex-col gap-1">
           <span className="text-body font-medium leading-6 text-text">{t.name}</span>
           <div className="flex flex-wrap gap-1">
             <span className={`${tag} text-accent-fg bg-text px-3 py-1 rounded-full`}>Cardio</span>
-            <span className={`${tag} text-accent bg-text/5 px-2 py-1 rounded`}>{t.activityType}</span>
+            <span className={`${tag} text-accent bg-bg-element px-2 py-1 rounded`}>{t.activityType}</span>
           </div>
         </div>
         {(t.targetDurationMinutes || t.targetDistanceKm) && (
@@ -186,7 +186,7 @@ function WorkoutsPageInner() {
 
       {/* ── Main tab pill switcher ── */}
       <div className="mx-5 mt-5 flex-shrink-0">
-        <div className="flex p-1 rounded-full bg-text/5 gap-1">
+        <div className="flex p-1 rounded-full bg-bg-element gap-1">
           {(['programmes', 'sessions'] as const).map(t => {
             const isActive = t === mainTab
             return (
@@ -233,13 +233,13 @@ function WorkoutsPageInner() {
                           {phases} phase{phases !== 1 ? 's' : ''}
                         </span>
                         {weeks > 0 && (
-                          <span className={`${tag} text-accent bg-text/5 px-2 py-1 rounded`}>
+                          <span className={`${tag} text-accent bg-bg-element px-2 py-1 rounded`}>
                             {weeks} week{weeks !== 1 ? 's' : ''}
                           </span>
                         )}
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
                       <ChevronRight size={16} className="text-text" />
                     </div>
                   </button>
@@ -248,7 +248,7 @@ function WorkoutsPageInner() {
 
               {filteredProgrammes.length === 0 && (
                 <div className="px-4">
-                  <div className="bg-bg-element rounded-xl p-4">
+                  <div className="bg-bg-element rounded-inner p-4">
                     <p className="text-label font-medium leading-[18px] text-text/50 m-0">
                       {progSubTab === 'active'
                         ? 'No active programme – open a programme and set a start date to activate it.'
@@ -283,7 +283,7 @@ function WorkoutsPageInner() {
               <div className="flex flex-col gap-3">
                 {sessSubTab === 'strength' ? (
                   strengthTemplates.length === 0 ? (
-                    <div className="bg-bg-element rounded-xl p-4">
+                    <div className="bg-bg-element rounded-inner p-4">
                       <p className="text-label font-medium leading-[18px] text-text/50 m-0">
                         No session templates yet – create a new session to get started.
                       </p>
@@ -293,7 +293,7 @@ function WorkoutsPageInner() {
                   )
                 ) : (
                   cardioTemplates.length === 0 ? (
-                    <div className="bg-bg-element rounded-xl p-4">
+                    <div className="bg-bg-element rounded-inner p-4">
                       <p className="text-label font-medium leading-[18px] text-text/50 m-0">
                         No cardio templates yet – create a new cardio session to add it to a programme.
                       </p>

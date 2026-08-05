@@ -90,12 +90,12 @@ export default function EditSessionPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
           <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Session</h1>
         </div>
-        <button onClick={handleDelete} className="p-1 rounded-lg">
+        <button onClick={handleDelete} className="p-1 rounded-inner">
           <Trash2 size={20} className="text-text/40" />
         </button>
       </div>
@@ -113,7 +113,7 @@ export default function EditSessionPage() {
             <button
               type="button"
               onClick={handleEditExercises}
-              className="flex items-center justify-between px-4 py-3 rounded-xl bg-bg-element text-left"
+              className="flex items-center justify-between px-4 py-3 rounded-inner bg-bg-element text-left"
             >
               <div>
                 <p className="text-label font-medium text-text m-0">Edit exercises &amp; sets</p>
@@ -144,7 +144,7 @@ export default function EditSessionPage() {
                       key={a}
                       type="button"
                       onClick={() => setActivityType(a)}
-                      className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-accent text-accent-fg' : 'bg-text/5 text-text opacity-60'}`}
+                      className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text opacity-60'}`}
                     >
                       {a.charAt(0).toUpperCase() + a.slice(1)}
                     </button>

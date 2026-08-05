@@ -56,7 +56,7 @@ export default function EditProfilePage() {
 
       {/* Header */}
       <div className="flex items-center gap-3 px-5 screen-top pb-6 border-b border-border flex-shrink-0">
-        <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+        <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
           <ArrowLeft size={16} className="text-accent" />
         </button>
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Profile</h1>
@@ -82,13 +82,13 @@ export default function EditProfilePage() {
         {(latestWeight !== null || bmi !== null) && (
           <div className="flex gap-3">
             {latestWeight !== null && (
-              <div className="flex-1 bg-bg-element border border-border rounded-2xl p-3 text-center">
+              <div className="flex-1 bg-bg-card rounded-card p-3 text-center">
                 <p className="text-h3 font-bold text-text tabular">{latestWeight.toFixed(1)}</p>
                 <p className="text-caption text-text-secondary mt-0.5">Weight (kg)</p>
               </div>
             )}
             {bmi !== null && (
-              <div className="flex-1 bg-bg-element border border-border rounded-2xl p-3 text-center">
+              <div className="flex-1 bg-bg-card rounded-card p-3 text-center">
                 <p className="text-h3 font-bold text-text tabular">{bmi.toFixed(1)}</p>
                 <p className="text-caption text-text-secondary mt-0.5">BMI</p>
               </div>
@@ -125,7 +125,7 @@ export default function EditProfilePage() {
         {chartLogs.length > 0 && (
           <div>
             <p className="eyebrow mb-3">Weight history</p>
-            <div className="bg-bg-element border border-border rounded-2xl p-4">
+            <div className="bg-bg-card rounded-card p-4">
               <div className="flex items-end gap-1.5">
                 {chartLogs.map(w => {
                   const pct = ((w.weightKg - minW) / range) * 100
@@ -149,7 +149,7 @@ export default function EditProfilePage() {
         {sortedLogs.length > 0 && (
           <div>
             <p className="eyebrow mb-3">Entries</p>
-            <div className="bg-bg-element border border-border rounded-2xl overflow-hidden">
+            <div className="bg-bg-card rounded-card overflow-hidden">
               {[...sortedLogs].reverse().map((w, i) => (
                 <div key={w.id} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? 'border-t border-border' : ''}`}>
                   <div>

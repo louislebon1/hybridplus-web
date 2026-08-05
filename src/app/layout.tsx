@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="h-full">
       <body className="h-full overflow-hidden bg-bg text-text">
         <div className="flex justify-center h-full">
-          <div className="w-full max-w-[430px] h-full relative flex flex-col overflow-hidden bg-bg">
+          <div className="app-atmosphere w-full max-w-[430px] h-full relative flex flex-col overflow-hidden bg-bg">
             {children}
           </div>
         </div>

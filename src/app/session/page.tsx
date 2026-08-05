@@ -25,7 +25,7 @@ const EMPTY_CARDIO_FORM = {
   notes: '',
 }
 
-const stepperBtn = 'w-9 h-9 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0 outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-hover active:scale-90 active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50'
+const stepperBtn = 'w-9 h-9 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0 outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-hover active:scale-90 active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50'
 
 /**
  * One logging row: tap the steppers for quick adjustments, or type straight
@@ -51,7 +51,7 @@ function ValueRow({
         <Minus size={16} className="text-accent" />
       </button>
 
-      <div className="flex-1 max-w-[242px] bg-text/5 rounded-full py-2 px-3 flex items-center gap-1 ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/60">
+      <div className="flex-1 max-w-[242px] bg-bg-element rounded-full py-2 px-3 flex items-center gap-1 ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/60">
         <span className="w-11 flex-shrink-0" aria-hidden />
         <input
           type="number"
@@ -234,7 +234,7 @@ export default function SessionPage() {
       <>
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-3 px-5 screen-top pb-4 flex-shrink-0">
-          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
             <ArrowLeft size={16} className="text-accent" />
           </button>
           <h1 className="text-h2 font-bold text-text">Start Workout</h1>
@@ -244,7 +244,7 @@ export default function SessionPage() {
           {/* Quick start */}
           <button
             onClick={() => startSession(null, 'Quick Workout')}
-            className="bg-accent text-accent-fg rounded-2xl p-5 text-left"
+            className="bg-accent text-accent-fg rounded-card p-5 text-left"
           >
             <p className="text-h4 font-bold">Quick Start</p>
             <p className="text-prose opacity-80 mt-1">Start an empty session — add exercises as you go</p>
@@ -262,8 +262,7 @@ export default function SessionPage() {
                     const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                     const activePhase = store.getActivePhase(t.programmeId)
                     return (
-                      <button key={t.id} onClick={() => ref && startSession(ref)} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50">
-                        <div className="absolute left-0 top-0 bottom-0 w-2 bg-accent" />
+                      <button key={t.id} onClick={() => ref && startSession(ref)} className="relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50">
                         <div className="flex items-center gap-2">
                           <span className="text-tag uppercase text-accent-fg bg-accent px-2.5 py-1 rounded-full">Strength</span>
                           {activePhase && <span className="text-tag uppercase text-text/40">{activePhase.name}</span>}
@@ -273,8 +272,7 @@ export default function SessionPage() {
                     )
                   })}
                 {todayCardioEvents.map(ev => (
-                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50">
-                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-text" />
+                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} className="relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50">
                     <span className="text-tag uppercase text-accent-fg bg-text px-2.5 py-1 rounded-full inline-flex items-center w-fit">{ev.eventType}</span>
                     <span className="text-body leading-5 font-medium text-text">{ev.name ?? ev.eventType}</span>
                   </button>
@@ -293,8 +291,7 @@ export default function SessionPage() {
                   const activePhase = store.getActivePhase(t.programmeId)
                   const isToday = todayStrengthIds.has(t.id)
                   return (
-                    <button key={t.id} onClick={() => ref && startSession(ref)} className={`relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50 ${isToday ? 'opacity-40' : ''}`}>
-                      <div className="absolute left-0 top-0 bottom-0 w-2 bg-accent" />
+                    <button key={t.id} onClick={() => ref && startSession(ref)} className={`relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50 ${isToday ? 'opacity-40' : ''}`}>
                       <div className="flex items-center gap-2">
                         <span className="text-tag uppercase text-accent-fg bg-accent px-2.5 py-1 rounded-full">Strength</span>
                         {activePhase && <span className="text-tag uppercase text-text/40">{activePhase.name}</span>}
@@ -312,8 +309,7 @@ export default function SessionPage() {
             <p className="eyebrow mb-3">Log cardio</p>
             <div className="flex flex-col gap-2">
               {allCardioTemplates.length > 0 && allCardioTemplates.map((ct) => (
-                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} className="relative overflow-hidden bg-text/[0.03] border border-text/[0.08] rounded-xl px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-text/[0.06] active:scale-[0.98] active:bg-text/[0.08] focus-visible:ring-2 focus-visible:ring-accent/50">
-                  <div className="absolute left-0 top-0 bottom-0 w-2 bg-text" />
+                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} className="relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-accent/50">
                   <div className="flex items-center gap-2">
                     <span className="text-tag uppercase text-accent-fg bg-text px-2.5 py-1 rounded-full">{ct.activityType}</span>
                     {ct.targetDurationMinutes && <span className="text-tag uppercase text-text/40">{ct.targetDurationMinutes}M</span>}
@@ -326,7 +322,7 @@ export default function SessionPage() {
                   <button
                     key={type}
                     onClick={() => openCardioLog({ activityType: type })}
-                    className="flex-shrink-0 flex flex-col items-center gap-1 px-4 py-3 bg-bg-element border border-border rounded-2xl hover:bg-bg-hover transition-colors"
+                    className="flex-shrink-0 flex flex-col items-center gap-1 px-4 py-3 bg-bg-card rounded-card hover:bg-bg-hover transition-colors"
                   >
                     <span className="text-h3">{CARDIO_ICONS[type]}</span>
                     <span className="text-caption text-text-secondary capitalize">{type}</span>
@@ -506,7 +502,7 @@ export default function SessionPage() {
           )}
           <button
             onClick={() => { if (window.confirm('Abandon this session? Progress will be lost.')) { abandonSession(); router.back() } }}
-            className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0 ml-3"
+            className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0 ml-3"
           >
             <X size={16} className="text-accent" />
           </button>
@@ -619,7 +615,7 @@ export default function SessionPage() {
             <button
               onClick={() => prevBlock && setActiveBlock(prevBlock.id)}
               disabled={!prevBlock}
-              className={`w-12 h-12 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0 ${!prevBlock ? 'opacity-40' : ''}`}
+              className={`w-12 h-12 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0 ${!prevBlock ? 'opacity-40' : ''}`}
             >
               <ChevronLeft size={18} className="text-accent" />
             </button>

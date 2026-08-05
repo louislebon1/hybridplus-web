@@ -28,7 +28,7 @@ export default function NewProgrammePage() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Add new programme</h1>
-        <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
+        <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
           <X size={16} className="text-accent" />
         </button>
       </div>
@@ -51,7 +51,7 @@ export default function NewProgrammePage() {
             placeholder="Add description here..."
             value={description}
             onChange={e => setDescription(e.target.value)}
-            className="h-24 px-3 py-3 rounded-md bg-text/5 text-text text-body outline-none w-full resize-none"
+            className="h-24 px-3 py-3 rounded-inner bg-bg-element text-text text-body outline-none w-full resize-none"
           />
         </div>
 

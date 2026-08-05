@@ -248,6 +248,8 @@ Bottom clearance belongs to the tab shell alone (`NAV_CLEARANCE`, 80px on `main`
 
 This system does not draw depth — it renders material. Surfaces are **liquid glass**: a weak translucent fill over a heavily blurred, saturated and brightened backdrop, so a pane behaves like a lens over the atmospheric gradient rather than a tinted rectangle. Because the effect samples what is behind it, glass is most alive in the hero region and settles into a plain translucent fill further down the page. That falloff is correct behaviour, not a defect.
 
+A lens needs something to bend. The app shell therefore carries a permanent **ambient atmosphere** — `.app-atmosphere`, two wide accent blooms at 20% and 11% opacity, pinned top-left and bottom-right of the 430px column and drawn behind every child via a negative z-index inside an isolated stacking context. It is the floor of atmosphere on all nineteen screens; the hero screens layer their own stronger, contextual `HeroGlow` above it. Without it, glass over flat black renders as grey boxes, which is precisely how most of the app read before it existed.
+
 Edges are defined optically, not with a stroke: a bright specular highlight along the lit top edge, an inner bevel shadow opposite it, and a barely-there rim to hold the silhouette against black. Cards therefore carry **no border** — `border-color` is neutralised on glass surfaces, while dividers elsewhere keep theirs.
 
 Shadows exist only where an element genuinely floats above content — the navigation pill today, and sheets, dialogs or popovers by the same logic. In-flow surfaces never cast one.
@@ -261,6 +263,12 @@ Shadows exist only where an element genuinely floats above content — the navig
 **The Material Not Shadow Rule.** Depth on an in-flow surface comes from blur, translucency and the specular edge. If a card needs a drop shadow to read, its material is wrong — fix the blur or the fill, not the elevation.
 
 **The Floating Exception Rule.** Only elements that genuinely sit above the content plane may cast an outer shadow. Overlapping the scroll area is the test; being visually important is not.
+
+**The Glass Is For Panels Rule.** Only top-level surfaces get the material. Anything nested inside a card is a flat Inset. Glass applied to every chip, stepper and icon circle stops being a specific effect and becomes decoration — and 120 stacked `backdrop-filter` layers is a phone-sized performance bill for the privilege.
+
+**The Three Tiers Rule.** Panel, Inset, Raised. A surface that fits none of them is a surface that has not been thought about. This system previously ran eight ad-hoc fills and eight radii, and the result was an app that felt assembled from several different products.
+
+**The Pill Carries The Type Rule.** A card states its kind once, with its tag pill. It does not also get a coloured edge stripe, a tinted background and an icon saying the same thing. When a card needs to shout, remove the competing devices rather than adding a louder one.
 
 ## Shapes
 
@@ -289,12 +297,22 @@ Iconography is Lucide line icons at 16–20px, plus a small set of exported SVGs
 - **State:** The selected chip fills with Arc Light and switches to Arc Light Ink. Used for tab-like switching where the options are peers.
 
 ### Cards / Containers
-- **Corner Style:** `20px` for primary cards, `16px` for compact tiles and list rows.
-- **Background:** Glass Fill, with the backdrop treatment from Elevation & Depth.
-- **Shadow Strategy:** None. Edges come from the specular inset set.
-- **Border:** None on glass surfaces — deliberately neutralised.
+
+Three surface tiers, and nothing else. Every card in the app is one of them.
+
+| Tier | Token | Radius | Material |
+|---|---|---|---|
+| **Panel** | `bg-bg-card` (6%) | `rounded-card` — 20px | Glass. Specular edge, no border. |
+| **Inset** | `bg-bg-element` (5%) | `rounded-inner` — 12px | Flat tint + hairline border. No blur. |
+| **Raised** | `bg-bg-card-raised` (10%) | inherits | Glass. Hover and active state of a Panel. |
+
+- **Panel** is a top-level surface sitting on the page, where the atmosphere shows through and the glass has something to refract.
+- **Inset** is anything living *inside* a Panel — rows, controls, form fields, small tiles. It is deliberately not glass: blurring an already-blurred backdrop reads as mush, and `backdrop-filter` on every small control is a real cost on a phone.
+- **Shadow Strategy:** None on either tier. Edges come from the specular inset set on Panels, and a hairline border on Insets.
 - **Internal Padding:** `16px` standard, `12px` on compact tiles.
-- **Interactive cards:** Cards that start something press to `scale(0.98)` and lighten to Glass Fill Raised. A card with no action never gains a hover state — the treatment is the affordance.
+- **Interactive cards:** Cards that start something press to `scale(0.98)` and lighten to Raised. A card with no action never gains a hover state — the treatment is the affordance.
+
+Radii come from `rounded-card` / `rounded-inner`, generated from the tokens in `@theme inline`. Never write an arbitrary radius; if a surface seems to need a third value, it is one of the two tiers and should say so.
 
 ### Inputs / Fields
 - **Style:** `48px` tall, `12px` radius, faint white fill, hairline border.

@@ -220,7 +220,7 @@ export default function HomePage() {
           <p className="text-prose text-white/70 m-0 mt-2 max-w-[46ch]">{read.copy}</p>
 
           {/* Plan status card */}
-          <div className="mt-6 bg-bg-card border border-border rounded-[16px] px-4 py-3.5 flex items-center justify-between gap-3">
+          <div className="mt-6 bg-bg-card rounded-card px-4 py-3.5 flex items-center justify-between gap-3">
             {activeProgramme ? (
               <>
                 <div className="min-w-0">
@@ -265,7 +265,7 @@ export default function HomePage() {
                 <button
                   key={ds}
                   onClick={() => setSelectedDate(ds)}
-                  className="flex flex-col items-center gap-2 flex-1 outline-none rounded-xl py-1 transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-accent/50"
+                  className="flex flex-col items-center gap-2 flex-1 outline-none rounded-inner py-1 transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-accent/50"
                 >
                   <span className={`text-tag uppercase ${isToday || isSelected ? 'text-text' : 'text-text-tertiary'}`}>
                     {DAY_LABELS[i]}
@@ -305,7 +305,7 @@ export default function HomePage() {
 
           <div className="mt-3 flex flex-col gap-2">
             {selectedEvents.length === 0 ? (
-              <div className="bg-bg-card border border-border rounded-[16px] px-4 py-5">
+              <div className="bg-bg-card rounded-card px-4 py-5">
                 <p className="text-label text-text-tertiary m-0 text-center">No sessions planned</p>
               </div>
             ) : (
@@ -331,14 +331,14 @@ export default function HomePage() {
                     key={ev.id}
                     {...(isStartable ? { type: 'button' as const, onClick: () => startFromEvent(ev) } : {})}
                     className={[
-                      'bg-bg-card border border-border rounded-[16px] px-3.5 py-3 flex items-center gap-3 w-full text-left',
+                      'bg-bg-card rounded-card px-3.5 py-3 flex items-center gap-3 w-full text-left',
                       isStartable
                         ? 'outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-accent/50'
                         : '',
                     ].join(' ')}
                   >
                     <span
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-[18px] flex-shrink-0"
+                      className="w-10 h-10 rounded-inner flex items-center justify-center text-[18px] flex-shrink-0"
                       style={{ backgroundColor: isStrength ? 'rgba(0,171,254,0.16)' : 'rgba(45,212,191,0.16)' }}
                     >
                       {ACTIVITY_ICONS[ev.eventType] ?? '📅'}
