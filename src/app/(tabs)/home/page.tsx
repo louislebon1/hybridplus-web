@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { User, Play, ChevronRight } from 'lucide-react'
+import { User, Play, CalendarDays } from 'lucide-react'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useSessionStore } from '@/stores/session-store'
@@ -12,7 +12,7 @@ import type { CalendarEventData, Programme } from '@/types'
 import { localDateStr } from '@/lib/date'
 import { estimateDuration } from '@/lib/duration'
 import { ActivityIcon } from '@/lib/activity-icons'
-import { SectionLabel } from '@/components/dash'
+import { Pager, Page, Rail, RailAction, Caption, SnapHint, LoadField } from '@/components/feed'
 
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const CARDIO_TYPES = new Set(['run', 'swim', 'cycle', 'walk', 'row'])
@@ -180,164 +180,164 @@ export default function HomePage() {
   const todayLabel = new Date(today + 'T00:00:00')
     .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
+
   return (
-    <div>
+    <Pager>
 
-      <div>
+      {/* ── Item 1: today ─────────────────────────────────────────────────── */}
+      <Page field={<LoadField values={weekDays.map(d => (events[isoDate(d)] ?? []).length)} />}>
+        <header className="flex items-start justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+          <span className="display text-title">Hybrid<span className="text-fog">+</span></span>
+          <Link
+            href="/profile"
+            aria-label="Profile"
+            className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim"
+          >
+            <User size={18} />
+          </Link>
+        </header>
 
-        {/* ── Hero ── */}
-        <div>
-          <div>
-            <div>
-              <p>Today</p>
-              <p>{todayLabel}</p>
-            </div>
-            <Link href="/profile"
-              aria-label="Profile">
-              <User size={18} />
-            </Link>
-          </div>
+        <Rail>
+          <RailAction icon={<CalendarDays size={22} />} label="Schedule" onClick={() => router.push('/calendar')} />
+        </Rail>
 
-          {/* Focal metric — only when there's a plan to measure against */}
+        <Caption>
+          <p className="meta">{todayLabel}</p>
+
           {weekPct !== null && (
-            <div>
-              <span>{weekPct}</span>
-              <span>%</span>
-            </div>
+            <p className="display text-hero tabular m-0 mt-3 flex items-start">
+              {weekPct}
+              <span className="text-title mt-3 ml-1 text-fog">%</span>
+            </p>
           )}
 
-          <h1>{read.title}</h1>
-          <p>{read.copy}</p>
+          <h1 className="display text-display m-0 mt-3">{read.title}</h1>
+          <p className="text-label text-stone m-0 mt-2 max-w-[46ch]">{read.copy}</p>
 
-          {/* Plan status card */}
-          <div>
-            {activeProgramme ? (
-              <>
-                <div>
-                  <p>
-                    {activePhase ? activePhase.name : activeProgramme.name}
-                  </p>
-                  <p>
-                    {activeProgramme.name}
-                    {weekNumber !== null && ` · Week ${weekNumber}`}
-                  </p>
-                </div>
-                <span>
-                  Active
-                </span>
-              </>
-            ) : (
-              <>
-                <p>No active programme</p>
-                <button onClick={() => router.push('/programmes')}>
-                  Set up
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+          <p className="meta mt-4">
+            {activeProgramme
+              ? [activePhase ? activePhase.name : activeProgramme.name, activeProgramme.name]
+                  .concat(weekNumber !== null ? ['Week ' + weekNumber] : [])
+                  .join(' · ')
+              : 'No active programme'}
+          </p>
 
-        {/* ── Timeline strip ── */}
-        <div>
-          <SectionLabel>This week</SectionLabel>
-          <div>
+          {/* Week strip — navigation, kept compact so the figure stays dominant */}
+          <div className="flex gap-1.5 mt-4">
             {weekDays.map((d, i) => {
-              const ds          = isoDate(d)
-              const isToday     = ds === today
-              const isSelected  = ds === selectedDate
-              const dayEvs      = events[ds] ?? []
-              const hasStrength = dayEvs.some(e => e.eventType === 'strength')
-              const hasCardio   = dayEvs.some(e => CARDIO_TYPES.has(e.eventType))
+              const ds = isoDate(d)
+              const isToday = ds === today
+              const isSelected = ds === selectedDate
+              const dayEvs = events[ds] ?? []
               return (
-                <button key={ds}
-                  onClick={() => setSelectedDate(ds)}>
-                  <span>
-                    {DAY_LABELS[i]}
-                  </span>
-                  <div>
-                    <span>
-                      {d.getDate()}
-                    </span>
-                  </div>
-                  <div>
-                    {hasStrength && <span />}
-                    {hasCardio   && <span />}
-                  </div>
+                <button
+                  key={ds}
+                  onClick={() => setSelectedDate(ds)}
+                  aria-label={d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric' })}
+                  aria-current={isToday ? 'date' : undefined}
+                  className={[
+                    'flex-1 h-14 rounded-card flex flex-col items-center justify-center gap-1 border transition-colors duration-150 cursor-pointer',
+                    isSelected ? 'bg-scrim text-void border-transparent' : 'matt text-scrim',
+                  ].join(' ')}
+                >
+                  <span className={isSelected ? 'meta text-void' : 'meta'}>{DAY_LABELS[i]}</span>
+                  <span className="display text-label tabular leading-none">{d.getDate()}</span>
+                  <span
+                    className={[
+                      'w-1 h-1 rounded-pill block',
+                      dayEvs.length ? (isSelected ? 'bg-void' : 'bg-scrim') : 'bg-transparent',
+                    ].join(' ')}
+                  />
                 </button>
               )
             })}
           </div>
-        </div>
 
-        {/* ── Sessions ── */}
-        <div>
-          <SectionLabel action={
-              <button onClick={() => router.push('/calendar')}>
-                View schedule
-              </button>
-            }>
-            {sessionLabel}
-          </SectionLabel>
+          <button
+            onClick={handleCtaClick}
+            className="mt-5 h-14 px-7 rounded-pill bg-scrim text-void inline-flex items-center gap-2.5 border-0 cursor-pointer transition-transform duration-150 ease-out active:scale-[0.97]"
+          >
+            <Play size={17} fill="currentColor" />
+            <span className="display text-figure">{ctaLabel}</span>
+          </button>
+        </Caption>
 
-          <div>
-            {selectedEvents.length === 0 ? (
-              <div>
-                <p>No sessions planned</p>
-              </div>
-            ) : (
-              selectedEvents.map(ev => {
-                const isStrength    = ev.eventType === 'strength'
-                const name          = getTemplateName(ev)
-                const duration      = getDuration(ev, programmes)
-                const exerciseCount = getExerciseCount(ev, programmes)
-                const muscleTags    = getMuscleGroups(ev, programmes)
-                const cardioTag     = CARDIO_TYPES.has(ev.eventType) ? (CARDIO_LABELS[ev.eventType] ?? null) : null
-                const isStartable   = isStrength && selectedDate === today && !ev.isCompleted && !activeSession
-                const meta = [
-                  duration,
-                  exerciseCount !== null ? `${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''}` : null,
-                  cardioTag,
-                  ...muscleTags,
-                ].filter(Boolean).join(' · ')
+        {selectedEvents.length > 0 && <SnapHint label={selectedEvents.length + ' planned'} />}
+      </Page>
 
-                const Wrapper = isStartable ? 'button' : 'div'
+      {/* ── One item per planned session ──────────────────────────────────── */}
+      {selectedEvents.map((ev, idx) => {
+        const isStrength = ev.eventType === 'strength'
+        const name = getTemplateName(ev)
+        const duration = getDuration(ev, programmes)
+        const exerciseCount = getExerciseCount(ev, programmes)
+        const muscleTags = getMuscleGroups(ev, programmes)
+        const cardioTag = CARDIO_TYPES.has(ev.eventType) ? (CARDIO_LABELS[ev.eventType] ?? null) : null
+        const isStartable = isStrength && selectedDate === today && !ev.isCompleted && !activeSession
+        const meta = [
+          duration,
+          exerciseCount !== null ? exerciseCount + (exerciseCount !== 1 ? ' exercises' : ' exercise') : null,
+          cardioTag,
+          ...muscleTags,
+        ].filter(Boolean) as string[]
 
-                return (
-                  <Wrapper key={ev.id}
-                    {...(isStartable ? { type: 'button' as const, onClick: () => startFromEvent(ev) } : {})}>
-                    <span>
-                      <ActivityIcon type={ev.eventType} size={18} />
+        return (
+          <Page key={ev.id}>
+            <header className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">{sessionLabel}</span>
+              <span className="meta tabular">
+                {idx + 1} / {selectedEvents.length}
+              </span>
+            </header>
+
+            <Rail>
+              {isStartable && (
+                <RailAction
+                  icon={<Play size={22} fill="currentColor" />}
+                  label={'Start ' + name}
+                  engaged
+                  onClick={() => startFromEvent(ev)}
+                />
+              )}
+              <RailAction icon={<CalendarDays size={22} />} label="Schedule" onClick={() => router.push('/calendar')} />
+            </Rail>
+
+            <Caption>
+              <span className="w-12 h-12 rounded-pill matt flex items-center justify-center text-scrim">
+                <ActivityIcon type={ev.eventType} size={20} />
+              </span>
+
+              <h2 className="display text-display m-0 mt-4">{name}</h2>
+
+              {meta.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {meta.map(m => (
+                    <span key={m} className="meta px-3 py-1.5 rounded-pill matt text-stone">
+                      {m}
                     </span>
+                  ))}
+                </div>
+              )}
 
-                    <div>
-                      <p>{name}</p>
-                      {meta && <p>{meta}</p>}
-                    </div>
+              {ev.isCompleted ? (
+                <p className="display text-figure m-0 mt-5">Completed</p>
+              ) : isStartable ? (
+                <button
+                  onClick={() => startFromEvent(ev)}
+                  className="mt-5 h-14 px-7 rounded-pill bg-scrim text-void inline-flex items-center gap-2.5 border-0 cursor-pointer transition-transform duration-150 ease-out active:scale-[0.97]"
+                >
+                  <Play size={17} fill="currentColor" />
+                  <span className="display text-figure">Start</span>
+                </button>
+              ) : (
+                <p className="text-label text-stone m-0 mt-5">Scheduled — start it from the day it falls on.</p>
+              )}
+            </Caption>
 
-                    {ev.isCompleted ? (
-                      <span>
-                        Done
-                      </span>
-                    ) : isStartable ? (
-                      <ChevronRight size={16} />
-                    ) : null}
-                  </Wrapper>
-                )
-              })
-            )}
-          </div>
-        </div>
-
-        <div />
-      </div>
-
-      {/* ── Primary CTA — sits above the floating nav ── */}
-      <div>
-        <button onClick={handleCtaClick}>
-          <Play size={18}  fill="currentColor" />
-          <span>{ctaLabel}</span>
-        </button>
-      </div>
-    </div>
+            {idx < selectedEvents.length - 1 && <SnapHint />}
+          </Page>
+        )
+      })}
+    </Pager>
   )
 }

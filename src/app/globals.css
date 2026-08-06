@@ -1,18 +1,155 @@
 @import "tailwindcss";
 
-/*
-  Intentionally empty.
+/* ═══════════════════════════════════════════════════════════════════════════
+   FULL-BLEED VERTICAL MEDIA SURFACE
+   One item owns the entire viewport. Navigation is a single vertical snap
+   between complete states. The only interface colour is white.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-  Every design token, type step, utility and material was removed here so this
-  product's visual world can be decided from zero rather than inherited. The
-  Tailwind import is kept only for its preflight reset — that is hygiene, not
-  a design decision, and nothing below it is load-bearing yet.
+@theme {
+  /* Palette — carried from the world's own board. */
+  --color-void: #0B0D12;
+  --color-midnight: #141823;
+  --color-steel: #232A36;
+  --color-fog: #5C6572;
+  --color-stone: #8A9099;
+  --color-scrim: #E6E8EC;
 
-  The next world is written into this file after its direction is chosen, and
-  DESIGN.md is written from what actually gets built, not before.
-*/
+  --font-display: var(--font-anton), 'Arial Narrow', sans-serif;
+  --font-body: var(--font-inter), -apple-system, 'Helvetica Neue', Arial, sans-serif;
 
-html,
-body {
+  /* Display steps. Condensed caps, set tight and solid — these carry every
+     figure and title, and they are why this surface needs no imagery. */
+  --text-hero: 7.5rem;              /* 120px — the working figure */
+  --text-hero--line-height: 0.82;
+  --text-hero--letter-spacing: -0.02em;
+
+  --text-display: 3.25rem;          /* 52px — item title */
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.01em;
+
+  --text-title: 2rem;               /* 32px — screen and section titles */
+  --text-title--line-height: 0.95;
+
+  --text-figure: 1.75rem;           /* 28px — inline figures in chips and rows */
+  --text-figure--line-height: 1;
+
+  /* Reading steps. Inter, for anything read rather than scanned. */
+  --text-body: 1rem;
+  --text-body--line-height: 1.5rem;
+
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.25rem;
+
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1rem;
+  --text-meta--letter-spacing: 0.08em;
+
+  --radius-pill: 9999px;
+  --radius-card: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
   height: 100%;
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-scrim);
+  color-scheme: dark;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every figure and title is condensed caps. Applied by class, never globally —
+   Anton has no lowercase worth reading and no weight range to fall back on. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+/* Uppercase micro-label: rail counts, axis notes, section markers. */
+.meta {
+  font-family: var(--font-body);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: var(--text-meta--letter-spacing);
+  text-transform: uppercase;
+  color: var(--color-stone);
+}
+
+/* ── The pager ──────────────────────────────────────────────────────────────
+   One item fills the viewport whatever its content; motion is a hard snap with
+   no partial scroll position. */
+.pager {
+  height: 100%;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+.pager::-webkit-scrollbar { display: none; }
+
+.page {
+  position: relative;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ── Materials ──────────────────────────────────────────────────────────────
+   Three, and no more: a scrim gradient so text can sit over a field, film grain
+   so a flat surface does not read as dead, and soft matt panels. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--color-void) 0%,
+    color-mix(in srgb, var(--color-void) 88%, transparent) 26%,
+    transparent 58%
+  );
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+}
+
+.matt {
+  background: color-mix(in srgb, var(--color-steel) 68%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-scrim) 10%, transparent);
+}
+
+/* Numeric columns line up; a logged weight must not dance as digits change. */
+.tabular { font-variant-numeric: tabular-nums; }
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] { -moz-appearance: textfield; appearance: textfield; }
+
+:focus-visible {
+  outline: 2px solid var(--color-scrim);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

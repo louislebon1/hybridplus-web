@@ -19,7 +19,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <main style={{ flex: 1, minHeight: 0, paddingBottom: NAV_CLEARANCE, overflow: 'hidden' }}>
+      <main style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {children}
       </main>
 
@@ -31,7 +31,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
         right: 0,
         display: 'flex',
         justifyContent: 'center',
-        paddingBottom: '24px',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 18px)',
         pointerEvents: 'none'}}>
         <nav style={{
           display: 'flex',
@@ -40,6 +40,10 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           gap: '2px',
           padding: '6px',
           width: '272px',
+          borderRadius: '200px',
+          background: 'rgba(35, 42, 54, 0.82)',
+          border: '1px solid rgba(230, 232, 236, 0.10)',
+          boxShadow: '0 10px 34px rgba(0, 0, 0, 0.55)',
           pointerEvents: 'auto'}}>
           {TABS.map(({ href, inactive, active }) => {
             const isActive = pathname.startsWith(href)
@@ -53,6 +57,8 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
                   justifyContent: 'center',
                   paddingTop: '9px',
                   paddingBottom: '9px',
+                  borderRadius: '200px',
+                  background: isActive ? '#E6E8EC' : 'transparent',
                   transition: 'background-color 150ms ease-out',
                   textDecoration: 'none'}}>
                 <Image src={isActive ? active : inactive}
