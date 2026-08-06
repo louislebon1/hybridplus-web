@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Scale, Trash2 } from 'lucide-react'
+import { Page } from '@/components/feed'
 import { useBodyMetricsStore } from '@/stores/body-metrics-store'
 import { Input, Button, EmptyState } from '@/components/ui'
 import { localDateStr } from '@/lib/date'
@@ -52,21 +53,21 @@ export default function EditProfilePage() {
   const bmi = heightM && latestWeight ? latestWeight / (heightM * heightM) : null
 
   return (
-    <div>
+    <Page>
 
       {/* Header */}
-      <div>
-        <button onClick={() => router.back()}>
+      <div className="flex items-center justify-between gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)] pb-5 flex-shrink-0">
+        <h1 className="display text-title m-0 flex-1 min-w-0">Edit Profile</h1>
+        <button onClick={() => router.back()} aria-label="Close" className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer">
           <ArrowLeft size={16} />
         </button>
-        <h1>Edit Profile</h1>
       </div>
 
-      <div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 pb-32 flex flex-col gap-5">
 
         {/* Height */}
-        <div>
-          <label>Height (cm)</label>
+        <div className="flex flex-col gap-2">
+          <label className="meta">Height (cm)</label>
           <Input type="number"
             min="0"
             step="0.1"
@@ -95,9 +96,9 @@ export default function EditProfilePage() {
         )}
 
         {/* Log weight */}
-        <form onSubmit={handleLogWeight}>
-          <label>Log weight</label>
-          <div>
+        <form onSubmit={handleLogWeight} className="flex flex-col gap-2.5">
+          <label className="meta">Log weight</label>
+          <div className="flex gap-2.5">
             <Input type="date"
               value={weightDate}
               onChange={e => setWeightDate(e.target.value)} />
@@ -115,10 +116,10 @@ export default function EditProfilePage() {
 
         {/* Weight chart */}
         {chartLogs.length> 0 && (
-          <div>
-            <p>Weight history</p>
-            <div>
-              <div>
+          <div className="flex flex-col gap-3">
+            <p className="meta m-0">Weight history</p>
+            <div className="matt rounded-card p-4">
+              <div className="flex items-end gap-1.5 h-28">
                 {chartLogs.map(w => {
                   const pct = ((w.weightKg - minW) / range) * 100
                   return (
@@ -163,6 +164,6 @@ export default function EditProfilePage() {
             description="Log your first entry above to start tracking." />
         )}
       </div>
-    </div>
+    </Page>
   )
 }

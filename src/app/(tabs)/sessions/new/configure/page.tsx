@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { X, ChevronUp, ChevronDown, Minus } from 'lucide-react'
+import { Page } from '@/components/feed'
 import { useSessionWizard } from '@/stores/session-wizard-store'
 import { useTemplateStore } from '@/stores/template-store'
 import type { ExerciseTemplateBlock } from '@/types'
@@ -53,31 +54,31 @@ export default function NewSessionConfigurePage() {
   }
 
   return (
-    <div>
+    <Page>
 
       {/* Header */}
-      <div>
-        <h1>Edit session</h1>
-        <button onClick={handleClose}>
+      <div className="flex items-center justify-between gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)] pb-4 flex-shrink-0">
+        <h1 className="display text-display m-0 flex-1 min-w-0">Edit session</h1>
+        <button onClick={handleClose} aria-label="Close" className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer">
           <X size={16} />
         </button>
       </div>
 
       {/* Scrollable content */}
-      <div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 pt-2 pb-[200px] flex flex-col gap-3">
 
         {blocks.map((block, blockIdx) => (
-          <div key={block.id}>
+          <div key={block.id} className="matt rounded-card p-4 flex flex-col gap-3">
 
             {/* Exercise header */}
-            <div>
-              <div>
-                <span>{block.exerciseName}</span>
-                <div>
-                  <button onClick={() => moveBlock(block.id, 'up')}>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="display text-figure truncate">{block.exerciseName}</span>
+                <div className="flex gap-1.5 flex-shrink-0">
+                  <button aria-label="Move up" className="w-9 h-9 rounded-pill matt flex items-center justify-center text-scrim cursor-pointer" onClick={() => moveBlock(block.id, 'up')}>
                     <ChevronUp size={16} />
                   </button>
-                  <button onClick={() => moveBlock(block.id, 'down')}>
+                  <button aria-label="Move down" className="w-9 h-9 rounded-pill matt flex items-center justify-center text-scrim cursor-pointer" onClick={() => moveBlock(block.id, 'down')}>
                     <ChevronDown size={16} />
                   </button>
                 </div>
@@ -85,10 +86,10 @@ export default function NewSessionConfigurePage() {
 
               {/* Muscle tags */}
               {block.muscles.length> 0 && (
-                <div>
+                <div className="flex flex-wrap gap-1.5">
                   {block.muscles.map(m => (
                     <div key={m}>
-                      <span>{m}</span>
+                      <span className="meta px-2.5 py-1 rounded-pill matt">{m}</span>
                     </div>
                   ))}
                 </div>
@@ -155,13 +156,13 @@ export default function NewSessionConfigurePage() {
       </div>
 
       {/* Save footer */}
-      <div>
-        <button onClick={handleSave}
+      <div className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+84px)] z-40 px-5 py-3 bg-void/95 border-t border-scrim/10">
+        <button className="w-full h-14 rounded-pill bg-scrim text-void inline-flex items-center justify-center border-0 cursor-pointer transition-transform duration-150 ease-out active:scale-[0.97] display text-figure disabled:opacity-35 disabled:active:scale-100" onClick={handleSave}
           disabled={blocks.length === 0}>
           Save session
         </button>
       </div>
 
-    </div>
+    </Page>
   )
 }

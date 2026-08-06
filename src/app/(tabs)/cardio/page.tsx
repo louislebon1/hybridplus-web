@@ -1,5 +1,6 @@
 'use client'
-import { Footprints } from 'lucide-react'
+import { Footprints, X } from 'lucide-react'
+import { Page } from '@/components/feed'
 
 import { useState } from 'react'
 import { useCardioStore } from '@/stores/cardio-store'
@@ -71,24 +72,25 @@ export default function CardioPage() {
   const sorted = [...sessions].sort((a, b) => b.sessionDate.localeCompare(a.sessionDate))
 
   return (
-    <div>
+    <Page>
       {/* Header */}
-      <div>
-        <h1>Cardio</h1>
-      </div>
+      <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)] pb-4 flex-shrink-0">
+        <h1 className="display text-display m-0">Cardio</h1>
+      </header>
 
       {/* Tabs */}
-      <div>
+      <div className="px-5 flex gap-2 flex-shrink-0">
         {(['history', 'log'] as const).map((t) => (
           <button key={t}
-            onClick={() => setTab(t)}>
+            onClick={() => setTab(t)}
+            className={['px-4 py-2 rounded-pill border cursor-pointer meta transition-colors duration-150', t === tab ? 'bg-scrim text-void border-transparent' : 'matt'].join(' ')}>
             {t === 'history' ? 'History' : 'Log Session'}
           </button>
         ))}
       </div>
 
       {tab === 'history' ? (
-        <div>
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 pb-32 flex flex-col gap-4 pt-4">
           {sorted.length === 0 ? (
             <EmptyState icon={Footprints}
               title="No cardio logged yet"
@@ -96,18 +98,18 @@ export default function CardioPage() {
               action={{ label: 'Log Session', onClick: () => setTab('log') }} />
           ) : (
             sorted.map((s) => (
-              <div key={s.id}>
-                <div>
-                  <div>
-                    <ActivityIcon type={s.activityType} size={22} />
-                    <div>
-                      <p>
+              <div key={s.id} className="matt rounded-card p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <ActivityIcon type={s.activityType} size={22} className="text-scrim flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="display text-figure m-0 truncate capitalize">
                         {s.runType ? `${s.runType.replace('_', ' ')} ` : ''}{s.activityType}
                       </p>
-                      <p>{fmtDate(s.sessionDate)}</p>
+                      <p className="meta">{fmtDate(s.sessionDate)}</p>
                     </div>
                   </div>
-                  <button onClick={() => { if (window.confirm('Delete this session?')) deleteSession(s.id) }}>✕</button>
+                  <button aria-label="Delete session" className="w-9 h-9 rounded-pill matt flex items-center justify-center text-fog flex-shrink-0 cursor-pointer" onClick={() => { if (window.confirm('Delete this session?')) deleteSession(s.id) }}><X size={14} /></button>
                 </div>
                 <div>
                   <div>
@@ -138,7 +140,7 @@ export default function CardioPage() {
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex-1 min-h-0 overflow-y-auto px-5 pt-4 pb-32 flex flex-col gap-4">
           {/* Activity type */}
           <div>
             <p>Activity</p>
@@ -188,6 +190,6 @@ export default function CardioPage() {
           <Button type="submit" size="lg">LOG SESSION</Button>
         </form>
       )}
-    </div>
+    </Page>
   )
 }

@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckCircle2 } from 'lucide-react'
+import { Page } from '@/components/feed'
 import { useSessionStore } from '@/stores/session-store'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { Button } from '@/components/ui'
@@ -58,44 +59,44 @@ export default function SessionCompletePage() {
   }
 
   return (
-    <div>
+    <Page>
 
-      <div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 pb-32 flex flex-col gap-4 pt-[calc(env(safe-area-inset-top,0px)+24px)]">
         {/* ── Hero ── */}
-        <div>
-          <CheckCircle2 size={16} />
-          <p>Session complete</p>
+        <div className="flex items-center gap-2 text-stone">
+          <CheckCircle2 size={15} />
+          <p className="meta m-0">Session complete</p>
         </div>
 
-        <div>
-          <span>{fmtVolume(completed.totalVolume)}</span>
+        <div className="-mt-1">
+          <span className="display text-hero tabular">{fmtVolume(completed.totalVolume)}</span>
         </div>
 
-        <h1>{activeSession.name}</h1>
-        <p>
+        <h1 className="display text-display m-0 -mt-2">{activeSession.name}</h1>
+        <p className="text-label text-stone m-0 max-w-[46ch]">
           {setsCompleted} set{setsCompleted !== 1 ? 's' : ''} logged in {fmtDuration(completed.durationSeconds)}
           {newPRs> 0 ? ` — and you set ${newPRs} new personal record${newPRs !== 1 ? 's' : ''}.` : '. Volume is banked toward this week’s total.'}
         </p>
 
         {/* ── Compact stat row ── */}
-        <div>
+        <div className="flex gap-2">
           <StatCard label="Duration" value={fmtDuration(completed.durationSeconds)} caption="elapsed" />
           <StatCard label="Sets" value={String(setsCompleted)} caption="completed" />
           <StatCard label="Records"
             value={newPRs> 0 ? String(newPRs) : '—'}
             caption={newPRs> 0 ? `new PR${newPRs !== 1 ? 's' : ''}` : 'no new PRs'}
-            valueColor={newPRs> 0 ? 'var(--accent)' : undefined} />
+            valueColor={undefined} />
         </div>
 
         {/* ── Per-exercise breakdown ── */}
         <div>
           <SectionLabel>Exercises</SectionLabel>
-          <div>
+          <div className="flex flex-col gap-2">
             {completed.exercises.map(ex => (
-              <div key={ex.exerciseId}>
-                <div>
-                  <p>{ex.exerciseName}</p>
-                  <p>
+              <div key={ex.exerciseId} className="matt rounded-card p-4">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="display text-figure m-0 truncate">{ex.exerciseName}</p>
+                  <p className="meta flex-shrink-0">
                     {ex.sets.length} set{ex.sets.length !== 1 ? 's' : ''}
                   </p>
                 </div>
@@ -108,7 +109,7 @@ export default function SessionCompletePage() {
         <div />
       </div>
 
-      <div>
+      <div className="px-5 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] flex gap-2.5 flex-shrink-0">
         <Button variant="secondary" size="lg"  onClick={() => router.push('/session/complete/review')}>
           Review session
         </Button>
@@ -116,6 +117,6 @@ export default function SessionCompletePage() {
           Done
         </Button>
       </div>
-    </div>
+    </Page>
   )
 }
