@@ -82,46 +82,43 @@ export default function EditSessionPage() {
     router.push('/sessions/new/configure')
   }
 
-  const canSave = strength ? sName.trim().length > 0 : cName.trim().length > 0
+  const canSave = strength ? sName.trim().length> 0 : cName.trim().length> 0
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-            <ArrowLeft size={16} className="text-text" />
+      <div>
+        <div>
+          <button onClick={() => router.back()}>
+            <ArrowLeft size={16} />
           </button>
-          <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Session</h1>
+          <h1>Edit Session</h1>
         </div>
-        <button onClick={handleDelete} className="p-1 rounded-inner">
-          <Trash2 size={20} className="text-text/40" />
+        <button onClick={handleDelete}>
+          <Trash2 size={20} />
         </button>
       </div>
 
-      <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4">
+      <form onSubmit={handleSave}>
 
         {/* Strength form */}
         {strength && (
           <>
-            <div className="flex flex-col gap-2">
-              <label className="text-label font-medium leading-[18px] text-text">Session name</label>
+            <div>
+              <label>Session name</label>
               <Input autoFocus value={sName} onChange={e => setSName(e.target.value)} />
             </div>
 
-            <button
-              type="button"
-              onClick={handleEditExercises}
-              className="flex items-center justify-between px-4 py-3 rounded-inner bg-bg-element text-left"
-            >
+            <button type="button"
+              onClick={handleEditExercises}>
               <div>
-                <p className="text-label font-medium text-text m-0">Edit exercises &amp; sets</p>
-                <p className="text-caption text-text/50 mt-0.5 mb-0">
+                <p>Edit exercises &amp; sets</p>
+                <p>
                   {strength.exerciseBlocks.length} exercise{strength.exerciseBlocks.length !== 1 ? 's' : ''}
                 </p>
               </div>
-              <ChevronRight size={16} className="text-text/40 flex-shrink-0" />
+              <ChevronRight size={16} />
             </button>
           </>
         )}
@@ -129,23 +126,20 @@ export default function EditSessionPage() {
         {/* Cardio form */}
         {cardio && (
           <>
-            <div className="flex flex-col gap-2">
-              <label className="text-label font-medium leading-[18px] text-text">Session name</label>
+            <div>
+              <label>Session name</label>
               <Input autoFocus value={cName} onChange={e => setCName(e.target.value)} />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-label font-medium leading-[18px] text-text">Activity</label>
-              <div className="flex gap-2 flex-wrap">
+            <div>
+              <label>Activity</label>
+              <div>
                 {ACTIVITY_TYPES.map(a => {
                   const isActive = a === activityType
                   return (
-                    <button
-                      key={a}
+                    <button key={a}
                       type="button"
-                      onClick={() => setActivityType(a)}
-                      className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text opacity-60'}`}
-                    >
+                      onClick={() => setActivityType(a)}>
                       {a.charAt(0).toUpperCase() + a.slice(1)}
                     </button>
                   )
@@ -153,16 +147,16 @@ export default function EditSessionPage() {
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <div className="flex-1 flex flex-col gap-2">
-                <label className="text-label font-medium leading-[18px] text-text">
-                  Target duration <span className="text-text/40">(mins)</span>
+            <div>
+              <div>
+                <label>
+                  Target duration <span>(mins)</span>
                 </label>
                 <Input type="number" min="1" placeholder="30" value={targetDuration} onChange={e => setTargetDuration(e.target.value)} />
               </div>
-              <div className="flex-1 flex flex-col gap-2">
-                <label className="text-label font-medium leading-[18px] text-text">
-                  Target distance <span className="text-text/40">(km)</span>
+              <div>
+                <label>
+                  Target distance <span>(km)</span>
                 </label>
                 <Input type="number" min="0.1" step="0.1" placeholder="5.0" value={targetDistance} onChange={e => setTargetDistance(e.target.value)} />
               </div>
@@ -171,11 +165,8 @@ export default function EditSessionPage() {
         )}
 
         {/* Save */}
-        <button
-          type="submit"
-          disabled={!canSave}
-          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSave ? 'bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
-        >
+        <button type="submit"
+          disabled={!canSave}>
           Save Changes
         </button>
 

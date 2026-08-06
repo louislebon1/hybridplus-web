@@ -46,29 +46,26 @@ function ValueRow({
   onBlur: () => void
 }) {
   return (
-    <div className="flex gap-3 items-center justify-center w-full">
-      <button onClick={onDec} aria-label={`Decrease ${label}`} className={stepperBtn}>
-        <Minus size={16} className="text-text" />
+    <div>
+      <button onClick={onDec} aria-label={`Decrease ${label}`}>
+        <Minus size={16} />
       </button>
 
-      <div className="flex-1 max-w-[242px] bg-bg-element rounded-full py-2 px-3 flex items-center gap-1 ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-text/60">
-        <span className="w-11 flex-shrink-0" aria-hidden />
-        <input
-          type="number"
+      <div>
+        <span aria-hidden />
+        <input type="number"
           inputMode="decimal"
           aria-label={label}
           value={display}
           placeholder={placeholder}
           onChange={e => onChange(e.target.value)}
           onFocus={onFocus}
-          onBlur={onBlur}
-          className="w-0 flex-1 min-w-0 text-center bg-transparent outline-none text-display text-text tabular placeholder:text-text-tertiary"
-        />
-        <span className="w-11 flex-shrink-0 text-tag uppercase text-text-tertiary">{unit}</span>
+          onBlur={onBlur} />
+        <span>{unit}</span>
       </div>
 
-      <button onClick={onInc} aria-label={`Increase ${label}`} className={stepperBtn}>
-        <Plus size={16} className="text-text" />
+      <button onClick={onInc} aria-label={`Increase ${label}`}>
+        <Plus size={16} />
       </button>
     </div>
   )
@@ -102,17 +99,15 @@ function fmtLastTime(set: CompletedSet): string {
 function RestRing({ pct, label, sublabel }: { pct: number; label: string; sublabel: string }) {
   const offset = REST_RING_CIRCUMFERENCE * (1 - Math.min(1, Math.max(0, pct)))
   return (
-    <div className="relative w-[220px] h-[220px] flex items-center justify-center flex-shrink-0">
-      <svg width={220} height={220} viewBox="0 0 220 220" className="-rotate-90 absolute inset-0">
+    <div>
+      <svg width={220} height={220} viewBox="0 0 220 220">
         <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="rgba(242,242,240,0.12)" strokeWidth={12} />
-        <circle
-          cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="var(--accent)" strokeWidth={12}
-          strokeDasharray={REST_RING_CIRCUMFERENCE} strokeDashoffset={offset} strokeLinecap="round"
-        />
+        <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="var(--accent)" strokeWidth={12}
+          strokeDasharray={REST_RING_CIRCUMFERENCE} strokeDashoffset={offset} strokeLinecap="round" />
       </svg>
-      <div className="flex flex-col items-center gap-1">
-        <p className="text-metric text-text tabular">{label}</p>
-        <p className="text-caption font-medium text-text/40 uppercase tracking-wide">{sublabel}</p>
+      <div>
+        <p>{label}</p>
+        <p>{sublabel}</p>
       </div>
     </div>
   )
@@ -232,29 +227,26 @@ export default function SessionPage() {
   if (!activeSession) {
     return (
       <>
-      <div className="flex flex-col h-full">
-        <div className="flex items-center gap-3 px-5 screen-top pb-4 flex-shrink-0">
-          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-            <ArrowLeft size={16} className="text-text" />
+      <div>
+        <div>
+          <button onClick={() => router.back()}>
+            <ArrowLeft size={16} />
           </button>
-          <h1 className="text-h2 font-bold text-text">Start Workout</h1>
+          <h1>Start Workout</h1>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-5">
+        <div>
           {/* Quick start */}
-          <button
-            onClick={() => startSession(null, 'Quick Workout')}
-            className="bg-fill-strong text-fill-strong-fg rounded-card p-5 text-left"
-          >
-            <p className="text-h4 font-bold">Quick Start</p>
-            <p className="text-prose opacity-80 mt-1">Start an empty session — add exercises as you go</p>
+          <button onClick={() => startSession(null, 'Quick Workout')}>
+            <p>Quick Start</p>
+            <p>Start an empty session — add exercises as you go</p>
           </button>
 
           {/* Today's scheduled sessions */}
-          {(todayStrengthIds.size > 0 || todayCardioEvents.length > 0) && (
+          {(todayStrengthIds.size> 0 || todayCardioEvents.length> 0) && (
             <div>
-              <p className="eyebrow mb-3">Today</p>
-              <div className="flex flex-col gap-2">
+              <p>Today</p>
+              <div>
                 {allTemplates
                   .filter(t => todayStrengthIds.has(t.id))
                   .map((t) => {
@@ -262,41 +254,41 @@ export default function SessionPage() {
                     const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                     const activePhase = store.getActivePhase(t.programmeId)
                     return (
-                      <button key={t.id} onClick={() => ref && startSession(ref)} className="relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-text/60">
-                        <div className="flex items-center gap-2">
-                          <span className="text-tag uppercase text-fill-strong-fg bg-fill-strong px-2.5 py-1 rounded-full">Strength</span>
-                          {activePhase && <span className="text-tag uppercase text-text/40">{activePhase.name}</span>}
+                      <button key={t.id} onClick={() => ref && startSession(ref)}>
+                        <div>
+                          <span>Strength</span>
+                          {activePhase && <span>{activePhase.name}</span>}
                         </div>
-                        <span className="text-body leading-5 font-medium text-text">{t.name}</span>
+                        <span>{t.name}</span>
                       </button>
                     )
                   })}
                 {todayCardioEvents.map(ev => (
-                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })} className="relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-text/60">
-                    <span className="text-tag uppercase text-fill-strong-fg bg-fill-strong px-2.5 py-1 rounded-full inline-flex items-center w-fit">{ev.eventType}</span>
-                    <span className="text-body leading-5 font-medium text-text">{ev.name ?? ev.eventType}</span>
+                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })}>
+                    <span>{ev.eventType}</span>
+                    <span>{ev.name ?? ev.eventType}</span>
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {allTemplates.length > 0 && (
+          {allTemplates.length> 0 && (
             <div>
-              <p className="eyebrow mb-3">From programme</p>
-              <div className="flex flex-col gap-2">
+              <p>From programme</p>
+              <div>
                 {allTemplates.map((t) => {
                   const store = useProgrammeStore.getState()
                   const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                   const activePhase = store.getActivePhase(t.programmeId)
                   const isToday = todayStrengthIds.has(t.id)
                   return (
-                    <button key={t.id} onClick={() => ref && startSession(ref)} className={`relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-text/60 ${isToday ? 'opacity-40' : ''}`}>
-                      <div className="flex items-center gap-2">
-                        <span className="text-tag uppercase text-fill-strong-fg bg-fill-strong px-2.5 py-1 rounded-full">Strength</span>
-                        {activePhase && <span className="text-tag uppercase text-text/40">{activePhase.name}</span>}
+                    <button key={t.id} onClick={() => ref && startSession(ref)}>
+                      <div>
+                        <span>Strength</span>
+                        {activePhase && <span>{activePhase.name}</span>}
                       </div>
-                      <span className="text-body leading-5 font-medium text-text">{t.name}</span>
+                      <span>{t.name}</span>
                     </button>
                   )
                 })}
@@ -306,26 +298,23 @@ export default function SessionPage() {
 
           {/* Cardio */}
           <div>
-            <p className="eyebrow mb-3">Log cardio</p>
-            <div className="flex flex-col gap-2">
-              {allCardioTemplates.length > 0 && allCardioTemplates.map((ct) => (
-                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })} className="relative overflow-hidden bg-bg-card rounded-card px-5 py-3 min-h-[68px] flex flex-col justify-center gap-1.5 text-left w-full outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.98] active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-text/60">
-                  <div className="flex items-center gap-2">
-                    <span className="text-tag uppercase text-fill-strong-fg bg-fill-strong px-2.5 py-1 rounded-full">{ct.activityType}</span>
-                    {ct.targetDurationMinutes && <span className="text-tag uppercase text-text/40">{ct.targetDurationMinutes}M</span>}
+            <p>Log cardio</p>
+            <div>
+              {allCardioTemplates.length> 0 && allCardioTemplates.map((ct) => (
+                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })}>
+                  <div>
+                    <span>{ct.activityType}</span>
+                    {ct.targetDurationMinutes && <span>{ct.targetDurationMinutes}M</span>}
                   </div>
-                  <span className="text-body leading-5 font-medium text-text">{ct.name}</span>
+                  <span>{ct.name}</span>
                 </button>
               ))}
-              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+              <div>
                 {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => openCardioLog({ activityType: type })}
-                    className="flex-shrink-0 flex flex-col items-center gap-1 px-4 py-3 bg-bg-card rounded-card hover:bg-bg-hover transition-colors"
-                  >
-                    <ActivityIcon type={type} size={20} className="text-text" />
-                    <span className="text-caption text-text-secondary capitalize">{type}</span>
+                  <button key={type}
+                    onClick={() => openCardioLog({ activityType: type })}>
+                    <ActivityIcon type={type} size={20} />
+                    <span>{type}</span>
                   </button>
                 ))}
               </div>
@@ -336,21 +325,13 @@ export default function SessionPage() {
 
       {/* Log cardio sheet */}
       <Sheet visible={showLogCardio} onClose={() => setShowLogCardio(false)} title="Log Cardio">
-        <form onSubmit={handleCardioLog} className="px-5 py-4 flex flex-col gap-4 pb-8">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+        <form onSubmit={handleCardioLog}>
+          <div>
             {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map((type) => (
-              <button
-                key={type}
+              <button key={type}
                 type="button"
-                onClick={() => setCardioForm(f => ({ ...f, activityType: type }))}
-                className={[
-                  'flex-shrink-0 px-4 py-2 rounded-full text-label border transition-colors',
-                  cardioForm.activityType === type
-                    ? 'bg-fill-strong text-fill-strong-fg border-border-strong'
-                    : 'border-border text-text-secondary hover:bg-bg-element',
-                ].join(' ')}
-              >
-                <span className="inline-flex items-center gap-1.5"><ActivityIcon type={type} size={14} />{type}</span>
+                onClick={() => setCardioForm(f => ({ ...f, activityType: type }))}>
+                <span><ActivityIcon type={type} size={14} />{type}</span>
               </button>
             ))}
           </div>
@@ -358,12 +339,12 @@ export default function SessionPage() {
           <Input label="Date" type="date" value={cardioForm.sessionDate} onChange={e => setCardioForm(f => ({ ...f, sessionDate: e.target.value }))} />
 
           <div>
-            <p className="text-label font-medium text-text mb-2">Duration</p>
-            <div className="flex gap-2 items-center">
+            <p>Duration</p>
+            <div>
               <Input placeholder="0" type="number" min="0" value={cardioForm.hours} onChange={e => setCardioForm(f => ({ ...f, hours: e.target.value }))} />
-              <span className="text-text-secondary text-label flex-shrink-0">h</span>
+              <span>h</span>
               <Input placeholder="30" type="number" min="0" max="59" value={cardioForm.minutes} onChange={e => setCardioForm(f => ({ ...f, minutes: e.target.value }))} />
-              <span className="text-text-secondary text-label flex-shrink-0">m</span>
+              <span>m</span>
             </div>
           </div>
 
@@ -373,18 +354,12 @@ export default function SessionPage() {
 
           {cardioForm.activityType === 'run' && (
             <div>
-              <p className="text-label font-medium text-text mb-2">Run type</p>
-              <div className="flex flex-wrap gap-2">
+              <p>Run type</p>
+              <div>
                 {(['easy', 'tempo', 'intervals', 'long_run', 'recovery', 'race'] as RunSessionType[]).map((type) => (
-                  <button
-                    key={type}
+                  <button key={type}
                     type="button"
-                    onClick={() => setCardioForm(f => ({ ...f, runType: type }))}
-                    className={[
-                      'px-3 py-1.5 rounded-full text-caption border transition-colors',
-                      cardioForm.runType === type ? 'border-border-strong bg-text/10 text-text' : 'border-border text-text-secondary',
-                    ].join(' ')}
-                  >
+                    onClick={() => setCardioForm(f => ({ ...f, runType: type }))}>
                     {type.replace('_', ' ')}
                   </button>
                 ))}
@@ -393,7 +368,7 @@ export default function SessionPage() {
           )}
 
           <Input label="Notes" placeholder="How did it feel?" value={cardioForm.notes} onChange={e => setCardioForm(f => ({ ...f, notes: e.target.value }))} />
-          <Button type="submit" size="lg" className="w-full">LOG SESSION</Button>
+          <Button type="submit" size="lg">LOG SESSION</Button>
         </form>
       </Sheet>
       </>
@@ -409,10 +384,10 @@ export default function SessionPage() {
     ?? null
   const currentIndex = currentBlock ? sortedBlocks.findIndex(b => b.id === currentBlock.id) : -1
   const currentSet = currentBlock ? getActiveSet(currentBlock) : null
-  const prevBlock = currentIndex > 0 ? sortedBlocks[currentIndex - 1] : null
-  const nextBlock = currentIndex >= 0 && currentIndex < sortedBlocks.length - 1 ? sortedBlocks[currentIndex + 1] : null
+  const prevBlock = currentIndex> 0 ? sortedBlocks[currentIndex - 1] : null
+  const nextBlock = currentIndex>= 0 && currentIndex < sortedBlocks.length - 1 ? sortedBlocks[currentIndex + 1] : null
   const setPosition = currentBlock ? currentBlock.sets.findIndex(s => s.id === currentSet?.id) : -1
-  const lastTimeSet = currentBlock && currentSet && setPosition >= 0 && currentSet.setType !== 'warm_up'
+  const lastTimeSet = currentBlock && currentSet && setPosition>= 0 && currentSet.setType !== 'warm_up'
     ? getLastTimeSet(currentBlock.exerciseId, setPosition, pastSessions)
     : null
 
@@ -478,59 +453,51 @@ export default function SessionPage() {
     if (currentSet.weightValue === null) updates.weightValue = currentSet.targetWeightKg
     if (currentSet.reps === null) updates.reps = currentSet.targetReps
     if (currentSet.rpe === null) updates.rpe = currentSet.targetRpe
-    if (Object.keys(updates).length > 0) updateSet(currentBlock.id, currentSet.id, updates)
+    if (Object.keys(updates).length> 0) updateSet(currentBlock.id, currentSet.id, updates)
     completeSet(currentBlock.id, currentSet.id)
   }
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div>
       {/* Header */}
-      <div className="flex flex-col gap-2 px-5 screen-top pb-6 border-b border-border flex-shrink-0">
-        <div className="flex items-center justify-between w-full">
+      <div>
+        <div>
           {editingName ? (
-            <input
-              autoFocus
+            <input autoFocus
               defaultValue={activeSession.name}
               onBlur={(e) => { setSessionName(e.target.value); setEditingName(false) }}
-              onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
-              className="text-h2 font-bold leading-[30px] text-text bg-transparent border-b border-border-strong outline-none flex-1 min-w-0"
-            />
+              onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()} />
           ) : (
-            <button onClick={() => setEditingName(true)} className="text-h2 font-bold leading-[30px] text-text text-left min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+            <button onClick={() => setEditingName(true)}>
               {activeSession.name}
             </button>
           )}
-          <button
-            onClick={() => { if (window.confirm('Abandon this session? Progress will be lost.')) { abandonSession(); router.back() } }}
-            className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0 ml-3"
-          >
-            <X size={16} className="text-text" />
+          <button onClick={() => { if (window.confirm('Abandon this session? Progress will be lost.')) { abandonSession(); router.back() } }}>
+            <X size={16} />
           </button>
         </div>
-        <p className="text-caption font-medium text-text tabular">{formatDuration(elapsed)}</p>
+        <p>{formatDuration(elapsed)}</p>
       </div>
 
       {restTimer.isActive ? (
         /* ── Resting ── */
         <>
-          <div className="flex-1 flex flex-col gap-6 items-center justify-center px-4 py-6">
-            <RestRing
-              pct={restTimer.durationSeconds ? restRemaining / restTimer.durationSeconds : 0}
+          <div>
+            <RestRing pct={restTimer.durationSeconds ? restRemaining / restTimer.durationSeconds : 0}
               label={formatDuration(restRemaining)}
-              sublabel="Resting"
-            />
+              sublabel="Resting" />
             <Button variant="primary" onClick={() => addRestTime(15)}>
               <Plus size={16} /> Add 15 seconds
             </Button>
             {nextBlock && (
-              <div className="flex flex-col items-center gap-2 text-center">
-                <p className="text-tag uppercase text-text">Next exercise</p>
-                <p className="text-h2 font-bold leading-[30px] text-text">{nextBlock.exerciseName}</p>
+              <div>
+                <p>Next exercise</p>
+                <p>{nextBlock.exerciseName}</p>
               </div>
             )}
           </div>
-          <div className="px-5 pb-6 flex-shrink-0">
-            <Button size="lg" className="w-full" onClick={dismissRestTimer}>
+          <div>
+            <Button size="lg"  onClick={dismissRestTimer}>
               Skip rest <ChevronRight size={16} />
             </Button>
           </div>
@@ -538,137 +505,120 @@ export default function SessionPage() {
       ) : currentBlock && currentSet ? (
         /* ── Logging a set ── */
         <>
-          <div className="flex-1 overflow-y-auto flex flex-col gap-6">
-            <div className="flex gap-4 items-center px-5 pt-6">
-              <Button variant="secondary" className="flex-1" onClick={() => setShowSwapExercise(true)}>Swap exercise</Button>
+          <div>
+            <div>
+              <Button variant="secondary"  onClick={() => setShowSwapExercise(true)}>Swap exercise</Button>
             </div>
 
-            <div className="flex flex-col gap-2 items-center text-center px-4">
-              <p className="text-h1 text-text">{currentBlock.exerciseName}</p>
+            <div>
+              <p>{currentBlock.exerciseName}</p>
               {currentSet.setType === 'warm_up' ? (
-                <span className="text-tag uppercase text-bg bg-text-tertiary px-3 py-1 rounded-full inline-flex items-center">
+                <span>
                   Warm-up · Set {setPosition + 1} / {currentBlock.sets.length}
                 </span>
               ) : (
-                <p className="text-tag uppercase text-text">
+                <p>
                   Set {setPosition + 1} / {currentBlock.sets.length}
                 </p>
               )}
               {lastTimeSet && (
-                <p className="text-caption text-text-tertiary">
+                <p>
                   Last time: {fmtLastTime(lastTimeSet)}
                 </p>
               )}
             </div>
 
-            <div className="flex flex-col gap-2 items-center px-4">
-              <ValueRow
-                label="Weight" unit="kg"
+            <div>
+              <ValueRow label="Weight" unit="kg"
                 display={editingField === 'weight' ? editingValue : String(weightValue)}
                 onDec={() => stepWeight(-2.5)}
                 onInc={() => stepWeight(2.5)}
                 onChange={raw => editField('weight', raw)}
                 onFocus={() => beginEdit('weight', String(weightValue))}
-                onBlur={endEdit}
-              />
-              <ValueRow
-                label="Reps" unit="reps"
+                onBlur={endEdit} />
+              <ValueRow label="Reps" unit="reps"
                 display={editingField === 'reps' ? editingValue : String(repsValue)}
                 onDec={() => stepReps(-1)}
                 onInc={() => stepReps(1)}
                 onChange={raw => editField('reps', raw)}
                 onFocus={() => beginEdit('reps', String(repsValue))}
-                onBlur={endEdit}
-              />
-              <ValueRow
-                label="RPE" unit="rpe" placeholder="—"
+                onBlur={endEdit} />
+              <ValueRow label="RPE" unit="rpe" placeholder="—"
                 display={editingField === 'rpe' ? editingValue : (rpeValue !== null ? String(rpeValue) : '')}
                 onDec={() => stepRpe(-0.5)}
                 onInc={() => stepRpe(0.5)}
                 onChange={raw => editField('rpe', raw)}
                 onFocus={() => beginEdit('rpe', rpeValue !== null ? String(rpeValue) : '')}
-                onBlur={endEdit}
-              />
+                onBlur={endEdit} />
             </div>
           </div>
 
-          <div className="px-5 pb-6 pt-3 flex-shrink-0 flex flex-col gap-3">
-            <Button size="lg" className="w-full" onClick={handleLogSet}>Log set</Button>
-            <div className="flex gap-3">
-              <Button variant="secondary" size="lg" className="flex-1" onClick={() => addSet(currentBlock.id)}>
+          <div>
+            <Button size="lg"  onClick={handleLogSet}>Log set</Button>
+            <div>
+              <Button variant="secondary" size="lg"  onClick={() => addSet(currentBlock.id)}>
                 <Plus size={16} /> Add set
               </Button>
-              <Button
-                variant="secondary"
+              <Button variant="secondary"
                 size="lg"
-                className="flex-1"
+                
                 disabled={currentBlock.sets.length <= 1}
-                onClick={() => removeSet(currentBlock.id, currentSet.id)}
-              >
+                onClick={() => removeSet(currentBlock.id, currentSet.id)}>
                 Delete set
               </Button>
             </div>
           </div>
 
           {/* Prev / next exercise nav */}
-          <div className="flex gap-4 p-4 flex-shrink-0">
-            <button
-              onClick={() => prevBlock && setActiveBlock(prevBlock.id)}
-              disabled={!prevBlock}
-              className={`w-12 h-12 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0 ${!prevBlock ? 'opacity-40' : ''}`}
-            >
-              <ChevronLeft size={18} className="text-text" />
+          <div>
+            <button onClick={() => prevBlock && setActiveBlock(prevBlock.id)}
+              disabled={!prevBlock}>
+              <ChevronLeft size={18} />
             </button>
             {nextBlock ? (
-              <button onClick={() => setActiveBlock(nextBlock.id)} className="flex-1 h-12 rounded-full border border-border-strong bg-fill-strong flex items-center justify-between pl-6 pr-3">
-                <span className="text-body font-medium text-fill-strong-fg">{nextBlock.exerciseName}</span>
-                <ChevronRight size={20} className="text-fill-strong-fg" />
+              <button onClick={() => setActiveBlock(nextBlock.id)}>
+                <span>{nextBlock.exerciseName}</span>
+                <ChevronRight size={20} />
               </button>
             ) : (
-              <button onClick={handleFinish} className="flex-1 h-12 rounded-full border border-border-strong bg-fill-strong flex items-center justify-between pl-6 pr-3">
-                <span className="text-body font-medium text-fill-strong-fg">Finish workout</span>
-                <ChevronRight size={20} className="text-fill-strong-fg" />
+              <button onClick={handleFinish}>
+                <span>Finish workout</span>
+                <ChevronRight size={20} />
               </button>
             )}
           </div>
         </>
-      ) : sortedBlocks.length > 0 ? (
+      ) : sortedBlocks.length> 0 ? (
         /* ── Every set logged ── */
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
-          <EmptyState
-            icon={CircleCheck}
+        <div>
+          <EmptyState icon={CircleCheck}
             title="All sets logged"
             description="Nice work — ready to wrap up?"
-            action={{ label: 'Finish workout', onClick: handleFinish }}
-          />
+            action={{ label: 'Finish workout', onClick: handleFinish }} />
         </div>
       ) : (
         /* ── No exercises yet ── */
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
-          <EmptyState
-            icon={Dumbbell}
+        <div>
+          <EmptyState icon={Dumbbell}
             title="No exercises added yet"
             description="Add your first exercise to build this workout."
-            action={{ label: 'Add exercise', onClick: () => { setExerciseSearch(''); setShowAddExercise(true) } }}
-          />
+            action={{ label: 'Add exercise', onClick: () => { setExerciseSearch(''); setShowAddExercise(true) } }} />
         </div>
       )}
 
       {/* Swap exercise sheet */}
       <Sheet visible={showSwapExercise} onClose={() => setShowSwapExercise(false)} title="Swap Exercise">
-        <div className="px-5 pt-4 pb-2">
+        <div>
           <Input placeholder="Search exercises…" value={exerciseSearch} onChange={(e) => setExerciseSearch(e.target.value)} autoFocus />
         </div>
-        <div className="divide-y divide-border max-h-[60vh] overflow-y-auto">
+        <div>
           {filteredLibrary.slice(0, 50).map((ex) => (
-            <button
-              key={ex.id}
-              className="w-full text-left px-5 py-3.5 text-label text-text hover:bg-bg-element"
+            <button key={ex.id}
+              
               onClick={() => {
                 if (currentBlock) substituteExercise(currentBlock.id, { id: ex.id, name: ex.name, category: ex.category, equipment: ex.equipment, primaryMuscles: ex.primaryMuscles })
                 setShowSwapExercise(false)
-              }}
-            >
+              }}>
               {ex.name}
             </button>
           ))}
@@ -677,24 +627,20 @@ export default function SessionPage() {
 
       {/* Exercise search sheet (empty-session flow) */}
       <Sheet visible={showAddExercise} onClose={() => setShowAddExercise(false)} title="Add Exercise">
-        <div className="px-5 pt-4 pb-2">
-          <Input
-            placeholder="Search exercises…"
+        <div>
+          <Input placeholder="Search exercises…"
             value={exerciseSearch}
             onChange={(e) => setExerciseSearch(e.target.value)}
-            autoFocus
-          />
+            autoFocus />
         </div>
-        <div className="divide-y divide-border max-h-[60vh] overflow-y-auto">
+        <div>
           {filteredLibrary.slice(0, 50).map((ex) => (
-            <button
-              key={ex.id}
-              className="w-full text-left px-5 py-3.5 text-label text-text hover:bg-bg-element"
+            <button key={ex.id}
+              
               onClick={() => {
                 addExerciseBlock({ id: ex.id, name: ex.name, category: ex.category, equipment: ex.equipment, primaryMuscles: ex.primaryMuscles })
                 setShowAddExercise(false)
-              }}
-            >
+              }}>
               {ex.name}
             </button>
           ))}

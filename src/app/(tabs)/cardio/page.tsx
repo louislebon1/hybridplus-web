@@ -18,7 +18,7 @@ function fmtPace(paceSecs: number | null) {
 function fmtDuration(secs: number) {
   const h = Math.floor(secs / 3600)
   const m = Math.floor((secs % 3600) / 60)
-  if (h > 0) return `${h}h ${m}m`
+  if (h> 0) return `${h}h ${m}m`
   return `${m}m`
 }
 
@@ -71,73 +71,65 @@ export default function CardioPage() {
   const sorted = [...sessions].sort((a, b) => b.sessionDate.localeCompare(a.sessionDate))
 
   return (
-    <div className="flex flex-col h-full">
+    <div>
       {/* Header */}
-      <div className="px-5 screen-top pb-4 flex-shrink-0">
-        <h1 className="text-h2 font-bold text-text">Cardio</h1>
+      <div>
+        <h1>Cardio</h1>
       </div>
 
       {/* Tabs */}
-      <div className="flex px-5 gap-1 mb-4 flex-shrink-0">
+      <div>
         {(['history', 'log'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={[
-              'flex-1 py-2 rounded-inner text-label font-medium transition-colors',
-              tab === t ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text-secondary',
-            ].join(' ')}
-          >
+          <button key={t}
+            onClick={() => setTab(t)}>
             {t === 'history' ? 'History' : 'Log Session'}
           </button>
         ))}
       </div>
 
       {tab === 'history' ? (
-        <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-2">
+        <div>
           {sorted.length === 0 ? (
-            <EmptyState
-              icon={Footprints}
+            <EmptyState icon={Footprints}
               title="No cardio logged yet"
               description="Log your first session to start tracking"
-              action={{ label: 'Log Session', onClick: () => setTab('log') }}
-            />
+              action={{ label: 'Log Session', onClick: () => setTab('log') }} />
           ) : (
             sorted.map((s) => (
-              <div key={s.id} className="bg-bg-card rounded-card p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <ActivityIcon type={s.activityType} size={22} className="text-text flex-shrink-0" />
+              <div key={s.id}>
+                <div>
+                  <div>
+                    <ActivityIcon type={s.activityType} size={22} />
                     <div>
-                      <p className="text-label font-medium text-text capitalize">
+                      <p>
                         {s.runType ? `${s.runType.replace('_', ' ')} ` : ''}{s.activityType}
                       </p>
-                      <p className="text-caption text-text-secondary">{fmtDate(s.sessionDate)}</p>
+                      <p>{fmtDate(s.sessionDate)}</p>
                     </div>
                   </div>
-                  <button onClick={() => { if (window.confirm('Delete this session?')) deleteSession(s.id) }} className="text-caption text-error">✕</button>
+                  <button onClick={() => { if (window.confirm('Delete this session?')) deleteSession(s.id) }}>✕</button>
                 </div>
-                <div className="flex gap-4 mt-3">
+                <div>
                   <div>
-                    <p className="text-caption text-text-tertiary">Duration</p>
-                    <p className="text-label font-medium text-text tabular">{fmtDuration(s.durationSeconds)}</p>
+                    <p>Duration</p>
+                    <p>{fmtDuration(s.durationSeconds)}</p>
                   </div>
                   {s.distanceKm && (
                     <div>
-                      <p className="text-caption text-text-tertiary">Distance</p>
-                      <p className="text-label font-medium text-text tabular">{s.distanceKm.toFixed(2)} km</p>
+                      <p>Distance</p>
+                      <p>{s.distanceKm.toFixed(2)} km</p>
                     </div>
                   )}
                   {s.avgPaceSecs && (
                     <div>
-                      <p className="text-caption text-text-tertiary">Avg pace</p>
-                      <p className="text-label font-medium text-text tabular">{fmtPace(s.avgPaceSecs)}</p>
+                      <p>Avg pace</p>
+                      <p>{fmtPace(s.avgPaceSecs)}</p>
                     </div>
                   )}
                   {s.avgHeartRate && (
                     <div>
-                      <p className="text-caption text-text-tertiary">HR</p>
-                      <p className="text-label font-medium text-text tabular">{s.avgHeartRate} bpm</p>
+                      <p>HR</p>
+                      <p>{s.avgHeartRate} bpm</p>
                     </div>
                   )}
                 </div>
@@ -146,24 +138,16 @@ export default function CardioPage() {
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-4">
+        <form onSubmit={handleSubmit}>
           {/* Activity type */}
           <div>
-            <p className="text-label font-medium text-text mb-2">Activity</p>
-            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            <p>Activity</p>
+            <div>
               {(['run','swim','cycle','walk','row'] as ActivityType[]).map((type) => (
-                <button
-                  key={type}
+                <button key={type}
                   type="button"
-                  onClick={() => setForm((f) => ({ ...f, activityType: type }))}
-                  className={[
-                    'flex-shrink-0 px-4 py-2 rounded-full text-label font-medium border transition-colors',
-                    form.activityType === type
-                      ? 'bg-fill-strong text-fill-strong-fg border-border-strong'
-                      : 'border-border text-text-secondary hover:bg-bg-element',
-                  ].join(' ')}
-                >
-                  <span className="inline-flex items-center gap-1.5"><ActivityIcon type={type} size={14} />{type}</span>
+                  onClick={() => setForm((f) => ({ ...f, activityType: type }))}>
+                  <span><ActivityIcon type={type} size={14} />{type}</span>
                 </button>
               ))}
             </div>
@@ -172,12 +156,12 @@ export default function CardioPage() {
           <Input label="Date" type="date" value={form.sessionDate} onChange={(e) => setForm((f) => ({ ...f, sessionDate: e.target.value }))} />
 
           <div>
-            <p className="text-label font-medium text-text mb-2">Duration</p>
-            <div className="flex gap-2">
+            <p>Duration</p>
+            <div>
               <Input placeholder="0" type="number" min="0" value={form.hours} onChange={(e) => setForm((f) => ({ ...f, hours: e.target.value }))} />
-              <span className="self-center text-text-secondary text-label">h</span>
+              <span>h</span>
               <Input placeholder="30" type="number" min="0" max="59" value={form.minutes} onChange={(e) => setForm((f) => ({ ...f, minutes: e.target.value }))} />
-              <span className="self-center text-text-secondary text-label">m</span>
+              <span>m</span>
             </div>
           </div>
 
@@ -187,18 +171,12 @@ export default function CardioPage() {
 
           {form.activityType === 'run' && (
             <div>
-              <p className="text-label font-medium text-text mb-2">Run type</p>
-              <div className="flex flex-wrap gap-2">
+              <p>Run type</p>
+              <div>
                 {(['easy','tempo','intervals','long_run','recovery','race'] as RunSessionType[]).map((type) => (
-                  <button
-                    key={type}
+                  <button key={type}
                     type="button"
-                    onClick={() => setForm((f) => ({ ...f, runType: type }))}
-                    className={[
-                      'px-3 py-1.5 rounded-full text-caption font-medium border transition-colors',
-                      form.runType === type ? 'border-border-strong bg-text/10 text-text' : 'border-border text-text-secondary',
-                    ].join(' ')}
-                  >
+                    onClick={() => setForm((f) => ({ ...f, runType: type }))}>
                     {type.replace('_', ' ')}
                   </button>
                 ))}
@@ -207,7 +185,7 @@ export default function CardioPage() {
           )}
 
           <Input label="Notes" placeholder="How did it feel?" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
-          <Button type="submit" size="lg" className="w-full">LOG SESSION</Button>
+          <Button type="submit" size="lg">LOG SESSION</Button>
         </form>
       )}
     </div>

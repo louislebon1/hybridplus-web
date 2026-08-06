@@ -42,7 +42,7 @@ function getTemplate(ev: CalendarEventData, programmes: Programme[]) {
 function getDuration(ev: CalendarEventData, programmes: Programme[]): string | null {
   if (ev.eventType === 'strength') {
     const tmpl = getTemplate(ev, programmes)
-    if (tmpl && tmpl.exerciseBlocks.length > 0) {
+    if (tmpl && tmpl.exerciseBlocks.length> 0) {
       const totalSets = tmpl.exerciseBlocks.reduce((s, b) => s + b.targetSets, 0)
       return estimateDuration(totalSets)
     }
@@ -82,19 +82,19 @@ function readWeek(pct: number | null, scheduled: number) {
       copy: "Every session on this week's plan is done. Strong consistency — hold this rhythm into next week.",
     }
   }
-  if ((pct ?? 0) >= 60) {
+  if ((pct ?? 0)>= 60) {
     return {
       title: 'On Track',
       copy: "You're through most of this week's plan. Keep the remaining sessions in place to finish clean.",
     }
   }
-  if ((pct ?? 0) >= 30) {
+  if ((pct ?? 0)>= 30) {
     return {
       title: 'Building Momentum',
       copy: "You're partway through the week. A couple more sessions keeps this block on schedule.",
     }
   }
-  if ((pct ?? 0) > 0) {
+  if ((pct ?? 0)> 0) {
     return {
       title: 'Just Started',
       copy: "You've opened the week. Most of the plan is still ahead — pick the next session and get moving.",
@@ -174,68 +174,62 @@ export default function HomePage() {
   // ── Hero metric: this week's plan completion, from existing calendar data ──
   const weekEvents = weekDays.flatMap(d => events[isoDate(d)] ?? [])
   const weekDone = weekEvents.filter(ev => ev.isCompleted).length
-  const weekPct = weekEvents.length > 0 ? Math.round((weekDone / weekEvents.length) * 100) : null
+  const weekPct = weekEvents.length> 0 ? Math.round((weekDone / weekEvents.length) * 100) : null
   const read = readWeek(weekPct, weekEvents.length)
 
   const todayLabel = new Date(today + 'T00:00:00')
     .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
-    <div className="relative flex flex-col h-full overflow-hidden">
+    <div>
 
-      <div className="no-scrollbar relative flex-1 overflow-y-auto">
+      <div>
 
         {/* ── Hero ── */}
-        <div className="px-5 screen-top flex flex-col">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-h4 font-bold text-text m-0">Today</p>
-              <p className="text-label text-white/70 m-0 mt-0.5">{todayLabel}</p>
+        <div>
+          <div>
+            <div>
+              <p>Today</p>
+              <p>{todayLabel}</p>
             </div>
-            <Link
-              href="/profile"
-              aria-label="Profile"
-              className="w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 outline-none transition-colors duration-150 ease-out hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <User size={18} className="text-text" />
+            <Link href="/profile"
+              aria-label="Profile">
+              <User size={18} />
             </Link>
           </div>
 
           {/* Focal metric — only when there's a plan to measure against */}
           {weekPct !== null && (
-            <div className="mt-8 flex items-start gap-1">
-              <span className="text-metric font-bold text-text tabular">{weekPct}</span>
-              <span className="text-h2 font-bold text-text mt-3">%</span>
+            <div>
+              <span>{weekPct}</span>
+              <span>%</span>
             </div>
           )}
 
-          <h1 className={`text-h2 font-bold text-text m-0 ${weekPct !== null ? 'mt-3' : 'mt-10'}`}>{read.title}</h1>
-          <p className="text-prose text-white/70 m-0 mt-2 max-w-[46ch]">{read.copy}</p>
+          <h1>{read.title}</h1>
+          <p>{read.copy}</p>
 
           {/* Plan status card */}
-          <div className="mt-6 bg-bg-card rounded-card px-4 py-3.5 flex items-center justify-between gap-3">
+          <div>
             {activeProgramme ? (
               <>
-                <div className="min-w-0">
-                  <p className="text-label font-medium text-text m-0 truncate">
+                <div>
+                  <p>
                     {activePhase ? activePhase.name : activeProgramme.name}
                   </p>
-                  <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0 mt-1 truncate">
+                  <p>
                     {activeProgramme.name}
                     {weekNumber !== null && ` · Week ${weekNumber}`}
                   </p>
                 </div>
-                <span className="text-tag uppercase tracking-[0.06em] text-fill-strong-fg bg-fill-strong px-2.5 py-1 rounded-full flex-shrink-0">
+                <span>
                   Active
                 </span>
               </>
             ) : (
               <>
-                <p className="text-label text-text-secondary m-0">No active programme</p>
-                <button
-                  onClick={() => router.push('/programmes')}
-                  className="text-caption text-text flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-text/60 rounded"
-                >
+                <p>No active programme</p>
+                <button onClick={() => router.push('/programmes')}>
                   Set up
                 </button>
               </>
@@ -244,9 +238,9 @@ export default function HomePage() {
         </div>
 
         {/* ── Timeline strip ── */}
-        <div className="px-5 mt-7">
+        <div>
           <SectionLabel>This week</SectionLabel>
-          <div className="mt-3 flex justify-between items-start gap-1">
+          <div>
             {weekDays.map((d, i) => {
               const ds          = isoDate(d)
               const isToday     = ds === today
@@ -255,25 +249,19 @@ export default function HomePage() {
               const hasStrength = dayEvs.some(e => e.eventType === 'strength')
               const hasCardio   = dayEvs.some(e => CARDIO_TYPES.has(e.eventType))
               return (
-                <button
-                  key={ds}
-                  onClick={() => setSelectedDate(ds)}
-                  className="flex flex-col items-center gap-2 flex-1 outline-none rounded-inner py-1 transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-text/60"
-                >
-                  <span className={`text-tag uppercase ${isToday || isSelected ? 'text-text' : 'text-text-tertiary'}`}>
+                <button key={ds}
+                  onClick={() => setSelectedDate(ds)}>
+                  <span>
                     {DAY_LABELS[i]}
                   </span>
-                  <div className={[
-                    'w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-150 ease-out',
-                    isSelected ? 'bg-fill-strong' : isToday ? 'bg-white/10 border border-white/20' : 'bg-white/[0.04]',
-                  ].join(' ')}>
-                    <span className={`text-label font-medium tabular ${isSelected ? 'text-fill-strong-fg' : 'text-text'}`}>
+                  <div>
+                    <span>
                       {d.getDate()}
                     </span>
                   </div>
-                  <div className="flex gap-1 h-1.5 items-center">
-                    {hasStrength && <span className="w-1.5 h-1.5 rounded-full bg-fill-strong block" />}
-                    {hasCardio   && <span className="w-1.5 h-1.5 rounded-full border border-text block" />}
+                  <div>
+                    {hasStrength && <span />}
+                    {hasCardio   && <span />}
                   </div>
                 </button>
               )
@@ -282,24 +270,19 @@ export default function HomePage() {
         </div>
 
         {/* ── Sessions ── */}
-        <div className="px-5 mt-7">
-          <SectionLabel
-            action={
-              <button
-                onClick={() => router.push('/calendar')}
-                className="text-caption text-text outline-none rounded focus-visible:ring-2 focus-visible:ring-text/60"
-              >
+        <div>
+          <SectionLabel action={
+              <button onClick={() => router.push('/calendar')}>
                 View schedule
               </button>
-            }
-          >
+            }>
             {sessionLabel}
           </SectionLabel>
 
-          <div className="mt-3 flex flex-col gap-2">
+          <div>
             {selectedEvents.length === 0 ? (
-              <div className="bg-bg-card rounded-card px-4 py-5">
-                <p className="text-label text-text-tertiary m-0 text-center">No sessions planned</p>
+              <div>
+                <p>No sessions planned</p>
               </div>
             ) : (
               selectedEvents.map(ev => {
@@ -320,33 +303,23 @@ export default function HomePage() {
                 const Wrapper = isStartable ? 'button' : 'div'
 
                 return (
-                  <Wrapper
-                    key={ev.id}
-                    {...(isStartable ? { type: 'button' as const, onClick: () => startFromEvent(ev) } : {})}
-                    className={[
-                      'bg-bg-card rounded-card px-3.5 py-3 flex items-center gap-3 w-full text-left',
-                      isStartable
-                        ? 'outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-text/60'
-                        : '',
-                    ].join(' ')}
-                  >
-                    <span
-                      className="w-10 h-10 rounded-inner flex items-center justify-center flex-shrink-0 bg-bg-element text-text"
-                    >
+                  <Wrapper key={ev.id}
+                    {...(isStartable ? { type: 'button' as const, onClick: () => startFromEvent(ev) } : {})}>
+                    <span>
                       <ActivityIcon type={ev.eventType} size={18} />
                     </span>
 
-                    <div className="flex-1 min-w-0">
-                      <p className="text-label font-medium text-text m-0 truncate">{name}</p>
-                      {meta && <p className="text-tag text-text-tertiary m-0 mt-0.5 truncate">{meta}</p>}
+                    <div>
+                      <p>{name}</p>
+                      {meta && <p>{meta}</p>}
                     </div>
 
                     {ev.isCompleted ? (
-                      <span className="text-tag uppercase tracking-[0.06em] text-text bg-text/15 px-2 py-1 rounded flex-shrink-0">
+                      <span>
                         Done
                       </span>
                     ) : isStartable ? (
-                      <ChevronRight size={16} className="text-text-tertiary flex-shrink-0" />
+                      <ChevronRight size={16} />
                     ) : null}
                   </Wrapper>
                 )
@@ -355,17 +328,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="h-6" />
+        <div />
       </div>
 
       {/* ── Primary CTA — sits above the floating nav ── */}
-      <div className="relative px-5 pt-3 pb-4 flex-shrink-0">
-        <button
-          onClick={handleCtaClick}
-          className="w-full h-13 py-3.5 bg-fill-strong rounded-full flex items-center justify-center gap-2 px-4 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.98] active:opacity-80 focus-visible:ring-2 focus-visible:ring-text/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-        >
-          <Play size={18} className="text-fill-strong-fg flex-shrink-0" fill="currentColor" />
-          <span className="text-body font-medium text-fill-strong-fg truncate min-w-0">{ctaLabel}</span>
+      <div>
+        <button onClick={handleCtaClick}>
+          <Play size={18}  fill="currentColor" />
+          <span>{ctaLabel}</span>
         </button>
       </div>
     </div>

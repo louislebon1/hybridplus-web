@@ -30,27 +30,24 @@ function NewSessionPageInner() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
-        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
-        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
-          <X size={16} className="text-text" />
+      <div>
+        <h1>New session</h1>
+        <button onClick={handleClose}>
+          <X size={16} />
         </button>
       </div>
 
       {/* Type toggle */}
-      <div className="px-5 pt-6 pb-3 flex-shrink-0">
-        <div className="flex p-1 rounded-full bg-bg-element gap-1">
+      <div>
+        <div>
           {(['strength', 'cardio'] as const).map(t => {
             const active = t === sessionType
             return (
-              <button
-                key={t}
-                onClick={() => setSessionType(t)}
-                className={`flex-1 py-2 px-6 rounded-full text-body font-medium ${active ? 'bg-bg text-text' : 'text-text opacity-40'}`}
-              >
+              <button key={t}
+                onClick={() => setSessionType(t)}>
                 {t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
             )
@@ -59,11 +56,8 @@ function NewSessionPageInner() {
       </div>
 
       {/* CTA */}
-      <div className="px-5 pt-3 flex-shrink-0">
-        <button
-          onClick={() => router.push(sessionType === 'cardio' ? '/sessions/new/cardio' : '/sessions/new/exercises')}
-          className="w-full h-12 rounded-full border border-border-strong bg-fill-strong text-body font-medium text-fill-strong-fg"
-        >
+      <div>
+        <button onClick={() => router.push(sessionType === 'cardio' ? '/sessions/new/cardio' : '/sessions/new/exercises')}>
           {sessionType === 'cardio' ? 'Continue' : 'Add exercises to workout'}
         </button>
       </div>

@@ -20,46 +20,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
 }
 
-const buttonVariantClasses: Record<ButtonVariant, string> = {
-  primary:
-    'bg-fill-strong text-fill-strong-fg hover:opacity-90 active:scale-[0.97] active:opacity-80 disabled:opacity-40 disabled:active:scale-100',
-  secondary:
-    'bg-transparent text-text border border-border-strong hover:bg-bg-hover active:bg-bg-selected active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
-  ghost:
-    'bg-transparent text-text hover:bg-bg-element active:bg-bg-hover active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
-  danger:
-    'bg-error text-white hover:opacity-90 active:scale-[0.97] active:opacity-80 disabled:opacity-40 disabled:active:scale-100',
-  outline:
-    'bg-transparent text-text border border-border-strong hover:bg-text/10 active:bg-text/20 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
-}
-
-const buttonSizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-9 px-4 text-label gap-1.5 rounded-full',
-  md: 'h-12 px-5 text-body gap-2 rounded-full',
-  lg: 'h-12 px-6 text-body gap-2.5 rounded-full',
-}
-
 export function Button({
   variant = 'primary',
   size = 'md',
-  className = '',
   children,
   disabled,
   ...rest
 }: ButtonProps) {
   return (
-    <button
-      disabled={disabled}
-      className={[
-        'inline-flex items-center justify-center font-medium cursor-pointer select-none',
-        'transition-[background-color,opacity,transform] duration-150 ease-out',
-        'outline-none focus-visible:ring-2 focus-visible:ring-text/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
-        buttonVariantClasses[variant],
-        buttonSizeClasses[size],
-        className,
-      ].join(' ')}
-      {...rest}
-    >
+    <button disabled={disabled}
+      
+      {...rest}>
       {children}
     </button>
   )
@@ -72,31 +43,20 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
-export function Input({ label, error, className = '', id, ...rest }: InputProps) {
+export function Input({ label, error, id, ...rest }: InputProps) {
   const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
 
   return (
-    <div className="flex flex-col gap-1.5 w-full">
+    <div>
       {label && (
-        <label htmlFor={inputId} className="text-label font-medium text-text">
+        <label htmlFor={inputId}>
           {label}
         </label>
       )}
-      <input
-        id={inputId}
-        className={[
-          'w-full h-12 px-4 rounded-inner bg-bg-element border text-text text-body',
-          'placeholder:text-text-tertiary',
-          'focus:outline-none focus:ring-2 focus:ring-text/50 focus:border-border-strong',
-          'transition-colors',
-          error
-            ? 'border-error focus:ring-error/40 focus:border-error'
-            : 'border-border',
-          className,
-        ].join(' ')}
-        {...rest}
-      />
-      {error && <p className="text-caption text-error">{error}</p>}
+      <input id={inputId}
+        
+        {...rest} />
+      {error && <p>{error}</p>}
     </div>
   )
 }
@@ -108,22 +68,9 @@ interface BadgeProps {
   color?: BadgeColor
 }
 
-const badgeColorClasses: Record<BadgeColor, string> = {
-  default: 'bg-bg-element text-text-secondary',
-  accent: 'bg-fill-strong text-fill-strong-fg',
-  success: 'bg-fill-strong text-fill-strong-fg',
-  error: 'bg-error/15 text-error',
-  warning: 'bg-bg-card-raised text-text',
-}
-
 export function Badge({ label, color = 'default' }: BadgeProps) {
   return (
-    <span
-      className={[
-        'inline-flex items-center px-2 py-0.5 rounded-full text-tag font-medium',
-        badgeColorClasses[color],
-      ].join(' ')}
-    >
+    <span>
       {label}
     </span>
   )
@@ -133,16 +80,14 @@ export function Badge({ label, color = 'default' }: BadgeProps) {
 
 interface CardProps {
   children: React.ReactNode
-  className?: string
   onClick?: () => void
 }
 
-export function Card({ children, className = '', onClick }: CardProps) {
+export function Card({ children, onClick }: CardProps) {
   const interactive = onClick !== undefined
 
   return (
-    <div
-      role={interactive ? 'button' : undefined}
+    <div role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       onClick={onClick}
       onKeyDown={
@@ -154,15 +99,7 @@ export function Card({ children, className = '', onClick }: CardProps) {
               }
             }
           : undefined
-      }
-      className={[
-        'bg-bg-element border border-border rounded-inner p-4',
-        interactive
-          ? 'cursor-pointer hover:bg-bg-hover active:bg-bg-selected transition-colors'
-          : '',
-        className,
-      ].join(' ')}
-    >
+      }>
       {children}
     </div>
   )
@@ -207,10 +144,9 @@ export function Sheet({ visible, onClose, title, children }: SheetProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+            
             onClick={onClose}
-            aria-hidden="true"
-          />
+            aria-hidden="true" />
 
           <motion.div
             key="sheet-panel"
@@ -220,27 +156,23 @@ export function Sheet({ visible, onClose, title, children }: SheetProps) {
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-            className="fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-bg rounded-t-3xl max-h-[92dvh]"
-          >
-            <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-9 h-1 rounded-full bg-border" />
+            transition={{ type: 'spring', stiffness: 380, damping: 34 }}>
+            <div>
+              <div />
             </div>
 
             {title && (
-              <div className="flex items-center justify-between px-5 py-3 flex-shrink-0 border-b border-border">
-                <h2 className="text-body font-medium text-text">{title}</h2>
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-bg-element hover:bg-bg-hover transition-colors text-text-secondary"
-                  aria-label="Close"
-                >
+              <div>
+                <h2>{title}</h2>
+                <button onClick={onClose}
+                  
+                  aria-label="Close">
                   <X size={16} />
                 </button>
               </div>
             )}
 
-            <div className="overflow-y-auto flex-1 safe-bottom">{children}</div>
+            <div>{children}</div>
           </motion.div>
         </>
       )}
@@ -255,22 +187,10 @@ interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-const spinnerSizeClasses: Record<NonNullable<SpinnerProps['size']>, string> = {
-  sm: 'w-4 h-4 border-2',
-  md: 'w-6 h-6 border-2',
-  lg: 'w-9 h-9 border-[3px]',
-}
-
 export function Spinner({ size = 'md' }: SpinnerProps) {
   return (
-    <div
-      role="status"
-      aria-label="Loading"
-      className={[
-        'rounded-full border-border border-t-text animate-spin',
-        spinnerSizeClasses[size],
-      ].join(' ')}
-    />
+    <div role="status"
+      aria-label="Loading" />
   )
 }
 
@@ -288,11 +208,11 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center text-center px-6 py-12 gap-4">
-      <Icon size={28} strokeWidth={1.5} className="text-text-tertiary" aria-hidden />
-      <div className="flex flex-col gap-1.5">
-        <h3 className="text-body font-medium text-text">{title}</h3>
-        <p className="text-label text-text-secondary max-w-xs">{description}</p>
+    <div>
+      <Icon size={28} strokeWidth={1.5}  aria-hidden />
+      <div>
+        <h3>{title}</h3>
+        <p>{description}</p>
       </div>
       {action && (
         <Button variant="primary" size="md" onClick={action.onClick}>

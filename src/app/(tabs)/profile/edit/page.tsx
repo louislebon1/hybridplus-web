@@ -52,91 +52,83 @@ export default function EditProfilePage() {
   const bmi = heightM && latestWeight ? latestWeight / (heightM * heightM) : null
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div>
 
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 screen-top pb-6 border-b border-border flex-shrink-0">
-        <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-          <ArrowLeft size={16} className="text-text" />
+      <div>
+        <button onClick={() => router.back()}>
+          <ArrowLeft size={16} />
         </button>
-        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Profile</h1>
+        <h1>Edit Profile</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-6">
+      <div>
 
         {/* Height */}
-        <div className="flex flex-col gap-2">
-          <label className="text-label font-medium leading-[18px] text-text">Height (cm)</label>
-          <Input
-            type="number"
+        <div>
+          <label>Height (cm)</label>
+          <Input type="number"
             min="0"
             step="0.1"
             placeholder="e.g. 178"
             value={heightInput}
             onChange={e => setHeightInput(e.target.value)}
-            onBlur={handleHeightBlur}
-          />
+            onBlur={handleHeightBlur} />
         </div>
 
         {/* Current stats */}
         {(latestWeight !== null || bmi !== null) && (
-          <div className="flex gap-3">
+          <div>
             {latestWeight !== null && (
-              <div className="flex-1 bg-bg-card rounded-card p-3 text-center">
-                <p className="text-h3 font-bold text-text tabular">{latestWeight.toFixed(1)}</p>
-                <p className="text-caption text-text-secondary mt-0.5">Weight (kg)</p>
+              <div>
+                <p>{latestWeight.toFixed(1)}</p>
+                <p>Weight (kg)</p>
               </div>
             )}
             {bmi !== null && (
-              <div className="flex-1 bg-bg-card rounded-card p-3 text-center">
-                <p className="text-h3 font-bold text-text tabular">{bmi.toFixed(1)}</p>
-                <p className="text-caption text-text-secondary mt-0.5">BMI</p>
+              <div>
+                <p>{bmi.toFixed(1)}</p>
+                <p>BMI</p>
               </div>
             )}
           </div>
         )}
 
         {/* Log weight */}
-        <form onSubmit={handleLogWeight} className="flex flex-col gap-3">
-          <label className="text-label font-medium leading-[18px] text-text">Log weight</label>
-          <div className="flex gap-3">
-            <Input
-              type="date"
+        <form onSubmit={handleLogWeight}>
+          <label>Log weight</label>
+          <div>
+            <Input type="date"
               value={weightDate}
-              onChange={e => setWeightDate(e.target.value)}
-              className="flex-1"
-            />
-            <Input
-              type="number"
+              onChange={e => setWeightDate(e.target.value)} />
+            <Input type="number"
               min="0"
               step="0.1"
               placeholder="kg"
               value={weightInput}
-              onChange={e => setWeightInput(e.target.value)}
-              className="flex-1"
-            />
+              onChange={e => setWeightInput(e.target.value)} />
           </div>
-          <Button type="submit" variant="primary" size="lg" disabled={!weightInput.trim()} className="w-full">
+          <Button type="submit" variant="primary" size="lg" disabled={!weightInput.trim()}>
             Log weight
           </Button>
         </form>
 
         {/* Weight chart */}
-        {chartLogs.length > 0 && (
+        {chartLogs.length> 0 && (
           <div>
-            <p className="eyebrow mb-3">Weight history</p>
-            <div className="bg-bg-card rounded-card p-4">
-              <div className="flex items-end gap-1.5">
+            <p>Weight history</p>
+            <div>
+              <div>
                 {chartLogs.map(w => {
                   const pct = ((w.weightKg - minW) / range) * 100
                   return (
-                    <div key={w.id} className="flex-1 flex flex-col items-center gap-1">
-                      <div className="w-full h-24 flex items-end">
-                        <div className="w-full rounded-t-sm bg-text/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
-                          <div className="absolute bottom-0 left-0 right-0 bg-fill-strong rounded-t-sm" style={{ height: '100%' }} />
+                    <div key={w.id}>
+                      <div>
+                        <div style={{ height: `${Math.max(pct, 4)}%` }}>
+                          <div style={{ height: '100%' }} />
                         </div>
                       </div>
-                      <span className="text-tag text-text-tertiary tabular">{fmtDate(w.date)}</span>
+                      <span>{fmtDate(w.date)}</span>
                     </div>
                   )
                 })}
@@ -146,17 +138,17 @@ export default function EditProfilePage() {
         )}
 
         {/* Weight log list */}
-        {sortedLogs.length > 0 && (
+        {sortedLogs.length> 0 && (
           <div>
-            <p className="eyebrow mb-3">Entries</p>
-            <div className="bg-bg-card rounded-card overflow-hidden">
+            <p>Entries</p>
+            <div>
               {[...sortedLogs].reverse().map((w, i) => (
-                <div key={w.id} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? 'border-t border-border' : ''}`}>
+                <div key={w.id}>
                   <div>
-                    <p className="text-label font-medium text-text">{w.weightKg.toFixed(1)} kg</p>
-                    <p className="text-caption text-text-tertiary">{fmtDate(w.date)}</p>
+                    <p>{w.weightKg.toFixed(1)} kg</p>
+                    <p>{fmtDate(w.date)}</p>
                   </div>
-                  <button onClick={() => handleDelete(w.id)} className="text-text-tertiary hover:text-error transition-colors">
+                  <button onClick={() => handleDelete(w.id)}>
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -166,11 +158,9 @@ export default function EditProfilePage() {
         )}
 
         {sortedLogs.length === 0 && (
-          <EmptyState
-            icon={Scale}
+          <EmptyState icon={Scale}
             title="No weight logged yet"
-            description="Log your first entry above to start tracking."
-          />
+            description="Log your first entry above to start tracking." />
         )}
       </div>
     </div>

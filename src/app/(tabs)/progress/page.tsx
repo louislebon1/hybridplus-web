@@ -27,7 +27,7 @@ function fmtDate(dateStr: string) {
 }
 
 function fmtVolume(kg: number) {
-  return kg >= 1000 ? `${(kg / 1000).toFixed(1)}t` : `${Math.round(kg)} kg`
+  return kg>= 1000 ? `${(kg / 1000).toFixed(1)}t` : `${Math.round(kg)} kg`
 }
 
 function getWeekKey(dateStr: string) {
@@ -86,8 +86,8 @@ export default function ProgressPage() {
       const we = new Date(ws); we.setDate(ws.getDate() + 6)
       const wsStr = localDateStr(ws)
       const weStr = localDateStr(we)
-      const hasSession = sessions.some((s) => s.sessionDate >= wsStr && s.sessionDate <= weStr)
-        || cardioSessions.some((s) => s.sessionDate >= wsStr && s.sessionDate <= weStr)
+      const hasSession = sessions.some((s) => s.sessionDate>= wsStr && s.sessionDate <= weStr)
+        || cardioSessions.some((s) => s.sessionDate>= wsStr && s.sessionDate <= weStr)
       if (!hasSession) break
       count++
     }
@@ -116,25 +116,25 @@ export default function ProgressPage() {
       day.setDate(monday.getDate() + d)
       const ds = localDateStr(day)
       const vol = volumeByDate[ds] ?? 0
-      if (vol > 0) return Math.min(1, vol / maxDayVolume)
+      if (vol> 0) return Math.min(1, vol / maxDayVolume)
       return cardioDates.has(ds) ? 0.32 : 0
     })
 
     const load = weeklyVolumes[mondayStr] ?? 0
     const prevMonday = new Date(monday); prevMonday.setDate(monday.getDate() - 7)
     const prevLoad = weeklyVolumes[localDateStr(prevMonday)] ?? 0
-    const pctChange = prevLoad > 0 ? Math.round(((load - prevLoad) / prevLoad) * 100) : null
+    const pctChange = prevLoad> 0 ? Math.round(((load - prevLoad) / prevLoad) * 100) : null
 
     return {
       label: weekLabel(mondayStr),
       days,
-      load: load > 0 ? fmtVolume(load) : '—',
-      change: pctChange !== null ? `${pctChange > 0 ? '+' : ''}${pctChange}%` : null,
-      changePositive: (pctChange ?? 0) >= 0,
+      load: load> 0 ? fmtVolume(load) : '—',
+      change: pctChange !== null ? `${pctChange> 0 ? '+' : ''}${pctChange}%` : null,
+      changePositive: (pctChange ?? 0)>= 0,
     }
   })
 
-  const hasGridData = weekRows.some(r => r.days.some(d => d > 0))
+  const hasGridData = weekRows.some(r => r.days.some(d => d> 0))
 
   // ── Training focus: share of strength volume by muscle group ──────────────
   const volumeByGroup: Record<string, number> = {}
@@ -152,7 +152,7 @@ export default function ProgressPage() {
     .map(([group, vol], i) => ({
       label: MUSCLE_GROUP_LABELS[group] ?? group,
       color: ZONE_COLORS[i % ZONE_COLORS.length],
-      pct: groupTotal > 0 ? (vol / groupTotal) * 100 : 0,
+      pct: groupTotal> 0 ? (vol / groupTotal) * 100 : 0,
     }))
 
   const allGroupZones: ZoneDatum[] = Object.entries(volumeByGroup)
@@ -160,7 +160,7 @@ export default function ProgressPage() {
     .map(([group, vol], i) => ({
       label: MUSCLE_GROUP_LABELS[group] ?? group,
       color: ZONE_COLORS[i % ZONE_COLORS.length],
-      pct: groupTotal > 0 ? (vol / groupTotal) * 100 : 0,
+      pct: groupTotal> 0 ? (vol / groupTotal) * 100 : 0,
       count: `${Math.round(vol / 1000 * 10) / 10}t`,
     }))
 
@@ -173,10 +173,10 @@ export default function ProgressPage() {
       }
       const entry = prMap[ex.exerciseId]
       for (const set of ex.sets) {
-        if (set.weight && set.weight > entry.maxWeight) entry.maxWeight = set.weight
-        if (set.e1rm && set.e1rm > entry.maxE1rm) entry.maxE1rm = set.e1rm
+        if (set.weight && set.weight> entry.maxWeight) entry.maxWeight = set.weight
+        if (set.e1rm && set.e1rm> entry.maxE1rm) entry.maxE1rm = set.e1rm
       }
-      if (s.sessionDate > entry.lastDate) entry.lastDate = s.sessionDate
+      if (s.sessionDate> entry.lastDate) entry.lastDate = s.sessionDate
     }
   }
   const prs = Object.values(prMap).sort((a, b) => a.name.localeCompare(b.name))
@@ -194,38 +194,33 @@ export default function ProgressPage() {
     .slice(0, 5)
 
   const volumeTrend = weekKeys.map(k => weeklyVolumes[k])
-  const consistencyLabel = consecutiveWeeks >= 4 ? 'HIGH' : consecutiveWeeks >= 2 ? 'BUILDING' : 'LOW'
-  const consistencyColor = consecutiveWeeks >= 4 ? 'var(--text)' : consecutiveWeeks >= 2 ? 'var(--text-secondary)' : 'var(--text-tertiary)'
+  const consistencyLabel = consecutiveWeeks>= 4 ? 'HIGH' : consecutiveWeeks>= 2 ? 'BUILDING' : 'LOW'
+  const consistencyColor = consecutiveWeeks>= 4 ? 'var(--text)' : consecutiveWeeks>= 2 ? 'var(--text-secondary)' : 'var(--text-tertiary)'
 
   return (
-    <div className="relative flex flex-col h-full overflow-hidden">
+    <div>
 
-      <div className="relative no-scrollbar flex-1 overflow-y-auto">
+      <div>
 
         {/* ── Header ── */}
-        <div className="px-5 screen-top flex items-center justify-between gap-3">
-          <h1 className="text-h2 font-bold text-text m-0">Progress</h1>
-          <Link
-            href="/profile"
-            aria-label="Profile"
-            className="w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 outline-none transition-colors duration-150 ease-out hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-white/40"
-          >
-            <User size={18} className="text-text" />
+        <div>
+          <h1>Progress</h1>
+          <Link href="/profile"
+            aria-label="Profile">
+            <User size={18} />
           </Link>
         </div>
 
         {/* ── Training summary grid ── */}
-        <div className="px-5 mt-6">
-          <SectionLabel
-            action={<span className="text-tag text-text-tertiary">{totalSessions} session{totalSessions !== 1 ? 's' : ''}</span>}
-          >
+        <div>
+          <SectionLabel action={<span>{totalSessions} session{totalSessions !== 1 ? 's' : ''}</span>}>
             Training summary
           </SectionLabel>
-          <div className="mt-3 bg-bg-card rounded-card px-3.5 py-3.5">
+          <div>
             {hasGridData ? (
               <WeekGrid rows={weekRows} />
             ) : (
-              <p className="text-caption text-text-tertiary text-center py-6 m-0">
+              <p>
                 No training logged in the last 6 weeks
               </p>
             )}
@@ -233,16 +228,16 @@ export default function ProgressPage() {
         </div>
 
         {/* ── Segmented control ── */}
-        <div className="px-5 mt-5">
+        <div>
           <SegmentedChips options={['overview', 'strength', 'cardio'] as const} value={tab} onChange={setTab} />
         </div>
 
-        <div className="px-5 mt-5 flex flex-col gap-5">
+        <div>
 
           {tab === 'overview' && (
             <>
               {/* Compact stat row */}
-              <div className="flex gap-2.5">
+              <div>
                 <StatCard label="Sessions" value={String(totalSessions)} caption="all time" />
                 <StatCard label="Volume" value={fmtVolume(totalVolume)} caption="lifted" />
                 <StatCard label="Streak" value={`${streak}d`} caption="current" />
@@ -251,11 +246,11 @@ export default function ProgressPage() {
               {/* Training focus distribution */}
               <div>
                 <SectionLabel>Training focus</SectionLabel>
-                <div className="mt-3 bg-bg-card rounded-card p-4">
-                  {focusZones.length > 0 ? (
+                <div>
+                  {focusZones.length> 0 ? (
                     <DistributionSummary zones={focusZones} />
                   ) : (
-                    <p className="text-caption text-text-tertiary text-center py-4 m-0">
+                    <p>
                       Log a strength session to see your split
                     </p>
                   )}
@@ -265,40 +260,40 @@ export default function ProgressPage() {
               {/* Fitness cards */}
               <div>
                 <SectionLabel>Fitness</SectionLabel>
-                <div className="mt-3 flex flex-col gap-2.5">
-                  <div className="bg-bg-card rounded-card p-4 flex items-center gap-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Weekly volume</p>
-                      <p className="text-display text-text tabular m-0 mt-1">
+                <div>
+                  <div>
+                    <div>
+                      <p>Weekly volume</p>
+                      <p>
                         {fmtVolume(weekKeys.length ? weeklyVolumes[weekKeys[weekKeys.length - 1]] : 0)}
                       </p>
-                      <div className="mt-1.5">
+                      <div>
                         <StatusPill label={consistencyLabel} color={consistencyColor} />
                       </div>
                     </div>
-                    <div className="w-[104px] flex-shrink-0">
-                      {volumeTrend.length > 0
+                    <div>
+                      {volumeTrend.length> 0
                         ? <Sparkline values={volumeTrend} />
-                        : <p className="text-tag text-text-tertiary text-right m-0">No data</p>}
+                        : <p>No data</p>}
                     </div>
                   </div>
 
-                  <div className="bg-bg-card rounded-card p-4 flex items-center gap-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Consistency</p>
-                      <p className="text-display text-text tabular m-0 mt-1">
-                        {consecutiveWeeks}<span className="text-h3 text-text-tertiary ml-1">wk</span>
+                  <div>
+                    <div>
+                      <p>Consistency</p>
+                      <p>
+                        {consecutiveWeeks}<span>wk</span>
                       </p>
-                      <p className="text-tag text-text-tertiary m-0 mt-1.5">consecutive training weeks</p>
+                      <p>consecutive training weeks</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {consecutiveWeeks >= 4 && (
-                <div className="rounded-card p-4 bg-fill-strong">
-                  <p className="text-label font-bold m-0 text-fill-strong-fg">Recovery recommended</p>
-                  <p className="text-caption text-fill-strong-fg/70 mt-1 m-0">
+              {consecutiveWeeks>= 4 && (
+                <div>
+                  <p>Recovery recommended</p>
+                  <p>
                     You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
                   </p>
                 </div>
@@ -310,13 +305,13 @@ export default function ProgressPage() {
             <>
               <div>
                 <SectionLabel>Volume by muscle group</SectionLabel>
-                <div className="mt-3 bg-bg-card rounded-card p-4">
-                  {allGroupZones.length > 0 ? (
-                    <div className="flex flex-col gap-3">
+                <div>
+                  {allGroupZones.length> 0 ? (
+                    <div>
                       {allGroupZones.map(z => <ZoneRow key={z.label} zone={z} />)}
                     </div>
                   ) : (
-                    <p className="text-caption text-text-tertiary text-center py-4 m-0">No strength volume logged yet</p>
+                    <p>No strength volume logged yet</p>
                   )}
                 </div>
               </div>
@@ -324,26 +319,24 @@ export default function ProgressPage() {
               <div>
                 <SectionLabel>Personal records</SectionLabel>
                 {prs.length === 0 ? (
-                  <EmptyState
-                    icon={Trophy}
+                  <EmptyState icon={Trophy}
                     title="No records yet"
-                    description="Complete some workouts to start tracking your PRs."
-                  />
+                    description="Complete some workouts to start tracking your PRs." />
                 ) : (
-                  <div className="mt-3 bg-bg-card rounded-card overflow-hidden">
-                    <div className="grid grid-cols-4 px-4 py-2.5 border-b border-border">
-                      <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary col-span-2">Exercise</span>
-                      <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary text-right">Max kg</span>
-                      <span className="text-tag uppercase tracking-[0.06em] text-text-tertiary text-right">e1RM</span>
+                  <div>
+                    <div>
+                      <span>Exercise</span>
+                      <span>Max kg</span>
+                      <span>e1RM</span>
                     </div>
                     {prs.map((pr, i) => (
-                      <div key={i} className="grid grid-cols-4 px-4 py-3 border-b border-border last:border-b-0">
-                        <div className="col-span-2 min-w-0">
-                          <p className="text-label font-medium text-text truncate m-0">{pr.name}</p>
-                          <p className="text-tag text-text-tertiary m-0 mt-0.5">{fmtDate(pr.lastDate)}</p>
+                      <div key={i}>
+                        <div>
+                          <p>{pr.name}</p>
+                          <p>{fmtDate(pr.lastDate)}</p>
                         </div>
-                        <p className="text-label font-medium text-text tabular text-right self-center m-0">{pr.maxWeight > 0 ? `${pr.maxWeight}` : '—'}</p>
-                        <p className="text-label font-medium text-text tabular text-right self-center m-0">{pr.maxE1rm > 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
+                        <p>{pr.maxWeight> 0 ? `${pr.maxWeight}` : '—'}</p>
+                        <p>{pr.maxE1rm> 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
                       </div>
                     ))}
                   </div>
@@ -354,53 +347,49 @@ export default function ProgressPage() {
 
           {tab === 'cardio' && (
             <>
-              <div className="flex gap-2.5">
+              <div>
                 <StatCard label="Distance" value={`${totalDistKm.toFixed(1)}`} caption="km total" />
-                <StatCard
-                  label="Time"
-                  value={totalCardioSecs >= 3600 ? `${Math.floor(totalCardioSecs / 3600)}h` : `${Math.floor(totalCardioSecs / 60)}m`}
-                  caption="moving"
-                />
+                <StatCard label="Time"
+                  value={totalCardioSecs>= 3600 ? `${Math.floor(totalCardioSecs / 3600)}h` : `${Math.floor(totalCardioSecs / 60)}m`}
+                  caption="moving" />
                 <StatCard label="Best pace" value={bestPace ? fmtPace(bestPace).replace(' /km', '') : '—'} caption="per km" />
               </div>
 
-              {Object.keys(activityCounts).length > 0 && (
+              {Object.keys(activityCounts).length> 0 && (
                 <div>
                   <SectionLabel>Activity split</SectionLabel>
-                  <div className="mt-3 bg-bg-card rounded-card p-4 flex flex-col gap-3">
+                  <div>
                     {Object.entries(activityCounts)
                       .sort((a, b) => b[1] - a[1])
                       .map(([type, count], i) => {
                         const total = Object.values(activityCounts).reduce((a, b) => a + b, 0)
                         return (
-                          <ZoneRow
-                            key={type}
+                          <ZoneRow key={type}
                             zone={{
                               label: type.charAt(0).toUpperCase() + type.slice(1),
                               color: ZONE_COLORS[i % ZONE_COLORS.length],
                               pct: (count / total) * 100,
                               count: `${count}×`,
-                            }}
-                          />
+                            }} />
                         )
                       })}
                   </div>
                 </div>
               )}
 
-              {recentRuns.length > 0 && (
+              {recentRuns.length> 0 && (
                 <div>
                   <SectionLabel>Recent runs</SectionLabel>
-                  <div className="mt-3 flex flex-col gap-2.5">
+                  <div>
                     {recentRuns.map((s) => (
-                      <div key={s.id} className="bg-bg-card rounded-card px-4 py-3 flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-label font-medium text-text m-0 capitalize truncate">{s.runType?.replace('_', ' ') ?? 'Run'}</p>
-                          <p className="text-tag text-text-tertiary m-0 mt-0.5">{fmtDate(s.sessionDate)}</p>
+                      <div key={s.id}>
+                        <div>
+                          <p>{s.runType?.replace('_', ' ') ?? 'Run'}</p>
+                          <p>{fmtDate(s.sessionDate)}</p>
                         </div>
-                        <div className="text-right flex-shrink-0">
-                          {s.distanceKm && <p className="text-label font-medium text-text tabular m-0">{s.distanceKm.toFixed(2)} km</p>}
-                          {s.avgPaceSecs && <p className="text-tag text-text-tertiary tabular m-0 mt-0.5">{fmtPace(s.avgPaceSecs)}</p>}
+                        <div>
+                          {s.distanceKm && <p>{s.distanceKm.toFixed(2)} km</p>}
+                          {s.avgPaceSecs && <p>{fmtPace(s.avgPaceSecs)}</p>}
                         </div>
                       </div>
                     ))}
@@ -409,11 +398,9 @@ export default function ProgressPage() {
               )}
 
               {cardioSessions.length === 0 && (
-                <EmptyState
-                  icon={Footprints}
+                <EmptyState icon={Footprints}
                   title="No cardio sessions yet"
-                  description="Log a cardio session to see your stats here."
-                />
+                  description="Log a cardio session to see your stats here." />
               )}
             </>
           )}

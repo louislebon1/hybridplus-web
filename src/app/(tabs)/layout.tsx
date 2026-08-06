@@ -32,8 +32,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
         display: 'flex',
         justifyContent: 'center',
         paddingBottom: '24px',
-        pointerEvents: 'none',
-      }}>
+        pointerEvents: 'none'}}>
         <nav style={{
           display: 'flex',
           flexDirection: 'row',
@@ -41,20 +40,11 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           gap: '2px',
           padding: '6px',
           width: '272px',
-          borderRadius: '200px',
-          // Flat, like every other surface. The nav genuinely floats over the
-          // scroll area, so it is the one element in the system allowed an
-          // outer shadow — and that shadow is the whole of its separation.
-          background: '#111111',
-          border: '1px solid var(--border)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
-          pointerEvents: 'auto',
-        }}>
+          pointerEvents: 'auto'}}>
           {TABS.map(({ href, inactive, active }) => {
             const isActive = pathname.startsWith(href)
             return (
-              <Link
-                key={href}
+              <Link key={href}
                 href={href}
                 style={{
                   flex: 1,
@@ -63,19 +53,13 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
                   justifyContent: 'center',
                   paddingTop: '9px',
                   paddingBottom: '9px',
-                  borderRadius: '200px',
-                  background: isActive ? 'var(--fill-strong)' : 'transparent',
                   transition: 'background-color 150ms ease-out',
-                  textDecoration: 'none',
-                }}
-              >
-                <Image
-                  src={isActive ? active : inactive}
+                  textDecoration: 'none'}}>
+                <Image src={isActive ? active : inactive}
                   alt=""
                   width={24}
                   height={24}
-                  style={{ display: 'block' }}
-                />
+                  style={{ display: 'block' }} />
               </Link>
             )
           })}

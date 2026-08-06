@@ -9,7 +9,7 @@ import { Button } from '@/components/ui'
 import { StatCard, SectionLabel } from '@/components/dash'
 
 function fmtVolume(kg: number) {
-  return kg >= 1000 ? `${(kg / 1000).toFixed(1)}t` : `${Math.round(kg)}kg`
+  return kg>= 1000 ? `${(kg / 1000).toFixed(1)}t` : `${Math.round(kg)}kg`
 }
 
 function fmtDuration(secs: number) {
@@ -29,7 +29,7 @@ function countNewPRs(sessionId: string, exerciseIds: string[], allSessions: Retu
       .filter(s => s.id !== sessionId)
       .flatMap(s => s.exercises.filter(e => e.exerciseId === exerciseId))
       .flatMap(e => e.sets.map(s => s.e1rm ?? 0)))
-    if (currentBest > priorBest) count++
+    if (currentBest> priorBest) count++
   }
   return count
 }
@@ -58,63 +58,61 @@ export default function SessionCompletePage() {
   }
 
   return (
-    <div className="relative flex flex-col h-full bg-bg overflow-hidden">
+    <div>
 
-      <div className="relative no-scrollbar flex-1 overflow-y-auto px-5 pt-8">
+      <div>
         {/* ── Hero ── */}
-        <div className="flex items-center gap-2">
-          <CheckCircle2 size={16} className="text-text" />
-          <p className="text-tag uppercase tracking-[0.08em] text-text m-0">Session complete</p>
+        <div>
+          <CheckCircle2 size={16} />
+          <p>Session complete</p>
         </div>
 
-        <div className="mt-7 flex items-start gap-1">
-          <span className="text-metric font-bold text-text tabular">{fmtVolume(completed.totalVolume)}</span>
+        <div>
+          <span>{fmtVolume(completed.totalVolume)}</span>
         </div>
 
-        <h1 className="text-h2 font-bold text-text m-0 mt-3">{activeSession.name}</h1>
-        <p className="text-prose text-white/70 m-0 mt-2 max-w-[46ch]">
+        <h1>{activeSession.name}</h1>
+        <p>
           {setsCompleted} set{setsCompleted !== 1 ? 's' : ''} logged in {fmtDuration(completed.durationSeconds)}
-          {newPRs > 0 ? ` — and you set ${newPRs} new personal record${newPRs !== 1 ? 's' : ''}.` : '. Volume is banked toward this week’s total.'}
+          {newPRs> 0 ? ` — and you set ${newPRs} new personal record${newPRs !== 1 ? 's' : ''}.` : '. Volume is banked toward this week’s total.'}
         </p>
 
         {/* ── Compact stat row ── */}
-        <div className="mt-7 flex gap-2.5">
+        <div>
           <StatCard label="Duration" value={fmtDuration(completed.durationSeconds)} caption="elapsed" />
           <StatCard label="Sets" value={String(setsCompleted)} caption="completed" />
-          <StatCard
-            label="Records"
-            value={newPRs > 0 ? String(newPRs) : '—'}
-            caption={newPRs > 0 ? `new PR${newPRs !== 1 ? 's' : ''}` : 'no new PRs'}
-            valueColor={newPRs > 0 ? 'var(--accent)' : undefined}
-          />
+          <StatCard label="Records"
+            value={newPRs> 0 ? String(newPRs) : '—'}
+            caption={newPRs> 0 ? `new PR${newPRs !== 1 ? 's' : ''}` : 'no new PRs'}
+            valueColor={newPRs> 0 ? 'var(--accent)' : undefined} />
         </div>
 
         {/* ── Per-exercise breakdown ── */}
-        <div className="mt-7">
+        <div>
           <SectionLabel>Exercises</SectionLabel>
-          <div className="mt-3 flex flex-col gap-2">
+          <div>
             {completed.exercises.map(ex => (
-              <div key={ex.exerciseId} className="bg-bg-card rounded-card px-4 py-3 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-label font-medium text-text m-0 truncate">{ex.exerciseName}</p>
-                  <p className="text-tag text-text-tertiary m-0 mt-0.5">
+              <div key={ex.exerciseId}>
+                <div>
+                  <p>{ex.exerciseName}</p>
+                  <p>
                     {ex.sets.length} set{ex.sets.length !== 1 ? 's' : ''}
                   </p>
                 </div>
-                <p className="text-label font-medium text-text tabular m-0 flex-shrink-0">{fmtVolume(ex.totalVolume)}</p>
+                <p>{fmtVolume(ex.totalVolume)}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="h-6" />
+        <div />
       </div>
 
-      <div className="relative px-5 pt-3 pb-6 flex flex-col gap-2.5 flex-shrink-0">
-        <Button variant="secondary" size="lg" className="w-full" onClick={() => router.push('/session/complete/review')}>
+      <div>
+        <Button variant="secondary" size="lg"  onClick={() => router.push('/session/complete/review')}>
           Review session
         </Button>
-        <Button size="lg" className="w-full" onClick={handleDone}>
+        <Button size="lg"  onClick={handleDone}>
           Done
         </Button>
       </div>

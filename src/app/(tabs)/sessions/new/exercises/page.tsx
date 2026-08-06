@@ -13,7 +13,7 @@ export default function NewSessionExercisesPage() {
 
   const blockIdByExerciseId = useMemo(() => new Map(blocks.map(b => [b.exerciseId, b.id])), [blocks])
   const addedIds = useMemo(() => new Set(blocks.map(b => b.exerciseId)), [blocks])
-  const canProceed = blocks.length > 0
+  const canProceed = blocks.length> 0
   const query = search.trim().toLowerCase()
 
   const filtered = useMemo(() =>
@@ -52,24 +52,21 @@ export default function NewSessionExercisesPage() {
   const ExerciseRow = ({ id, name, muscles }: { id: string; name: string; muscles: string[] }) => {
     const added = addedIds.has(id)
     return (
-      <button
-        onClick={() => {
+      <button onClick={() => {
           if (added) {
             const blockId = blockIdByExerciseId.get(id)
             if (blockId) removeBlock(blockId)
           } else {
             addExercise({ id, name, muscles })
           }
-        }}
-        className="w-full flex items-center justify-between px-4 py-5 border-b border-border text-left outline-none transition-colors duration-150 ease-out hover:bg-bg-hover active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-text/60"
-      >
-        <span className="text-h4 font-medium leading-6 text-text max-w-[calc(100%-32px)] overflow-hidden text-ellipsis whitespace-nowrap">
+        }}>
+        <span>
           {name}
         </span>
-        <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+        <div>
           {added
-            ? <Check size={16} className="text-text" />
-            : <Plus size={16} className="text-text/40" />
+            ? <Check size={16} />
+            : <Plus size={16} />
           }
         </div>
       </button>
@@ -77,44 +74,38 @@ export default function NewSessionExercisesPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
-        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
-        <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
-          <X size={16} className="text-text" />
+      <div>
+        <h1>New session</h1>
+        <button onClick={handleClose}>
+          <X size={16} />
         </button>
       </div>
 
       {/* Search bar */}
-      <div className="flex gap-4 px-5 pt-6 pb-3 flex-shrink-0">
-        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-inner bg-bg-element ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-text/60">
-          <Search size={16} className="text-text/40 flex-shrink-0" />
-          <input
-            placeholder="Search for exercises"
+      <div>
+        <div>
+          <Search size={16} />
+          <input placeholder="Search for exercises"
             value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 border-none bg-transparent outline-none text-body font-medium text-text"
-          />
+            onChange={e => setSearch(e.target.value)} />
         </div>
-        <button
-          onClick={handleAddCustom}
+        <button onClick={handleAddCustom}
           disabled={!search.trim()}
-          title="Add your own exercise"
-          className="w-12 h-12 rounded-full bg-fill-strong flex items-center justify-center flex-shrink-0 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-90 disabled:opacity-40 disabled:active:scale-100 focus-visible:ring-2 focus-visible:ring-text/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-        >
-          <Plus size={16} className="text-fill-strong-fg" />
+          title="Add your own exercise">
+          <Plus size={16} />
         </button>
       </div>
 
       {/* Exercise list */}
-      <div className="flex-1 overflow-y-auto pb-[96px]">
+      <div>
         {grouped
           ? Array.from(grouped.entries()).map(([letter, exercises]) => (
               <div key={letter}>
-                <div className="px-5 pt-5">
-                  <span className="text-h4 font-bold leading-6 text-text">{letter}</span>
+                <div>
+                  <span>{letter}</span>
                 </div>
                 {exercises.map(ex => (
                   <ExerciseRow key={ex.id} id={ex.id} name={ex.name} muscles={ex.primaryMuscles} />
@@ -128,12 +119,9 @@ export default function NewSessionExercisesPage() {
       </div>
 
       {/* Footer CTA */}
-      <div className="fixed bottom-20 left-0 right-0 px-5 pt-4 pb-6 bg-bg border-t border-border">
-        <button
-          onClick={() => router.push('/sessions/new/configure')}
-          disabled={!canProceed}
-          className={`w-full h-12 rounded-full text-body font-medium ${canProceed ? 'border border-border-strong bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
-        >
+      <div>
+        <button onClick={() => router.push('/sessions/new/configure')}
+          disabled={!canProceed}>
           Create session plan
         </button>
       </div>

@@ -11,8 +11,8 @@ import type { ReactNode } from 'react'
 
 export function SectionLabel({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-3">
-      <p className="text-tag uppercase tracking-[0.08em] text-text-tertiary m-0">{children}</p>
+    <div>
+      <p>{children}</p>
       {action}
     </div>
   )
@@ -21,10 +21,7 @@ export function SectionLabel({ children, action }: { children: ReactNode; action
 /** Small pill used for status words like FAIR / POOR / OPTIMAL. */
 export function StatusPill({ label, color = 'var(--text-tertiary)' }: { label: string; color?: string }) {
   return (
-    <span
-      className="text-tag uppercase tracking-[0.06em] px-2 py-0.5 rounded inline-flex items-center"
-      style={{ color, backgroundColor: `color-mix(in srgb, ${color} 16%, transparent)` }}
-    >
+    <span>
       {label}
     </span>
   )
@@ -34,19 +31,14 @@ export function StatusPill({ label, color = 'var(--text-tertiary)' }: { label: s
 
 export function Card({
   children,
-  className = '',
   as: Tag = 'div',
   ...rest
 }: {
   children: ReactNode
-  className?: string
   as?: 'div' | 'button'
 } & React.HTMLAttributes<HTMLElement>) {
   return (
-    <Tag
-      className={`bg-bg-card rounded-card ${className}`}
-      {...rest}
-    >
+    <Tag {...rest}>
       {children}
     </Tag>
   )
@@ -65,15 +57,12 @@ export function StatCard({
   valueColor?: string
 }) {
   return (
-    <div className="flex-1 min-w-0 bg-bg-card rounded-card px-3 py-3 flex flex-col gap-1">
-      <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0 truncate">{label}</p>
-      <p
-        className="text-h1 tabular m-0 truncate"
-        style={valueColor ? { color: valueColor } : undefined}
-      >
+    <div>
+      <p>{label}</p>
+      <p style={valueColor ? { color: valueColor } : undefined}>
         {value}
       </p>
-      {caption && <p className="text-tag text-text-tertiary m-0 truncate">{caption}</p>}
+      {caption && <p>{caption}</p>}
     </div>
   )
 }
@@ -92,17 +81,14 @@ export interface ZoneDatum {
 /** One labelled row: name, track+fill bar, percentage, optional count. */
 export function ZoneRow({ zone }: { zone: ZoneDatum }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-caption text-text-secondary w-[84px] flex-shrink-0 truncate">{zone.label}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-white/[0.07] overflow-hidden min-w-0">
-        <div
-          className="h-full rounded-full"
-          style={{ width: `${Math.max(zone.pct, 0)}%`, backgroundColor: zone.color }}
-        />
+    <div>
+      <span>{zone.label}</span>
+      <div>
+        <div style={{ width: `${Math.max(zone.pct, 0)}%`}} />
       </div>
-      <span className="text-caption text-text tabular w-9 text-right flex-shrink-0">{Math.round(zone.pct)}%</span>
+      <span>{Math.round(zone.pct)}%</span>
       {zone.count !== undefined && (
-        <span className="text-caption text-text-tertiary tabular w-8 text-right flex-shrink-0">{zone.count}</span>
+        <span>{zone.count}</span>
       )}
     </div>
   )
@@ -112,13 +98,11 @@ export function ZoneRow({ zone }: { zone: ZoneDatum }) {
 export function StackedBar({ zones, height = 10 }: { zones: ZoneDatum[]; height?: number }) {
   const total = zones.reduce((sum, z) => sum + z.pct, 0) || 1
   return (
-    <div className="flex w-full rounded-full overflow-hidden gap-0.5" style={{ height }}>
+    <div style={{ height }}>
       {zones.map(z => (
-        <div
-          key={z.label}
-          style={{ width: `${(z.pct / total) * 100}%`, backgroundColor: z.color }}
-          title={`${z.label} ${Math.round(z.pct)}%`}
-        />
+        <div key={z.label}
+          style={{ width: `${(z.pct / total) * 100}%`}}
+          title={`${z.label} ${Math.round(z.pct)}%`} />
       ))}
     </div>
   )
@@ -127,14 +111,14 @@ export function StackedBar({ zones, height = 10 }: { zones: ZoneDatum[]; height?
 /** Percentage triple above a stacked bar, as in "Training Focus". */
 export function DistributionSummary({ zones }: { zones: ZoneDatum[] }) {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex gap-3">
+    <div>
+      <div>
         {zones.map(z => (
-          <div key={z.label} className="flex-1 min-w-0 flex flex-col gap-0.5">
-            <span className="text-tag uppercase tracking-[0.06em] truncate" style={{ color: z.color }}>
+          <div key={z.label}>
+            <span>
               {z.label}
             </span>
-            <span className="text-h3 font-bold text-text tabular">{Math.round(z.pct)}%</span>
+            <span>{Math.round(z.pct)}%</span>
           </div>
         ))}
       </div>
@@ -164,7 +148,7 @@ export function Sparkline({
   // Inset horizontally so the end-point marker isn't clipped by the viewBox.
   const PAD = 3
   const inner = W - PAD * 2
-  const step = values.length > 1 ? inner / (values.length - 1) : 0
+  const step = values.length> 1 ? inner / (values.length - 1) : 0
   const pts = values.map((v, i) => {
     const x = values.length === 1 ? W / 2 : PAD + i * step
     const y = H - ((v - min) / span) * H * 0.82 - H * 0.09
@@ -182,16 +166,14 @@ export function Sparkline({
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      {values.length > 1 && <path d={area} fill="url(#sparkfill)" />}
-      <path
-        d={d}
+      {values.length> 1 && <path d={area} fill="url(#sparkfill)" />}
+      <path d={d}
         fill="none"
         stroke={color}
         strokeWidth={1.6}
         vectorEffect="non-scaling-stroke"
         strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+        strokeLinejoin="round" />
       <circle cx={last[0]} cy={last[1]} r={2.4} fill={color} vectorEffect="non-scaling-stroke" />
     </svg>
   )
@@ -219,46 +201,38 @@ const DAY_HEADS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
  */
 export function WeekGrid({ rows, accent = 'var(--text)' }: { rows: WeekRow[]; accent?: string }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div>
       {/* Header */}
-      <div className="flex items-center gap-2 pb-1">
-        <span className="w-9 flex-shrink-0" />
-        <div className="flex-1 grid grid-cols-7 gap-1">
+      <div>
+        <span />
+        <div>
           {DAY_HEADS.map((d, i) => (
-            <span key={i} className="text-tag text-text-tertiary text-center">{d}</span>
+            <span key={i}>{d}</span>
           ))}
         </div>
-        <span className="text-tag text-text-tertiary w-12 text-right flex-shrink-0">Load</span>
-        <span className="text-tag text-text-tertiary w-12 text-right flex-shrink-0">Change</span>
+        <span>Load</span>
+        <span>Change</span>
       </div>
 
       {rows.map(row => (
-        <div key={row.label} className="flex items-center gap-2">
-          <span className="text-tag text-text-tertiary w-9 flex-shrink-0 tabular">{row.label}</span>
-          <div className="flex-1 grid grid-cols-7 gap-1">
+        <div key={row.label}>
+          <span>{row.label}</span>
+          <div>
             {row.days.map((intensity, i) => (
-              <div key={i} className="flex items-center justify-center h-7">
-                {intensity > 0 ? (
-                  <span
-                    className="rounded-full block"
-                    style={{
+              <div key={i}>
+                {intensity> 0 ? (
+                  <span style={{
                       width: 8 + intensity * 12,
                       height: 8 + intensity * 12,
-                      backgroundColor: accent,
-                      opacity: 0.35 + intensity * 0.65,
-                    }}
-                  />
+                      opacity: 0.35 + intensity * 0.65}} />
                 ) : (
-                  <span className="w-1 h-1 rounded-full bg-white/10 block" />
+                  <span />
                 )}
               </div>
             ))}
           </div>
-          <span className="text-caption text-text tabular w-12 text-right flex-shrink-0">{row.load}</span>
-          <span
-            className="text-caption tabular w-12 text-right flex-shrink-0"
-            style={{ color: row.change ? (row.changePositive ? 'var(--text)' : 'var(--error)') : 'var(--text-tertiary)' }}
-          >
+          <span>{row.load}</span>
+          <span>
             {row.change ?? '—'}
           </span>
         </div>
@@ -279,22 +253,12 @@ export function SegmentedChips<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div>
       {options.map(opt => {
         const active = opt === value
         return (
-          <button
-            key={opt}
-            onClick={() => onChange(opt)}
-            className={[
-              'px-4 py-1.5 rounded-full text-caption font-medium capitalize outline-none',
-              'transition-[background-color,color] duration-150 ease-out',
-              'focus-visible:ring-2 focus-visible:ring-text/60',
-              active
-                ? 'bg-fill-strong text-fill-strong-fg'
-                : 'bg-bg-card text-text-secondary hover:bg-bg-hover',
-            ].join(' ')}
-          >
+          <button key={opt}
+            onClick={() => onChange(opt)}>
             {opt}
           </button>
         )

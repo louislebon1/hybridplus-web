@@ -49,13 +49,10 @@ function formatDate(dateStr: string): string {
 
 function DayToggle({ days, onToggle }: { days: number[]; onToggle: (next: number[]) => void }) {
   return (
-    <div className="flex gap-1">
+    <div>
       {DAY_LETTERS.map((d, i) => (
-        <button
-          key={i}
-          onClick={() => onToggle(days.includes(i) ? days.filter(x => x !== i) : [...days, i])}
-          className={`w-8 h-8 rounded-full text-caption font-medium flex items-center justify-center ${days.includes(i) ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text'}`}
-        >
+        <button key={i}
+          onClick={() => onToggle(days.includes(i) ? days.filter(x => x !== i) : [...days, i])}>
           {d}
         </button>
       ))}
@@ -103,9 +100,9 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
   if (!programme) {
     return (
-      <div className="flex flex-col h-full items-center justify-center gap-4">
-        <p className="text-label text-text/50">Programme not found</p>
-        <button onClick={() => router.back()} className="text-label text-text">Go back</button>
+      <div>
+        <p>Programme not found</p>
+        <button onClick={() => router.back()}>Go back</button>
       </div>
     )
   }
@@ -158,7 +155,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       targetRpeOverride:     overrideForm.rpe          ? parseFloat(overrideForm.rpe)           : null,
       intensityPct:          overrideForm.intensityPct ? parseFloat(overrideForm.intensityPct)  : null,
     }
-    const hasValue = Object.values(override).some((v, i) => i > 0 && v !== null)
+    const hasValue = Object.values(override).some((v, i) => i> 0 && v !== null)
     if (hasValue) {
       setExerciseOverride(programme.id, editingOverride.phaseId, editingOverride.templateId, override)
     } else {
@@ -362,63 +359,57 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     : []
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-            <ArrowLeft size={16} className="text-text" />
+      <div>
+        <div>
+          <button onClick={() => router.back()}>
+            <ArrowLeft size={16} />
           </button>
-          <h1 className="text-h2 font-bold leading-[30px] text-text m-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+          <h1>
             {programme.name}
           </h1>
         </div>
-        <button onClick={handleDeleteProgramme} className="w-10 h-10 rounded-full bg-error flex items-center justify-center flex-shrink-0 ml-3">
-          <Trash2 size={18} className="text-fill-strong-fg" />
+        <button onClick={handleDeleteProgramme}>
+          <Trash2 size={18} />
         </button>
       </div>
 
       {/* Start date row */}
-      <div className="flex items-center gap-3 px-5 py-6 flex-shrink-0">
-        <div className="flex-1 relative">
-          <div className="flex items-center gap-2 px-6 h-12 rounded-full bg-bg-element pointer-events-none">
-            <Calendar size={20} className="text-text" />
-            <span className="text-body font-medium leading-6 text-text">
+      <div>
+        <div>
+          <div>
+            <Calendar size={20} />
+            <span>
               {programme.startDate ? formatDate(programme.startDate) : 'Select start date'}
             </span>
           </div>
-          <input
-            type="date"
+          <input type="date"
             value={programme.startDate ?? ''}
-            onChange={e => handleSetStartDate(e.target.value || null)}
-            className="absolute inset-0 opacity-0 cursor-pointer w-full"
-          />
+            onChange={e => handleSetStartDate(e.target.value || null)} />
         </div>
-        <button onClick={syncToCalendar} className="w-12 h-12 rounded-full bg-fill-strong flex items-center justify-center flex-shrink-0">
-          <RefreshCw size={18} className="text-fill-strong-fg" />
+        <button onClick={syncToCalendar}>
+          <RefreshCw size={18} />
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-baseline gap-4 px-5 border-b border-border flex-shrink-0">
+      <div>
         {(['phases', 'sessions'] as const).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setDetailTab(tab)}
-            className={`pb-2 -mb-px text-body font-medium leading-6 text-text border-b-2 ${detailTab === tab ? 'border-text opacity-100' : 'border-transparent opacity-40'}`}
-          >
+          <button key={tab}
+            onClick={() => setDetailTab(tab)}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-5 py-6">
+      <div>
 
         {/* ── PHASES TAB ──────────────────────────────────────────────────── */}
         {detailTab === 'phases' && (
-          <div className="flex flex-col gap-3">
+          <div>
 
             {sortedPhases.map((phase, idx) => {
               const expanded = expandedPhases.has(phase.id)
@@ -430,86 +421,83 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                 if (!programme) return
                 const ids = sortedPhases.map(p => p.id)
                 const to = idx + dir
-                if (to < 0 || to >= ids.length) return
+                if (to < 0 || to>= ids.length) return
                 ;[ids[idx], ids[to]] = [ids[to], ids[idx]]
                 reorderPhases(programme.id, ids)
               }
 
               return (
-                <div key={phase.id} className="rounded-inner overflow-hidden bg-bg-element">
+                <div key={phase.id}>
                   {/* Card row */}
-                  <button onClick={() => togglePhase(phase.id)} className="w-full px-4 py-3 flex items-center gap-4 text-left">
-                    <div className="flex-1 flex flex-col gap-2">
-                      <span className="text-h4 font-medium leading-6 text-text">{phase.name}</span>
-                      <div className="flex gap-1 flex-wrap items-center">
+                  <button onClick={() => togglePhase(phase.id)}>
+                    <div>
+                      <span>{phase.name}</span>
+                      <div>
                         {(phase.phaseType || phase.isDeload) && (
-                          <span className={`${tag} bg-fill-strong text-fill-strong-fg px-3 py-1 rounded-full`}>
+                          <span>
                             {phase.phaseType ? PHASE_TYPE_LABELS[phase.phaseType] : 'Deload'}
                           </span>
                         )}
-                        <span className={`${tag} bg-bg-element text-text px-2 py-1 rounded`}>
+                        <span>
                           {phase.durationWeeks} {phase.durationWeeks === 1 ? 'week' : 'weeks'}
                         </span>
                         {phase.isActive && (
-                          <span className={`${tag} bg-text/10 text-text px-2 py-1 rounded`}>Active</span>
+                          <span>Active</span>
                         )}
                       </div>
                     </div>
-                    <ChevronRight size={16} className={`text-text/40 flex-shrink-0 transition-transform ${expanded ? 'rotate-90' : ''}`} />
+                    <ChevronRight size={16} />
                   </button>
 
                   {/* Expanded management section */}
                   {expanded && (
-                    <div className="border-t border-border/60">
+                    <div>
 
                       {/* Phase actions */}
-                      <div className="flex gap-2 px-4 py-3 flex-wrap items-center">
+                      <div>
                         {!phase.isActive && (
-                          <button onClick={() => setActivePhase(programme.id, phase.id)} className="text-caption text-text border border-border-strong/30 rounded-full px-3 py-1">
+                          <button onClick={() => setActivePhase(programme.id, phase.id)}>
                             Set active
                           </button>
                         )}
-                        <button onClick={() => openAddSession(phase.id)} className="text-caption text-text/60 border border-text/10 rounded-full px-3 py-1">
+                        <button onClick={() => openAddSession(phase.id)}>
                           + Session
                         </button>
-                        <div className="flex gap-1 ml-auto items-center">
-                          <button onClick={() => movePhase(-1)} disabled={idx === 0} className={`p-1 ${idx === 0 ? 'opacity-20' : ''}`}>
-                            <ArrowUp size={12} className="text-text" />
+                        <div>
+                          <button onClick={() => movePhase(-1)} disabled={idx === 0}>
+                            <ArrowUp size={12} />
                           </button>
-                          <button onClick={() => movePhase(1)} disabled={idx === sortedPhases.length - 1} className={`p-1 ${idx === sortedPhases.length - 1 ? 'opacity-20' : ''}`}>
-                            <ArrowDown size={12} className="text-text" />
+                          <button onClick={() => movePhase(1)} disabled={idx === sortedPhases.length - 1}>
+                            <ArrowDown size={12} />
                           </button>
-                          <button
-                            onClick={() => { if (window.confirm('Delete this phase?')) deletePhase(programme.id, phase.id) }}
-                            className="text-caption text-error ml-1"
-                          >
+                          <button onClick={() => { if (window.confirm('Delete this phase?')) deletePhase(programme.id, phase.id) }}>
                             Delete
                           </button>
                         </div>
                       </div>
 
                       {/* Assigned cardio */}
-                      {(phase.cardioTemplateIds ?? []).length > 0 && (
-                        <div className="border-t border-border/60">
+                      {(phase.cardioTemplateIds ?? []).length> 0 && (
+                        <div>
                           {(phase.cardioTemplateIds ?? []).map(cid => {
                             const ct = (programme.cardioTemplates ?? []).find(c => c.id === cid)
                             if (!ct) return null
                             const days = (phase.cardioTemplateDays ?? {})[ct.id] ?? []
                             return (
-                              <div key={ct.id} className="px-4 py-3 bg-bg/40">
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center gap-2">
-                                    <ActivityIcon type={ct.activityType} size={16} className="text-text flex-shrink-0" />
+                              <div key={ct.id}>
+                                <div>
+                                  <div>
+                                    <ActivityIcon type={ct.activityType} size={16} />
                                     <div>
-                                      <p className="text-caption text-text m-0">{ct.name}</p>
-                                      <p className="text-tag text-text/40 m-0 capitalize">
+                                      <p>{ct.name}</p>
+                                      <p>
                                         {ct.activityType}
                                         {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
                                         {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
                                       </p>
                                     </div>
                                   </div>
-                                  <button onClick={() => removeCardioTemplateFromPhase(programme.id, phase.id, ct.id)} className="text-caption text-error">
+                                  <button onClick={() => removeCardioTemplateFromPhase(programme.id, phase.id, ct.id)}>
                                     Remove
                                   </button>
                                 </div>
@@ -521,25 +509,25 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                       )}
 
                       {/* Assigned workouts */}
-                      {phaseTemplates.length > 0 && (
-                        <div className="border-t border-border/60">
+                      {phaseTemplates.length> 0 && (
+                        <div>
                           {phaseTemplates.map(template => {
                             const templateOverride = phase.overrides.find(o => o.templateId === template.id)
                             const overriddenCount = templateOverride?.exerciseOverrides.length ?? 0
                             const days = phase.templateDays?.[template.id] ?? []
                             return (
-                              <div key={template.id} className="border-t border-border/60 first:border-t-0">
-                                <div className="px-4 py-3 bg-bg/40">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                      <p className="text-caption text-text m-0">{template.name}</p>
-                                      {overriddenCount > 0 && (
-                                        <span className="text-tag px-1.5 py-0.5 rounded-full bg-text/10 text-text">
+                              <div key={template.id}>
+                                <div>
+                                  <div>
+                                    <div>
+                                      <p>{template.name}</p>
+                                      {overriddenCount> 0 && (
+                                        <span>
                                           {overriddenCount} overridden
                                         </span>
                                       )}
                                     </div>
-                                    <button onClick={() => removeTemplateFromPhase(programme.id, phase.id, template.id)} className="text-caption text-error">
+                                    <button onClick={() => removeTemplateFromPhase(programme.id, phase.id, template.id)}>
                                       Remove
                                     </button>
                                   </div>
@@ -549,11 +537,11 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                 {template.exerciseBlocks.map(block => {
                                   const exOverride = templateOverride?.exerciseOverrides.find(e => e.blockId === block.id)
                                   return (
-                                    <div key={block.id} className="flex items-center justify-between px-4 py-2 border-t border-border/40">
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-caption text-text m-0 overflow-hidden text-ellipsis whitespace-nowrap">{block.exerciseName}</p>
+                                    <div key={block.id}>
+                                      <div>
+                                        <p>{block.exerciseName}</p>
                                         {exOverride ? (
-                                          <p className="text-tag text-text m-0 mt-0.5">
+                                          <p>
                                             {[
                                               exOverride.targetSetsOverride != null && `${exOverride.targetSetsOverride} sets`,
                                               exOverride.targetRepsMinOverride != null && `${exOverride.targetRepsMinOverride} reps`,
@@ -562,12 +550,12 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                             ].filter(Boolean).join(' · ')}
                                           </p>
                                         ) : (
-                                          <p className="text-tag text-text/40 m-0 mt-0.5">
+                                          <p>
                                             {fmtSets(block)}{block.targetWeightKg ? ` @ ${block.targetWeightKg} kg` : ''}
                                           </p>
                                         )}
                                       </div>
-                                      <button onClick={() => openOverrideEditor(phase.id, template.id, block.id)} className="text-caption text-text ml-3 flex-shrink-0">
+                                      <button onClick={() => openOverrideEditor(phase.id, template.id, block.id)}>
                                         {exOverride ? 'Edit' : 'Override'}
                                       </button>
                                     </div>
@@ -585,10 +573,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             })}
 
             {/* Add new phase CTA */}
-            <button
-              onClick={() => router.push(`/programmes/${id}/add-phase`)}
-              className={`w-full h-12 rounded-full border border-border-strong bg-fill-strong text-body font-medium leading-6 text-fill-strong-fg ${sortedPhases.length > 0 ? 'mt-1' : ''}`}
-            >
+            <button onClick={() => router.push(`/programmes/${id}/add-phase`)}>
               Add new phase
             </button>
           </div>
@@ -596,13 +581,13 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
         {/* ── SESSIONS TAB ───────────────────────────────────────────────── */}
         {detailTab === 'sessions' && (
-          <div className="flex flex-col gap-4">
+          <div>
 
             {/* Template list */}
             {programme.templates.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-label text-text/40 m-0">No workouts yet</p>
-                <button onClick={() => setShowAddTemplate(true)} className="mt-3 text-label text-text">
+              <div>
+                <p>No workouts yet</p>
+                <button onClick={() => setShowAddTemplate(true)}>
                   + Add workout
                 </button>
               </div>
@@ -613,23 +598,23 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   const ssLabels = getSupersetLabels(t.exerciseBlocks)
                   const sortedBlocks = [...t.exerciseBlocks].sort((a, b) => a.orderIndex - b.orderIndex)
                   return (
-                    <div key={t.id} className="rounded-inner overflow-hidden bg-bg-element">
-                      <button onClick={() => toggleTemplate(t.id)} className="w-full px-4 py-3 flex items-center justify-between text-left">
+                    <div key={t.id}>
+                      <button onClick={() => toggleTemplate(t.id)}>
                         <div>
-                          <p className="text-h4 font-medium leading-6 text-text m-0">{t.name}</p>
-                          <p className="text-caption text-text/50 mt-0.5 mb-0">
+                          <p>{t.name}</p>
+                          <p>
                             {t.exerciseBlocks.length} exercise{t.exerciseBlocks.length !== 1 ? 's' : ''}
                           </p>
                         </div>
-                        <ChevronDown size={16} className={`text-text/40 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16} />
                       </button>
 
                       {expanded && (
-                        <div className="border-t border-border/60">
-                          {sortedBlocks.length > 0 && (
-                            <div className="grid grid-cols-[1fr_44px_44px_64px_28px_24px] gap-1.5 px-4 pt-2 pb-1">
+                        <div>
+                          {sortedBlocks.length> 0 && (
+                            <div>
                               {['Exercise', 'Sets', 'Reps', 'kg', '', ''].map((h, i) => (
-                                <span key={i} className={`text-tag text-text/40 font-mono ${i === 0 ? 'text-left' : 'text-center'}`}>{h}</span>
+                                <span key={i}>{h}</span>
                               ))}
                             </div>
                           )}
@@ -637,53 +622,38 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             const label = block.supersetGroupId ? ssLabels[block.supersetGroupId] : null
                             const inSS = !!block.supersetGroupId
                             return (
-                              <div
-                                key={block.id}
-                                className={`grid grid-cols-[1fr_44px_44px_64px_28px_24px] gap-1.5 items-center px-4 py-1.5 border-t border-border/40 ${inSS ? 'bg-text/[0.06]' : ''}`}
-                              >
-                                <div className="flex items-center gap-1 min-w-0">
-                                  {label && <span className="text-tag font-mono text-text flex-shrink-0 w-3">{label}</span>}
-                                  <p className="text-caption text-text m-0 overflow-hidden text-ellipsis whitespace-nowrap">{block.exerciseName}</p>
+                              <div key={block.id}>
+                                <div>
+                                  {label && <span>{label}</span>}
+                                  <p>{block.exerciseName}</p>
                                 </div>
-                                <input
-                                  type="number" min="1" max="20"
+                                <input type="number" min="1" max="20"
                                   value={block.targetSets || ''}
-                                  onChange={e => updateBlock(block.id, { targetSets: e.target.value === '' ? 0 : parseInt(e.target.value) })}
-                                  className="h-7 text-center text-caption text-text bg-bg-element border border-text/10 rounded-inner outline-none w-full"
-                                />
-                                <input
-                                  type="number" min="1" max="100"
+                                  onChange={e => updateBlock(block.id, { targetSets: e.target.value === '' ? 0 : parseInt(e.target.value) })} />
+                                <input type="number" min="1" max="100"
                                   value={block.targetRepsMin || ''}
                                   onChange={e => {
                                     const v = e.target.value === '' ? 0 : parseInt(e.target.value)
                                     updateBlock(block.id, { targetRepsMin: v, targetRepsMax: v })
-                                  }}
-                                  className="h-7 text-center text-caption text-text bg-bg-element border border-text/10 rounded-inner outline-none w-full"
-                                />
-                                <input
-                                  type="number" min="0" step="0.5"
+                                  }} />
+                                <input type="number" min="0" step="0.5"
                                   value={block.targetWeightKg ?? ''}
                                   placeholder="—"
-                                  onChange={e => updateBlock(block.id, { targetWeightKg: e.target.value ? parseFloat(e.target.value) : null })}
-                                  className="h-7 text-center text-caption text-text bg-bg-element border border-text/10 rounded-inner outline-none w-full"
-                                />
-                                <button onClick={() => removeBlock(block.id)} className="h-7 w-7 flex items-center justify-center text-text/40 text-label">
+                                  onChange={e => updateBlock(block.id, { targetWeightKg: e.target.value ? parseFloat(e.target.value) : null })} />
+                                <button onClick={() => removeBlock(block.id)}>
                                   <X size={14} />
                                 </button>
-                                <button
-                                  onClick={() => inSS ? handleUnlinkBlock(block.id, t.id) : setLinkingFor({ templateId: t.id, blockId: block.id })}
-                                  className="h-7 w-6 flex items-center justify-center"
-                                >
-                                  {inSS ? <Unlink size={11} className="text-text" /> : <Link2 size={11} className="text-text/30" />}
+                                <button onClick={() => inSS ? handleUnlinkBlock(block.id, t.id) : setLinkingFor({ templateId: t.id, blockId: block.id })}>
+                                  {inSS ? <Unlink size={11} /> : <Link2 size={11} />}
                                 </button>
                               </div>
                             )
                           })}
-                          <div className="flex gap-2 px-4 py-3 border-t border-border/60">
-                            <button onClick={() => { setAddExerciseFor(t.id); setExerciseSearch('') }} className="flex-1 text-caption text-text p-2 border border-dashed border-border-strong/40 rounded-inner">
+                          <div>
+                            <button onClick={() => { setAddExerciseFor(t.id); setExerciseSearch('') }}>
                               + Add exercise
                             </button>
-                            <button onClick={() => { if (window.confirm('Delete this workout?')) deleteTemplate(t.id) }} className="text-caption text-error p-2">
+                            <button onClick={() => { if (window.confirm('Delete this workout?')) deleteTemplate(t.id) }}>
                               Delete
                             </button>
                           </div>
@@ -693,7 +663,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   )
                 })}
 
-                <button onClick={() => setShowAddTemplate(true)} className="w-full h-12 rounded-full border border-text/10 bg-text/[0.03] text-label font-medium text-text">
+                <button onClick={() => setShowAddTemplate(true)}>
                   + Add workout
                 </button>
               </>
@@ -701,54 +671,53 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
             {/* Inline add-template form */}
             {showAddTemplate && (
-              <form onSubmit={handleAddTemplate} className="bg-bg-element rounded-inner p-4 flex flex-col gap-3">
+              <form onSubmit={handleAddTemplate}>
                 <Input placeholder="Workout name (e.g. Upper A)" value={templateName} onChange={e => setTemplateName(e.target.value)} autoFocus />
-                <div className="flex gap-2">
-                  <Button type="submit" size="sm" className="flex-1" disabled={!templateName.trim()}>Create</Button>
+                <div>
+                  <Button type="submit" size="sm"  disabled={!templateName.trim()}>Create</Button>
                   <Button type="button" variant="ghost" size="sm" onClick={() => setShowAddTemplate(false)}>Cancel</Button>
                 </div>
               </form>
             )}
 
             {/* Cardio sessions */}
-            <div className="mt-2">
-              <div className="flex items-center justify-between mb-3">
-                <p className="eyebrow m-0">Cardio Sessions</p>
-                <button onClick={() => setShowAddCardio(true)} className="text-caption text-text">+ Add</button>
+            <div>
+              <div>
+                <p>Cardio Sessions</p>
+                <button onClick={() => setShowAddCardio(true)}>+ Add</button>
               </div>
               {(programme.cardioTemplates ?? []).map(ct => (
-                <div key={ct.id} className="flex items-center justify-between px-4 py-3 rounded-inner bg-bg-element mb-2">
-                  <div className="flex items-center gap-3">
-                    <ActivityIcon type={ct.activityType} size={20} className="text-text flex-shrink-0" />
+                <div key={ct.id}>
+                  <div>
+                    <ActivityIcon type={ct.activityType} size={20} />
                     <div>
-                      <p className="text-label font-medium text-text m-0">{ct.name}</p>
-                      <p className="text-caption text-text/50 m-0 capitalize">
+                      <p>{ct.name}</p>
+                      <p>
                         {ct.activityType}
                         {ct.targetDurationMinutes ? ` · ${ct.targetDurationMinutes} min` : ''}
                         {ct.targetDistanceKm ? ` · ${ct.targetDistanceKm} km` : ''}
                       </p>
                     </div>
                   </div>
-                  <button onClick={() => { if (window.confirm('Delete this cardio session?')) deleteCardioTemplate(ct.id) }} className="text-label text-text/30">✕</button>
+                  <button onClick={() => { if (window.confirm('Delete this cardio session?')) deleteCardioTemplate(ct.id) }}>✕</button>
                 </div>
               ))}
               {showAddCardio && (
-                <form onSubmit={handleAddCardio} className="bg-bg-element rounded-inner p-4 flex flex-col gap-3">
+                <form onSubmit={handleAddCardio}>
                   <Input placeholder="Session name (e.g. Easy Run)" value={cardioName} onChange={e => setCardioName(e.target.value)} autoFocus />
-                  <div className="flex gap-1.5 flex-wrap">
+                  <div>
                     {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map(type => (
-                      <button key={type} type="button" onClick={() => setCardioType(type)}
-                        className={`px-3 py-1 rounded-full text-caption ${cardioType === type ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text'}`}>
-                        <span className="inline-flex items-center gap-1.5"><ActivityIcon type={type} size={14} />{type}</span>
+                      <button key={type} type="button" onClick={() => setCardioType(type)}>
+                        <span><ActivityIcon type={type} size={14} />{type}</span>
                       </button>
                     ))}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div>
                     <Input label="Duration (min)" type="number" min="1" placeholder="30" value={cardioMinutes} onChange={e => setCardioMinutes(e.target.value)} />
                     <Input label="Distance (km)" type="number" step="0.1" placeholder="5" value={cardioKm} onChange={e => setCardioKm(e.target.value)} />
                   </div>
-                  <div className="flex gap-2">
-                    <Button type="submit" size="sm" className="flex-1" disabled={!cardioName.trim()}>Create</Button>
+                  <div>
+                    <Button type="submit" size="sm"  disabled={!cardioName.trim()}>Create</Button>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setShowAddCardio(false)}>Cancel</Button>
                   </div>
                 </form>
@@ -763,40 +732,34 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
       <Sheet visible={!!addSessionFor} onClose={() => setAddSessionFor(null)} title="Add session">
         {addSessionFor && (
-          <div className="px-5 py-4 flex flex-col gap-4 pb-8">
-            <div className="flex p-1 rounded-full bg-bg-element gap-1">
+          <div>
+            <div>
               {(['strength', 'cardio'] as const).map(type => (
-                <button
-                  key={type}
-                  onClick={() => { setAddSessionType(type); setAddSessionId('') }}
-                  className={`flex-1 py-2 px-6 rounded-full text-label font-medium ${addSessionType === type ? 'bg-bg text-text' : 'text-text opacity-40'}`}
-                >
+                <button key={type}
+                  onClick={() => { setAddSessionType(type); setAddSessionId('') }}>
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
               ))}
             </div>
 
-            <div className="relative">
-              <select
-                value={addSessionId}
-                onChange={e => setAddSessionId(e.target.value)}
-                className="w-full h-12 px-3 rounded-inner bg-bg-element text-text text-body appearance-none outline-none"
-              >
+            <div>
+              <select value={addSessionId}
+                onChange={e => setAddSessionId(e.target.value)}>
                 <option value="">Select session</option>
                 {sessionOptions.map(opt => (
                   <option key={opt.id} value={opt.id}>{opt.name}</option>
                 ))}
               </select>
-              <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text pointer-events-none" />
+              <ChevronDown size={16} />
             </div>
 
             {sessionOptions.length === 0 && (
-              <p className="text-label text-text-secondary text-center">
+              <p>
                 {addSessionType === 'strength' ? 'All workouts are already assigned' : 'All cardio sessions are already assigned'}
               </p>
             )}
 
-            <Button size="lg" className="w-full" disabled={!addSessionId} onClick={handleAddSession}>
+            <Button size="lg"  disabled={!addSessionId} onClick={handleAddSession}>
               Add session
             </Button>
           </div>
@@ -810,21 +773,21 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           const labels = getSupersetLabels(template?.exerciseBlocks ?? [])
           const candidates = (template?.exerciseBlocks ?? []).filter(b => b.id !== linkingFor.blockId).sort((a, b) => a.orderIndex - b.orderIndex)
           return candidates.length === 0 ? (
-            <p className="px-5 py-8 text-label text-text-secondary text-center">Add more exercises to this workout first</p>
+            <p>Add more exercises to this workout first</p>
           ) : (
-            <div className="divide-y divide-border pb-4">
-              {source && <div className="px-5 py-3 bg-text/[0.06]"><p className="text-caption text-text-tertiary mb-0.5">Linking</p><p className="text-label text-text">{source.exerciseName}</p></div>}
+            <div>
+              {source && <div><p>Linking</p><p>{source.exerciseName}</p></div>}
               {candidates.map(b => {
                 const existingLabel = b.supersetGroupId ? labels[b.supersetGroupId] : null
                 const alreadyLinked = source?.supersetGroupId && b.supersetGroupId === source.supersetGroupId
                 return (
-                  <button key={b.id} className="w-full text-left px-5 py-3.5 hover:bg-bg-element transition-colors flex items-center justify-between"
+                  <button key={b.id} 
                     onClick={() => handleLinkSuperset(linkingFor.blockId, b.id, linkingFor.templateId)} disabled={!!alreadyLinked}>
                     <div>
-                      <p className="text-label text-text">{b.exerciseName}</p>
-                      {existingLabel && <p className="text-caption text-text mt-0.5">In superset {existingLabel} — will merge</p>}
+                      <p>{b.exerciseName}</p>
+                      {existingLabel && <p>In superset {existingLabel} — will merge</p>}
                     </div>
-                    {alreadyLinked && <Check size={14} className="text-text flex-shrink-0" />}
+                    {alreadyLinked && <Check size={14} />}
                   </button>
                 )
               })}
@@ -834,23 +797,22 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       </Sheet>
 
       <Sheet visible={!!addExerciseFor} onClose={() => setAddExerciseFor(null)} title="Add Exercise">
-        <div className="px-5 pt-4 pb-2">
+        <div>
           <Input placeholder="Search exercises…" value={exerciseSearch} onChange={e => setExerciseSearch(e.target.value)} autoFocus />
         </div>
-        <div className="divide-y divide-border">
+        <div>
           {exerciseSearch.trim() && !filteredExercises.some(e => e.name.toLowerCase() === exerciseSearch.trim().toLowerCase()) && (
-            <button className="w-full text-left px-5 py-3.5 text-label text-text hover:bg-bg-element flex items-center gap-2"
-              onClick={() => {
+            <button onClick={() => {
                 const name = exerciseSearch.trim()
                 if (addExerciseFor) addBlock(addExerciseFor, { id: `custom-${Date.now()}`, name })
                 setAddExerciseFor(null); setExerciseSearch('')
               }}>
-              <span className="text-h4 leading-none">+</span>
+              <span>+</span>
               Add &ldquo;{exerciseSearch.trim()}&rdquo;
             </button>
           )}
           {filteredExercises.slice(0, 50).map(ex => (
-            <button key={ex.id} className="w-full text-left px-5 py-3.5 text-label text-text hover:bg-bg-element"
+            <button key={ex.id} 
               onClick={() => {
                 if (addExerciseFor) addBlock(addExerciseFor, { id: ex.id, name: ex.name })
                 setAddExerciseFor(null); setExerciseSearch('')
@@ -866,21 +828,21 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
           const template = programme.templates.find(t => t.id === editingOverride.templateId)
           const block = template?.exerciseBlocks.find(b => b.id === editingOverride.blockId)
           return (
-            <div className="px-5 py-4 flex flex-col gap-5 pb-8">
+            <div>
               <div>
-                <p className="text-text text-label">{block?.exerciseName}</p>
-                <p className="text-text-tertiary text-caption mt-0.5">
+                <p>{block?.exerciseName}</p>
+                <p>
                   Default: {block ? fmtSets(block) : '—'}{block?.targetWeightKg ? ` @ ${block.targetWeightKg} kg` : ''}{block?.targetRpe ? ` · RPE ${block.targetRpe}` : ''}
                 </p>
-                <p className="text-text-secondary text-caption mt-2">Leave blank to keep the default value.</p>
+                <p>Leave blank to keep the default value.</p>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div>
                 <Input label="Sets" type="number" placeholder={`Default: ${block?.targetSets ?? '—'}`} value={overrideForm.sets} onChange={e => setOverrideForm(f => ({ ...f, sets: e.target.value }))} />
                 <Input label="Intensity %" type="number" min="1" max="150" placeholder="e.g. 80" value={overrideForm.intensityPct} onChange={e => setOverrideForm(f => ({ ...f, intensityPct: e.target.value }))} />
                 <Input label="Reps" type="number" min="1" placeholder={`Default: ${block?.targetRepsMin ?? '—'}`} value={overrideForm.repsMin} onChange={e => setOverrideForm(f => ({ ...f, repsMin: e.target.value, repsMax: e.target.value }))} />
                 <Input label="Target RPE" type="number" min="1" max="10" step="0.5" placeholder="e.g. 8" value={overrideForm.rpe} onChange={e => setOverrideForm(f => ({ ...f, rpe: e.target.value }))} />
               </div>
-              <Button size="lg" className="w-full" onClick={saveOverride}>
+              <Button size="lg"  onClick={saveOverride}>
                 <Check size={16} /> SAVE OVERRIDES
               </Button>
             </div>

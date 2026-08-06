@@ -20,47 +20,41 @@ export default function NewProgrammePage() {
     router.push('/programmes')
   }
 
-  const canSubmit = name.trim().length > 0
+  const canSubmit = name.trim().length> 0
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
-        <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Add new programme</h1>
-        <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-          <X size={16} className="text-text" />
+      <div>
+        <h1>Add new programme</h1>
+        <button onClick={() => router.back()}>
+          <X size={16} />
         </button>
       </div>
 
-      <div className="h-px bg-border mt-5 flex-shrink-0" />
+      <div />
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-4">
+      <form onSubmit={handleSubmit}>
 
         {/* Name */}
-        <div className="flex flex-col gap-2">
-          <label className="text-label font-medium leading-[18px] text-text">Name</label>
+        <div>
+          <label>Name</label>
           <Input autoFocus placeholder="Ultimate Hybrid Build" value={name} onChange={e => setName(e.target.value)} />
         </div>
 
         {/* Description */}
-        <div className="flex flex-col gap-2">
-          <label className="text-label font-medium leading-[18px] text-text">Description</label>
-          <textarea
-            placeholder="Add description here..."
+        <div>
+          <label>Description</label>
+          <textarea placeholder="Add description here..."
             value={description}
-            onChange={e => setDescription(e.target.value)}
-            className="h-24 px-3 py-3 rounded-inner bg-bg-element text-text text-body outline-none w-full resize-none"
-          />
+            onChange={e => setDescription(e.target.value)} />
         </div>
 
         {/* CTA */}
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSubmit ? 'border border-border-strong bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
-        >
+        <button type="submit"
+          disabled={!canSubmit}>
           Add new programme
         </button>
 

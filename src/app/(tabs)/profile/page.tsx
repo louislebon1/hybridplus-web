@@ -9,43 +9,43 @@ export default function ProfilePage() {
   const router = useRouter()
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-5 screen-top pb-4 flex-shrink-0">
-        <h1 className="text-h2 font-bold text-text">Profile</h1>
+    <div>
+      <div>
+        <h1>Profile</h1>
       </div>
 
-      <div className="no-scrollbar flex-1 overflow-y-auto pb-4">
+      <div>
 
         {/* Account section */}
-        <div className="px-5 pb-2">
-          <p className="eyebrow">Account</p>
+        <div>
+          <p>Account</p>
         </div>
-        <div className="bg-bg-element border border-text/[0.08] rounded-inner mx-5 overflow-hidden">
-          <button className={row} onClick={() => router.push('/profile/edit')}>
-            <span className="text-label font-medium text-text">Edit Profile</span>
-            <ChevronRight size={16} className="text-text/30" />
+        <div>
+          <button onClick={() => router.push('/profile/edit')}>
+            <span>Edit Profile</span>
+            <ChevronRight size={16} />
           </button>
-          <button className={row}>
-            <span className="text-label font-medium text-text">Notifications</span>
-            <ChevronRight size={16} className="text-text/30" />
+          <button>
+            <span>Notifications</span>
+            <ChevronRight size={16} />
           </button>
         </div>
 
         {/* App section */}
-        <div className="px-5 pt-5 pb-2">
-          <p className="eyebrow">App</p>
+        <div>
+          <p>App</p>
         </div>
-        <div className="bg-bg-element border border-text/[0.08] rounded-inner mx-5 overflow-hidden">
-          <button className={row}>
-            <span className="text-label font-medium text-text">Units</span>
-            <div className="flex items-center gap-1.5">
-              <span className="text-caption font-medium text-text/40">kg</span>
-              <ChevronRight size={16} className="text-text/30" />
+        <div>
+          <button>
+            <span>Units</span>
+            <div>
+              <span>kg</span>
+              <ChevronRight size={16} />
             </div>
           </button>
-          <button className={row}>
-            <span className="text-label font-medium text-text">Privacy Policy</span>
-            <ChevronRight size={16} className="text-text/30" />
+          <button>
+            <span>Privacy Policy</span>
+            <ChevronRight size={16} />
           </button>
         </div>
       </div>
