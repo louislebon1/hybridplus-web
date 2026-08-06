@@ -3,6 +3,7 @@
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowDown, ArrowLeft, ArrowUp, Calendar, Check, ChevronDown, ChevronRight, Link2, RefreshCw, Trash2, Unlink, X } from 'lucide-react'
+import { Page } from '@/components/feed'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useTemplateStore } from '@/stores/template-store'
@@ -49,9 +50,14 @@ function formatDate(dateStr: string): string {
 
 function DayToggle({ days, onToggle }: { days: number[]; onToggle: (next: number[]) => void }) {
   return (
-    <div>
+    <div className="flex gap-1.5">
       {DAY_LETTERS.map((d, i) => (
         <button key={i}
+          aria-pressed={days.includes(i)}
+          className={[
+            'w-9 h-9 rounded-pill border cursor-pointer meta transition-colors duration-150',
+            days.includes(i) ? 'bg-scrim text-void border-transparent' : 'matt',
+          ].join(' ')}
           onClick={() => onToggle(days.includes(i) ? days.filter(x => x !== i) : [...days, i])}>
           {d}
         </button>
@@ -359,57 +365,60 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     : []
 
   return (
-    <div>
+    <Page>
 
       {/* Header */}
-      <div>
-        <div>
-          <button onClick={() => router.back()}>
+      <div className="flex items-center justify-between gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)] pb-4 flex-shrink-0">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <button onClick={() => router.back()} aria-label="Back" className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer">
             <ArrowLeft size={16} />
           </button>
-          <h1>
+          <h1 className="display text-title m-0 truncate">
             {programme.name}
           </h1>
         </div>
-        <button onClick={handleDeleteProgramme}>
+        <button onClick={handleDeleteProgramme} aria-label="Delete programme" className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer">
           <Trash2 size={18} />
         </button>
       </div>
 
       {/* Start date row */}
-      <div>
-        <div>
-          <div>
-            <Calendar size={20} />
-            <span>
+      <div className="px-5 flex items-center gap-2.5 flex-shrink-0">
+        <div className="flex-1 min-w-0 relative h-12 rounded-card matt flex items-center gap-2.5 px-3.5">
+          <div className="flex items-center gap-2.5 min-w-0 pointer-events-none">
+            <Calendar size={17} className="text-fog flex-shrink-0" />
+            <span className="text-label text-scrim truncate">
               {programme.startDate ? formatDate(programme.startDate) : 'Select start date'}
             </span>
           </div>
           <input type="date"
+            aria-label="Programme start date"
+            className="absolute inset-0 opacity-0 cursor-pointer"
             value={programme.startDate ?? ''}
             onChange={e => handleSetStartDate(e.target.value || null)} />
         </div>
-        <button onClick={syncToCalendar}>
+        <button onClick={syncToCalendar} aria-label="Sync to calendar" className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer w-12 h-12">
           <RefreshCw size={18} />
         </button>
       </div>
 
       {/* Tabs */}
-      <div>
+      <div className="px-5 pt-4 flex gap-2 flex-shrink-0">
         {(['phases', 'sessions'] as const).map(tab => (
           <button key={tab}
-            onClick={() => setDetailTab(tab)}>
+            onClick={() => setDetailTab(tab)}
+            className={['px-4 py-2 rounded-pill border cursor-pointer meta transition-colors duration-150', detailTab === tab ? 'bg-scrim text-void border-transparent' : 'matt'].join(' ')}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      <div>
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 pt-4 pb-32">
 
         {/* ── PHASES TAB ──────────────────────────────────────────────────── */}
         {detailTab === 'phases' && (
-          <div>
+          <div className="flex flex-col gap-2.5">
 
             {sortedPhases.map((phase, idx) => {
               const expanded = expandedPhases.has(phase.id)
@@ -427,50 +436,50 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
               }
 
               return (
-                <div key={phase.id}>
+                <div key={phase.id} className="matt rounded-card overflow-hidden">
                   {/* Card row */}
-                  <button onClick={() => togglePhase(phase.id)}>
-                    <div>
-                      <span>{phase.name}</span>
-                      <div>
+                  <button onClick={() => togglePhase(phase.id)} className="w-full flex items-center justify-between gap-3 px-4 py-4 text-left bg-transparent border-0 cursor-pointer">
+                    <div className="min-w-0 flex flex-col gap-1.5">
+                      <span className="display text-figure truncate">{phase.name}</span>
+                      <div className="flex flex-wrap gap-1.5">
                         {(phase.phaseType || phase.isDeload) && (
-                          <span>
+                          <span className="meta px-2.5 py-1 rounded-pill matt">
                             {phase.phaseType ? PHASE_TYPE_LABELS[phase.phaseType] : 'Deload'}
                           </span>
                         )}
-                        <span>
+                        <span className="meta px-2.5 py-1 rounded-pill matt">
                           {phase.durationWeeks} {phase.durationWeeks === 1 ? 'week' : 'weeks'}
                         </span>
                         {phase.isActive && (
-                          <span>Active</span>
+                          <span className="meta px-2.5 py-1 rounded-pill bg-scrim text-void">Active</span>
                         )}
                       </div>
                     </div>
-                    <ChevronRight size={16} />
+                    <ChevronRight size={16} className="text-fog flex-shrink-0" />
                   </button>
 
                   {/* Expanded management section */}
                   {expanded && (
-                    <div>
+                    <div className="px-4 pb-4 flex flex-col gap-3 border-t border-scrim/8 pt-3">
 
                       {/* Phase actions */}
-                      <div>
+                      <div className="flex flex-wrap items-center gap-2">
                         {!phase.isActive && (
-                          <button onClick={() => setActivePhase(programme.id, phase.id)}>
+                          <button onClick={() => setActivePhase(programme.id, phase.id)} className="meta px-3 py-2 rounded-pill matt text-scrim cursor-pointer disabled:opacity-30">
                             Set active
                           </button>
                         )}
-                        <button onClick={() => openAddSession(phase.id)}>
+                        <button onClick={() => openAddSession(phase.id)} className="meta px-3 py-2 rounded-pill matt text-scrim cursor-pointer disabled:opacity-30">
                           + Session
                         </button>
-                        <div>
-                          <button onClick={() => movePhase(-1)} disabled={idx === 0}>
+                        <div className="flex items-center gap-2 ml-auto">
+                          <button aria-label="Move phase up" className="meta px-3 py-2 rounded-pill matt text-scrim cursor-pointer disabled:opacity-30" onClick={() => movePhase(-1)} disabled={idx === 0}>
                             <ArrowUp size={12} />
                           </button>
-                          <button onClick={() => movePhase(1)} disabled={idx === sortedPhases.length - 1}>
+                          <button aria-label="Move phase down" className="meta px-3 py-2 rounded-pill matt text-scrim cursor-pointer disabled:opacity-30" onClick={() => movePhase(1)} disabled={idx === sortedPhases.length - 1}>
                             <ArrowDown size={12} />
                           </button>
-                          <button onClick={() => { if (window.confirm('Delete this phase?')) deletePhase(programme.id, phase.id) }}>
+                          <button className="meta px-3 py-2 rounded-pill border border-[#F0453A]/40 text-[#F0453A] cursor-pointer" onClick={() => { if (window.confirm('Delete this phase?')) deletePhase(programme.id, phase.id) }}>
                             Delete
                           </button>
                         </div>
@@ -581,13 +590,13 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
 
         {/* ── SESSIONS TAB ───────────────────────────────────────────────── */}
         {detailTab === 'sessions' && (
-          <div>
+          <div className="flex flex-col gap-2.5">
 
             {/* Template list */}
             {programme.templates.length === 0 ? (
-              <div>
-                <p>No workouts yet</p>
-                <button onClick={() => setShowAddTemplate(true)}>
+              <div className="matt rounded-card p-5 flex flex-col items-start gap-3">
+                <p className="text-label text-stone m-0">No workouts in this programme yet.</p>
+                <button onClick={() => setShowAddTemplate(true)} className="meta px-3 py-2 rounded-pill bg-scrim text-void cursor-pointer">
                   + Add workout
                 </button>
               </div>
@@ -598,23 +607,23 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   const ssLabels = getSupersetLabels(t.exerciseBlocks)
                   const sortedBlocks = [...t.exerciseBlocks].sort((a, b) => a.orderIndex - b.orderIndex)
                   return (
-                    <div key={t.id}>
-                      <button onClick={() => toggleTemplate(t.id)}>
-                        <div>
-                          <p>{t.name}</p>
-                          <p>
+                    <div key={t.id} className="matt rounded-card overflow-hidden">
+                      <button onClick={() => toggleTemplate(t.id)} className="w-full flex items-center justify-between gap-3 px-4 py-4 text-left bg-transparent border-0 cursor-pointer">
+                        <div className="min-w-0">
+                          <p className="display text-figure m-0 truncate">{t.name}</p>
+                          <p className="meta">
                             {t.exerciseBlocks.length} exercise{t.exerciseBlocks.length !== 1 ? 's' : ''}
                           </p>
                         </div>
-                        <ChevronDown size={16} />
+                        <ChevronDown size={16} className="text-fog flex-shrink-0" />
                       </button>
 
                       {expanded && (
-                        <div>
+                        <div className="px-4 pb-4 pt-3 border-t border-scrim/8 flex flex-col gap-2">
                           {sortedBlocks.length> 0 && (
-                            <div>
+                            <div className="grid grid-cols-[1fr_46px_46px_56px_28px_28px] gap-1.5 items-center">
                               {['Exercise', 'Sets', 'Reps', 'kg', '', ''].map((h, i) => (
-                                <span key={i}>{h}</span>
+                                <span key={i} className="meta">{h}</span>
                               ))}
                             </div>
                           )}
@@ -622,21 +631,21 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             const label = block.supersetGroupId ? ssLabels[block.supersetGroupId] : null
                             const inSS = !!block.supersetGroupId
                             return (
-                              <div key={block.id}>
-                                <div>
-                                  {label && <span>{label}</span>}
-                                  <p>{block.exerciseName}</p>
+                              <div key={block.id} className="grid grid-cols-[1fr_46px_46px_56px_28px_28px] gap-1.5 items-center">
+                                <div className="min-w-0 flex items-center gap-1.5">
+                                  {label && <span className="meta px-1.5 py-0.5 rounded-[6px] bg-scrim text-void">{label}</span>}
+                                  <p className="text-label text-scrim m-0 truncate">{block.exerciseName}</p>
                                 </div>
-                                <input type="number" min="1" max="20"
+                                <input className="h-9 w-full rounded-[8px] matt text-center text-label text-scrim tabular outline-none focus:border-scrim/45" type="number" min="1" max="20"
                                   value={block.targetSets || ''}
                                   onChange={e => updateBlock(block.id, { targetSets: e.target.value === '' ? 0 : parseInt(e.target.value) })} />
-                                <input type="number" min="1" max="100"
+                                <input className="h-9 w-full rounded-[8px] matt text-center text-label text-scrim tabular outline-none focus:border-scrim/45" type="number" min="1" max="100"
                                   value={block.targetRepsMin || ''}
                                   onChange={e => {
                                     const v = e.target.value === '' ? 0 : parseInt(e.target.value)
                                     updateBlock(block.id, { targetRepsMin: v, targetRepsMax: v })
                                   }} />
-                                <input type="number" min="0" step="0.5"
+                                <input className="h-9 w-full rounded-[8px] matt text-center text-label text-scrim tabular outline-none focus:border-scrim/45" type="number" min="0" step="0.5"
                                   value={block.targetWeightKg ?? ''}
                                   placeholder="—"
                                   onChange={e => updateBlock(block.id, { targetWeightKg: e.target.value ? parseFloat(e.target.value) : null })} />
@@ -850,6 +859,6 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
         })()}
       </Sheet>
 
-    </div>
+    </Page>
   )
 }
