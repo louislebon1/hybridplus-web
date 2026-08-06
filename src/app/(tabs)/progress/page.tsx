@@ -10,11 +10,12 @@ import { EmptyState } from '@/components/ui'
 import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import {
   SectionLabel, StatCard, WeekGrid, SegmentedChips,
-  DistributionSummary, Sparkline, StatusPill, ZoneRow,
+  DistributionSummary, Sparkline, StatusPill, ZoneRow, DATA_TONES,
   type WeekRow, type ZoneDatum,
 } from '@/components/dash'
+import { Pager, Page, Caption, SnapHint, LoadField } from '@/components/feed'
 
-const ZONE_COLORS = ['var(--zone-1)', 'var(--zone-2)', 'var(--zone-3)', 'var(--zone-4)', 'var(--zone-5)']
+
 
 function fmtPace(paceSecs: number) {
   const m = Math.floor(paceSecs / 60)
@@ -151,7 +152,7 @@ export default function ProgressPage() {
     .slice(0, 3)
     .map(([group, vol], i) => ({
       label: MUSCLE_GROUP_LABELS[group] ?? group,
-      color: ZONE_COLORS[i % ZONE_COLORS.length],
+      color: DATA_TONES[i % DATA_TONES.length],
       pct: groupTotal> 0 ? (vol / groupTotal) * 100 : 0,
     }))
 
@@ -159,7 +160,7 @@ export default function ProgressPage() {
     .sort((a, b) => b[1] - a[1])
     .map(([group, vol], i) => ({
       label: MUSCLE_GROUP_LABELS[group] ?? group,
-      color: ZONE_COLORS[i % ZONE_COLORS.length],
+      color: DATA_TONES[i % DATA_TONES.length],
       pct: groupTotal> 0 ? (vol / groupTotal) * 100 : 0,
       count: `${Math.round(vol / 1000 * 10) / 10}t`,
     }))
@@ -195,217 +196,305 @@ export default function ProgressPage() {
 
   const volumeTrend = weekKeys.map(k => weeklyVolumes[k])
   const consistencyLabel = consecutiveWeeks>= 4 ? 'HIGH' : consecutiveWeeks>= 2 ? 'BUILDING' : 'LOW'
-  const consistencyColor = consecutiveWeeks>= 4 ? 'var(--text)' : consecutiveWeeks>= 2 ? 'var(--text-secondary)' : 'var(--text-tertiary)'
+  const consistencyColor = consecutiveWeeks >= 4 ? '#E6E8EC' : consecutiveWeeks >= 2 ? '#8A9099' : '#5C6572'
 
   return (
-    <div>
+    <Pager>
 
-      <div>
-
-        {/* ── Header ── */}
-        <div>
-          <h1>Progress</h1>
-          <Link href="/profile"
-            aria-label="Profile">
+      {/* ── Headline: the tab's own figure owns the frame ─────────────────── */}
+      <Page field={<LoadField values={volumeTrend} />}>
+        <header className="flex items-start justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+          <span className="display text-title">Progress</span>
+          <Link
+            href="/profile"
+            aria-label="Profile"
+            className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim"
+          >
             <User size={18} />
           </Link>
-        </div>
+        </header>
 
-        {/* ── Training summary grid ── */}
-        <div>
-          <SectionLabel action={<span>{totalSessions} session{totalSessions !== 1 ? 's' : ''}</span>}>
-            Training summary
-          </SectionLabel>
-          <div>
-            {hasGridData ? (
-              <WeekGrid rows={weekRows} />
-            ) : (
-              <p>
-                No training logged in the last 6 weeks
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* ── Segmented control ── */}
-        <div>
-          <SegmentedChips options={['overview', 'strength', 'cardio'] as const} value={tab} onChange={setTab} />
-        </div>
-
-        <div>
-
+        <Caption>
           {tab === 'overview' && (
             <>
-              {/* Compact stat row */}
-              <div>
-                <StatCard label="Sessions" value={String(totalSessions)} caption="all time" />
-                <StatCard label="Volume" value={fmtVolume(totalVolume)} caption="lifted" />
-                <StatCard label="Streak" value={`${streak}d`} caption="current" />
-              </div>
-
-              {/* Training focus distribution */}
-              <div>
-                <SectionLabel>Training focus</SectionLabel>
-                <div>
-                  {focusZones.length> 0 ? (
-                    <DistributionSummary zones={focusZones} />
-                  ) : (
-                    <p>
-                      Log a strength session to see your split
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Fitness cards */}
-              <div>
-                <SectionLabel>Fitness</SectionLabel>
-                <div>
-                  <div>
-                    <div>
-                      <p>Weekly volume</p>
-                      <p>
-                        {fmtVolume(weekKeys.length ? weeklyVolumes[weekKeys[weekKeys.length - 1]] : 0)}
-                      </p>
-                      <div>
-                        <StatusPill label={consistencyLabel} color={consistencyColor} />
-                      </div>
-                    </div>
-                    <div>
-                      {volumeTrend.length> 0
-                        ? <Sparkline values={volumeTrend} />
-                        : <p>No data</p>}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div>
-                      <p>Consistency</p>
-                      <p>
-                        {consecutiveWeeks}<span>wk</span>
-                      </p>
-                      <p>consecutive training weeks</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {consecutiveWeeks>= 4 && (
-                <div>
-                  <p>Recovery recommended</p>
-                  <p>
-                    You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
-                  </p>
-                </div>
-              )}
+              <p className="meta">Volume lifted · all time</p>
+              <p className="display text-hero tabular m-0 mt-3">{fmtVolume(totalVolume)}</p>
+              <p className="meta mt-3">
+                {totalSessions} session{totalSessions !== 1 ? 's' : ''} · {streak}d streak
+              </p>
             </>
           )}
-
           {tab === 'strength' && (
             <>
-              <div>
-                <SectionLabel>Volume by muscle group</SectionLabel>
-                <div>
-                  {allGroupZones.length> 0 ? (
-                    <div>
-                      {allGroupZones.map(z => <ZoneRow key={z.label} zone={z} />)}
-                    </div>
-                  ) : (
-                    <p>No strength volume logged yet</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <SectionLabel>Personal records</SectionLabel>
-                {prs.length === 0 ? (
-                  <EmptyState icon={Trophy}
-                    title="No records yet"
-                    description="Complete some workouts to start tracking your PRs." />
-                ) : (
-                  <div>
-                    <div>
-                      <span>Exercise</span>
-                      <span>Max kg</span>
-                      <span>e1RM</span>
-                    </div>
-                    {prs.map((pr, i) => (
-                      <div key={i}>
-                        <div>
-                          <p>{pr.name}</p>
-                          <p>{fmtDate(pr.lastDate)}</p>
-                        </div>
-                        <p>{pr.maxWeight> 0 ? `${pr.maxWeight}` : '—'}</p>
-                        <p>{pr.maxE1rm> 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <p className="meta">Personal records</p>
+              <p className="display text-hero tabular m-0 mt-3">{prs.length}</p>
+              <p className="meta mt-3">tracked lifts</p>
             </>
           )}
-
           {tab === 'cardio' && (
             <>
-              <div>
-                <StatCard label="Distance" value={`${totalDistKm.toFixed(1)}`} caption="km total" />
-                <StatCard label="Time"
-                  value={totalCardioSecs>= 3600 ? `${Math.floor(totalCardioSecs / 3600)}h` : `${Math.floor(totalCardioSecs / 60)}m`}
-                  caption="moving" />
-                <StatCard label="Best pace" value={bestPace ? fmtPace(bestPace).replace(' /km', '') : '—'} caption="per km" />
+              <p className="meta">Distance covered</p>
+              <p className="display text-hero tabular m-0 mt-3 flex items-start">
+                {totalDistKm.toFixed(1)}
+                <span className="text-title mt-3 ml-1 text-fog">km</span>
+              </p>
+              <p className="meta mt-3">
+                {totalCardioSecs >= 3600
+                  ? Math.floor(totalCardioSecs / 3600) + 'h moving'
+                  : Math.floor(totalCardioSecs / 60) + 'm moving'}
+              </p>
+            </>
+          )}
+
+          <div className="mt-5">
+            <SegmentedChips options={['overview', 'strength', 'cardio'] as const} value={tab} onChange={setTab} />
+          </div>
+        </Caption>
+
+        <SnapHint />
+      </Page>
+
+      {/* ── Overview ──────────────────────────────────────────────────────── */}
+      {tab === 'overview' && (
+        <>
+          <Page>
+            <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">Last 6 weeks</span>
+            </header>
+            <Caption>
+              <h2 className="display text-display m-0">Training summary</h2>
+              <div className="mt-5">
+                {hasGridData ? (
+                  <WeekGrid rows={weekRows} />
+                ) : (
+                  <p className="text-label text-stone m-0">No training logged in the last 6 weeks.</p>
+                )}
+              </div>
+            </Caption>
+            <SnapHint />
+          </Page>
+
+          <Page>
+            <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">Where the work went</span>
+            </header>
+            <Caption>
+              <h2 className="display text-display m-0">Training focus</h2>
+              <div className="mt-5">
+                {focusZones.length > 0 ? (
+                  <DistributionSummary zones={focusZones} />
+                ) : (
+                  <p className="text-label text-stone m-0">Log a strength session to see your split.</p>
+                )}
+              </div>
+            </Caption>
+            <SnapHint />
+          </Page>
+
+          <Page>
+            <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">This week</span>
+            </header>
+            <Caption>
+              <h2 className="display text-display m-0">Fitness</h2>
+
+              <div className="mt-5 matt rounded-card p-4">
+                <p className="meta m-0">Weekly volume</p>
+                <p className="display text-display tabular m-0 mt-1">
+                  {fmtVolume(weekKeys.length ? weeklyVolumes[weekKeys[weekKeys.length - 1]] : 0)}
+                </p>
+                <div className="mt-3">
+                  <StatusPill label={consistencyLabel} color={consistencyColor} />
+                </div>
+                <div className="mt-3">
+                  {volumeTrend.length > 0
+                    ? <Sparkline values={volumeTrend} />
+                    : <p className="meta m-0">No data</p>}
+                </div>
               </div>
 
-              {Object.keys(activityCounts).length> 0 && (
-                <div>
-                  <SectionLabel>Activity split</SectionLabel>
-                  <div>
-                    {Object.entries(activityCounts)
-                      .sort((a, b) => b[1] - a[1])
-                      .map(([type, count], i) => {
-                        const total = Object.values(activityCounts).reduce((a, b) => a + b, 0)
-                        return (
-                          <ZoneRow key={type}
-                            zone={{
-                              label: type.charAt(0).toUpperCase() + type.slice(1),
-                              color: ZONE_COLORS[i % ZONE_COLORS.length],
-                              pct: (count / total) * 100,
-                              count: `${count}×`,
-                            }} />
-                        )
-                      })}
-                  </div>
-                </div>
-              )}
+              <div className="mt-2.5 matt rounded-card p-4">
+                <p className="meta m-0">Consistency</p>
+                <p className="display text-display tabular m-0 mt-1">
+                  {consecutiveWeeks}<span className="text-figure text-fog ml-1">wk</span>
+                </p>
+                <p className="meta mt-1">consecutive training weeks</p>
+              </div>
+            </Caption>
+            {consecutiveWeeks >= 4 && <SnapHint label="Advice" />}
+          </Page>
 
-              {recentRuns.length> 0 && (
-                <div>
-                  <SectionLabel>Recent runs</SectionLabel>
-                  <div>
-                    {recentRuns.map((s) => (
-                      <div key={s.id}>
-                        <div>
-                          <p>{s.runType?.replace('_', ' ') ?? 'Run'}</p>
-                          <p>{fmtDate(s.sessionDate)}</p>
-                        </div>
-                        <div>
-                          {s.distanceKm && <p>{s.distanceKm.toFixed(2)} km</p>}
-                          {s.avgPaceSecs && <p>{fmtPace(s.avgPaceSecs)}</p>}
-                        </div>
+          {consecutiveWeeks >= 4 && (
+            <Page>
+              <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+                <span className="meta">Load management</span>
+              </header>
+              <Caption>
+                <h2 className="display text-display m-0">Recovery recommended</h2>
+                <p className="text-label text-stone m-0 mt-3 max-w-[44ch]">
+                  You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
+                </p>
+              </Caption>
+            </Page>
+          )}
+        </>
+      )}
+
+      {/* ── Strength ──────────────────────────────────────────────────────── */}
+      {tab === 'strength' && (
+        <>
+          <Page>
+            <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">Split</span>
+            </header>
+            <Caption>
+              <h2 className="display text-display m-0">Volume by muscle group</h2>
+              <div className="mt-5 flex flex-col gap-3 max-h-[44vh] overflow-y-auto">
+                {allGroupZones.length > 0 ? (
+                  allGroupZones.map(z => <ZoneRow key={z.label} zone={z} />)
+                ) : (
+                  <p className="text-label text-stone m-0">No strength volume logged yet.</p>
+                )}
+              </div>
+            </Caption>
+            <SnapHint />
+          </Page>
+
+          <Page>
+            <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">Bests</span>
+            </header>
+            <Caption>
+              <h2 className="display text-display m-0">Personal records</h2>
+              {prs.length === 0 ? (
+                <EmptyState
+                  icon={Trophy}
+                  title="No records yet"
+                  description="Complete some workouts to start tracking your PRs."
+                />
+              ) : (
+                <div className="mt-5 max-h-[44vh] overflow-y-auto">
+                  <div className="flex items-center gap-3 pb-2">
+                    <span className="flex-1 meta">Exercise</span>
+                    <span className="w-16 text-right meta">Max kg</span>
+                    <span className="w-16 text-right meta">e1RM</span>
+                  </div>
+                  {prs.map((pr, i) => (
+                    <div key={i} className="flex items-center gap-3 py-3 border-t border-scrim/8">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-label text-scrim m-0 truncate">{pr.name}</p>
+                        <p className="meta">{fmtDate(pr.lastDate)}</p>
                       </div>
-                    ))}
-                  </div>
+                      <p className="w-16 text-right display text-figure tabular m-0">
+                        {pr.maxWeight > 0 ? pr.maxWeight : '—'}
+                      </p>
+                      <p className="w-16 text-right display text-figure tabular m-0 text-stone">
+                        {pr.maxE1rm > 0 ? pr.maxE1rm.toFixed(1) : '—'}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               )}
+            </Caption>
+          </Page>
+        </>
+      )}
 
-              {cardioSessions.length === 0 && (
-                <EmptyState icon={Footprints}
+      {/* ── Cardio ────────────────────────────────────────────────────────── */}
+      {tab === 'cardio' && (
+        <>
+          {cardioSessions.length === 0 ? (
+            <Page>
+              <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+                <span className="meta">Conditioning</span>
+              </header>
+              <Caption>
+                <EmptyState
+                  icon={Footprints}
                   title="No cardio sessions yet"
-                  description="Log a cardio session to see your stats here." />
+                  description="Log a cardio session to see your stats here."
+                />
+              </Caption>
+            </Page>
+          ) : (
+            <>
+              <Page>
+                <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+                  <span className="meta">Conditioning</span>
+                </header>
+                <Caption>
+                  <h2 className="display text-display m-0">Totals</h2>
+                  <div className="flex gap-2 mt-5">
+                    <StatCard label="Distance" value={totalDistKm.toFixed(1)} caption="km total" />
+                    <StatCard
+                      label="Time"
+                      value={totalCardioSecs >= 3600 ? Math.floor(totalCardioSecs / 3600) + 'h' : Math.floor(totalCardioSecs / 60) + 'm'}
+                      caption="moving"
+                    />
+                    <StatCard
+                      label="Best pace"
+                      value={bestPace ? fmtPace(bestPace).replace(' /km', '') : '—'}
+                      caption="per km"
+                    />
+                  </div>
+
+                  {Object.keys(activityCounts).length > 0 && (
+                    <div className="mt-6 flex flex-col gap-3">
+                      <p className="meta m-0">Activity split</p>
+                      {Object.entries(activityCounts)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([type, count], i) => {
+                          const total = Object.values(activityCounts).reduce((a, b) => a + b, 0)
+                          return (
+                            <ZoneRow
+                              key={type}
+                              zone={{
+                                label: type.charAt(0).toUpperCase() + type.slice(1),
+                                color: DATA_TONES[i % DATA_TONES.length],
+                                pct: (count / total) * 100,
+                                count: count + '×',
+                              }}
+                            />
+                          )
+                        })}
+                    </div>
+                  )}
+                </Caption>
+                {recentRuns.length > 0 && <SnapHint />}
+              </Page>
+
+              {recentRuns.length > 0 && (
+                <Page>
+                  <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+                    <span className="meta">Latest</span>
+                  </header>
+                  <Caption>
+                    <h2 className="display text-display m-0">Recent runs</h2>
+                    <div className="mt-5 max-h-[44vh] overflow-y-auto">
+                      {recentRuns.map((s) => (
+                        <div key={s.id} className="flex items-center justify-between gap-3 py-3 border-t border-scrim/8">
+                          <div className="min-w-0">
+                            <p className="text-label text-scrim m-0 truncate capitalize">
+                              {s.runType?.replace('_', ' ') ?? 'Run'}
+                            </p>
+                            <p className="meta">{fmtDate(s.sessionDate)}</p>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            {s.distanceKm && (
+                              <p className="display text-figure tabular m-0">{s.distanceKm.toFixed(2)} km</p>
+                            )}
+                            {s.avgPaceSecs && <p className="meta">{fmtPace(s.avgPaceSecs)}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Caption>
+                </Page>
               )}
             </>
           )}
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    </Pager>
   )
 }

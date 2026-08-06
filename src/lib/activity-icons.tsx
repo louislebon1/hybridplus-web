@@ -33,10 +33,12 @@ export const CARDIO_ICONS: Record<ActivityType, LucideIcon> = {
 export function ActivityIcon({
   type,
   size = 20,
+  className = '',
 }: {
   type: CalendarEventType | ActivityType
   size?: number
+  className?: string
 }) {
   const Icon = ACTIVITY_ICONS[type as CalendarEventType] ?? Calendar
-  return <Icon size={size} strokeWidth={1.75}  aria-hidden />
+  return <Icon size={size} strokeWidth={1.75} className={className} aria-hidden />
 }

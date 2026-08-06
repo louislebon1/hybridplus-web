@@ -5,6 +5,7 @@ import { Check, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { Button, Input, Sheet } from '@/components/ui'
+import { Page } from '@/components/feed'
 import type { CalendarEventType } from '@/types'
 import { localDateStr } from '@/lib/date'
 import { ActivityIcon } from '@/lib/activity-icons'
@@ -113,40 +114,44 @@ export default function CalendarPage() {
   const selectedEvents = events[selectedDate] ?? []
 
   return (
-    <div>
+    <Page>
       {/* Month nav */}
-      <div>
-        <button onClick={prevMonth}>
+      <div className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)] pb-4 flex-shrink-0">
+        <button onClick={prevMonth} aria-label="Previous month" className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim cursor-pointer">
           <ChevronLeft size={20} />
         </button>
-        <h2>{MONTHS[month]} {year}</h2>
-        <button onClick={nextMonth}>
+        <h2 className="display text-title m-0">{MONTHS[month]} {year}</h2>
+        <button onClick={nextMonth} aria-label="Next month" className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim cursor-pointer">
           <ChevronRight size={20} />
         </button>
       </div>
 
       {/* Day labels */}
-      <div>
+      <div className="grid grid-cols-7 px-4 flex-shrink-0">
         {DAYS.map((d, i) => (
-          <div key={i}>{d}</div>
+          <div key={i} className="meta text-center py-1">{d}</div>
         ))}
       </div>
 
       {/* Calendar grid */}
-      <div>
+      <div className="grid grid-cols-7 px-4 flex-shrink-0">
         {cells.map(({ dateStr, currentMonth }) => {
           const dayEvents = events[dateStr] ?? []
           const isToday = dateStr === today
           const isSelected = dateStr === selectedDate
           return (
             <button key={dateStr}
-              onClick={() => setSelectedDate(dateStr)}>
-              <span>
+              onClick={() => setSelectedDate(dateStr)}
+              className="flex flex-col items-center py-1.5 gap-1 cursor-pointer">
+              <span className={[
+                'w-9 h-9 flex items-center justify-center rounded-pill display text-label tabular transition-colors',
+                isSelected ? 'bg-scrim text-void' : isToday ? 'matt text-scrim' : currentMonth ? 'text-scrim' : 'text-fog',
+              ].join(' ')}>
                 {new Date(dateStr + 'T00:00:00').getDate()}
               </span>
-              <div>
+              <div className="flex gap-0.5 h-1 items-center">
                 {dayEvents.slice(0, 3).map((ev) => (
-                  <span key={ev.id} />
+                  <span key={ev.id} className="w-1 h-1 rounded-pill bg-stone block" />
                 ))}
               </div>
             </button>
@@ -155,27 +160,28 @@ export default function CalendarPage() {
       </div>
 
       {/* Selected day */}
-      <div>
-        <div>
-          <p>{formatDayHeading(selectedDate)}</p>
-          <button onClick={() => { setForm(EMPTY_FORM); setShowAddEvent(true) }}>
-            <Plus size={16} />
-            ADD
+      <div className="flex-1 min-h-0 overflow-y-auto border-t border-scrim/10 mt-3">
+        <div className="flex items-center justify-between px-5 py-3.5">
+          <p className="display text-figure m-0">{formatDayHeading(selectedDate)}</p>
+          <button onClick={() => { setForm(EMPTY_FORM); setShowAddEvent(true) }}
+            className="meta inline-flex items-center gap-1.5 px-3 py-2 rounded-pill matt text-scrim cursor-pointer">
+            <Plus size={14} />
+            Add
           </button>
         </div>
 
-        <div>
+        <div className="px-5 pb-32 flex flex-col gap-2">
           {selectedEvents.length === 0 ? (
-            <p>No events — rest or add one above</p>
+            <p className="text-label text-stone py-6 m-0">No events — rest day, or add one above.</p>
           ) : (
             selectedEvents.map((ev) => {
               const linkedWorkout = getTemplateName(ev.workoutTemplateId)
               return (
-                <div key={ev.id}>
-                  <ActivityIcon type={ev.eventType} size={20} />
-                  <div>
-                    <p>{ev.name ?? ev.eventType}</p>
-                    <p>
+                <div key={ev.id} className="matt rounded-card px-4 py-3.5 flex items-center gap-3">
+                  <ActivityIcon type={ev.eventType} size={20} className="text-scrim flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-label text-scrim m-0 truncate capitalize">{ev.name ?? ev.eventType}</p>
+                    <p className="meta">
                       {linkedWorkout && <span>{linkedWorkout}</span>}
                       {linkedWorkout && ev.durationMinutes && ' · '}
                       {ev.durationMinutes && `${ev.durationMinutes} min`}
@@ -260,6 +266,6 @@ export default function CalendarPage() {
           <Button type="submit" size="lg">ADD EVENT</Button>
         </form>
       </Sheet>
-    </div>
+    </Page>
   )
 }

@@ -104,15 +104,17 @@ export function SnapHint({ label = 'Next' }: { label?: string }) {
  * nothing — an empty field is the honest state, not a seeded one.
  */
 export function LoadField({ values }: { values: number[] }) {
-  if (values.length === 0) return null
-  const max = Math.max(...values)
+  // One bar is not a plot, and an all-zero series has nothing to say. Both draw
+  // nothing rather than a decorative slab.
+  const max = Math.max(0, ...values)
+  if (values.length < 2 || max === 0) return null
   return (
-    <div className="absolute inset-0 flex items-end gap-[3px] px-2 pb-0" aria-hidden>
+    <div className="absolute inset-x-0 bottom-0 h-[58%] flex items-end gap-[3px] px-2" aria-hidden>
       {values.map((v, i) => (
         <div
           key={i}
-          className="flex-1 bg-steel"
-          style={{ height: `${max > 0 ? Math.max(4, (v / max) * 62) : 4}%` }}
+          className="flex-1 bg-scrim/[0.07] rounded-t-[3px]"
+          style={{ height: `${Math.max(3, (v / max) * 100)}%` }}
         />
       ))}
     </div>
