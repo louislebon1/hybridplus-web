@@ -59,7 +59,7 @@ export default function NewSessionConfigurePage() {
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
-          <X size={16} className="text-accent" />
+          <X size={16} className="text-text" />
         </button>
       </div>
 
@@ -88,7 +88,7 @@ export default function NewSessionConfigurePage() {
                 <div className="flex gap-1 flex-wrap">
                   {block.muscles.map(m => (
                     <div key={m} className="px-2 py-1 rounded bg-bg-element">
-                      <span className="text-tag uppercase text-accent">{m}</span>
+                      <span className="text-tag uppercase text-text">{m}</span>
                     </div>
                   ))}
                 </div>
@@ -99,7 +99,7 @@ export default function NewSessionConfigurePage() {
             <div className="flex flex-col gap-2">
               {block.sets.map((ws, setIdx) => (
                 <div key={ws.id} className="flex items-center gap-2">
-                  <span className="w-8 text-center flex-shrink-0 text-body font-medium leading-6 text-accent">
+                  <span className="w-8 text-center flex-shrink-0 text-body font-medium leading-6 text-text">
                     {String(setIdx + 1).padStart(2, '0')}
                   </span>
 
@@ -144,11 +144,11 @@ export default function NewSessionConfigurePage() {
 
             {/* Add set + Delete exercise */}
             <div className="flex items-center gap-4">
-              <button onClick={() => addSet(block.id)} className="flex-1 h-10 rounded-full bg-bg-element text-body font-medium text-accent">
+              <button onClick={() => addSet(block.id)} className="flex-1 h-10 rounded-full bg-bg-element text-body font-medium text-text">
                 Add set to exercise
               </button>
               <button onClick={() => removeBlock(block.id)} className="w-10 h-10 rounded-full bg-error flex items-center justify-center flex-shrink-0">
-                <X size={16} className="text-accent-fg" />
+                <X size={16} className="text-fill-strong-fg" />
               </button>
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function NewSessionConfigurePage() {
         <div className="px-4 py-6 border-b border-border">
           <button
             onClick={() => router.push('/sessions/new/exercises')}
-            className="w-full h-12 rounded-full border border-accent bg-accent text-body font-medium text-accent-fg"
+            className="w-full h-12 rounded-full border border-border-strong bg-fill-strong text-body font-medium text-fill-strong-fg"
           >
             Add exercises to workout
           </button>
@@ -171,7 +171,7 @@ export default function NewSessionConfigurePage() {
         <button
           onClick={handleSave}
           disabled={blocks.length === 0}
-          className={`w-full h-12 rounded-full text-body font-medium ${blocks.length > 0 ? 'border border-accent bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
+          className={`w-full h-12 rounded-full text-body font-medium ${blocks.length > 0 ? 'border border-border-strong bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
         >
           Save session
         </button>

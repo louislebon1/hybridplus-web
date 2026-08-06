@@ -91,7 +91,7 @@ export default function EditSessionPage() {
       <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-            <ArrowLeft size={16} className="text-accent" />
+            <ArrowLeft size={16} className="text-text" />
           </button>
           <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Session</h1>
         </div>
@@ -144,7 +144,7 @@ export default function EditSessionPage() {
                       key={a}
                       type="button"
                       onClick={() => setActivityType(a)}
-                      className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text opacity-60'}`}
+                      className={`px-4 py-2 rounded-full text-label font-medium ${isActive ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text opacity-60'}`}
                     >
                       {a.charAt(0).toUpperCase() + a.slice(1)}
                     </button>
@@ -174,7 +174,7 @@ export default function EditSessionPage() {
         <button
           type="submit"
           disabled={!canSave}
-          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSave ? 'bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
+          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSave ? 'bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
         >
           Save Changes
         </button>

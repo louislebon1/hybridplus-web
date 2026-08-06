@@ -9,38 +9,6 @@ import type { ReactNode } from 'react'
 
 // ── Atmospheric gradient hero ───────────────────────────────────────────────
 
-/**
- * Large soft radial wash that emerges from behind a focal metric and fades
- * into black. Purely decorative; sits behind content and ignores pointers.
- */
-export function HeroGlow({ color, className = '' }: { color: string; className?: string }) {
-  // No clipping container and no black scrim: the radials fade to transparent
-  // over the page's own black, which avoids any visible banding edge.
-  return (
-    <div aria-hidden className={`pointer-events-none absolute inset-x-0 top-0 h-[460px] ${className}`}>
-      {/* Vivid core, sitting just behind the focal metric */}
-      <div
-        className="absolute inset-x-0 -top-32 h-[440px]"
-        style={{
-          background: `radial-gradient(46% 44% at 28% 46%, ${color} 0%, ${color} 12%, transparent 70%)`,
-          filter: 'blur(44px)',
-        }}
-      />
-      {/* Wider secondary bloom for atmosphere */}
-      <div
-        className="absolute inset-x-0 -top-24 h-[460px]"
-        style={{
-          background: `radial-gradient(56% 46% at 72% 24%, ${color} 0%, transparent 72%)`,
-          filter: 'blur(80px)',
-          opacity: 0.5,
-        }}
-      />
-    </div>
-  )
-}
-
-// ── Labels ──────────────────────────────────────────────────────────────────
-
 export function SectionLabel({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
@@ -100,7 +68,7 @@ export function StatCard({
     <div className="flex-1 min-w-0 bg-bg-card rounded-card px-3 py-3 flex flex-col gap-1">
       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0 truncate">{label}</p>
       <p
-        className="text-h2 font-bold tabular m-0 truncate"
+        className="text-h1 tabular m-0 truncate"
         style={valueColor ? { color: valueColor } : undefined}
       >
         {value}
@@ -180,7 +148,7 @@ export function DistributionSummary({ zones }: { zones: ZoneDatum[] }) {
 /** Thin accent line over a dark field, with a highlighted final point. */
 export function Sparkline({
   values,
-  color = 'var(--accent)',
+  color = 'var(--text)',
   height = 44,
 }: {
   values: number[]
@@ -249,7 +217,7 @@ const DAY_HEADS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
  * Dot-matrix training grid: a row per week, a dot per day sized by relative
  * load, plus load and change columns — the reference's "Training Summary".
  */
-export function WeekGrid({ rows, accent = 'var(--accent)' }: { rows: WeekRow[]; accent?: string }) {
+export function WeekGrid({ rows, accent = 'var(--text)' }: { rows: WeekRow[]; accent?: string }) {
   return (
     <div className="flex flex-col gap-1">
       {/* Header */}
@@ -289,7 +257,7 @@ export function WeekGrid({ rows, accent = 'var(--accent)' }: { rows: WeekRow[]; 
           <span className="text-caption text-text tabular w-12 text-right flex-shrink-0">{row.load}</span>
           <span
             className="text-caption tabular w-12 text-right flex-shrink-0"
-            style={{ color: row.change ? (row.changePositive ? 'var(--accent)' : 'var(--error)') : 'var(--text-tertiary)' }}
+            style={{ color: row.change ? (row.changePositive ? 'var(--text)' : 'var(--error)') : 'var(--text-tertiary)' }}
           >
             {row.change ?? '—'}
           </span>
@@ -321,9 +289,9 @@ export function SegmentedChips<T extends string>({
             className={[
               'px-4 py-1.5 rounded-full text-caption font-medium capitalize outline-none',
               'transition-[background-color,color] duration-150 ease-out',
-              'focus-visible:ring-2 focus-visible:ring-accent/50',
+              'focus-visible:ring-2 focus-visible:ring-text/60',
               active
-                ? 'bg-accent text-accent-fg'
+                ? 'bg-fill-strong text-fill-strong-fg'
                 : 'bg-bg-card text-text-secondary hover:bg-bg-hover',
             ].join(' ')}
           >

@@ -1,11 +1,12 @@
 'use client'
+import { Footprints } from 'lucide-react'
 
 import { useState } from 'react'
 import { useCardioStore } from '@/stores/cardio-store'
 import { Button, Input, EmptyState } from '@/components/ui'
 import type { ActivityType, RunSessionType } from '@/types'
 import { localDateStr } from '@/lib/date'
-import { CARDIO_ICONS as ACTIVITY_ICONS } from '@/lib/activity-icons'
+import { ActivityIcon } from '@/lib/activity-icons'
 
 function fmtPace(paceSecs: number | null) {
   if (!paceSecs) return '—'
@@ -84,7 +85,7 @@ export default function CardioPage() {
             onClick={() => setTab(t)}
             className={[
               'flex-1 py-2 rounded-inner text-label font-medium transition-colors',
-              tab === t ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text-secondary',
+              tab === t ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text-secondary',
             ].join(' ')}
           >
             {t === 'history' ? 'History' : 'Log Session'}
@@ -96,7 +97,7 @@ export default function CardioPage() {
         <div className="flex-1 overflow-y-auto px-5 pb-6 flex flex-col gap-2">
           {sorted.length === 0 ? (
             <EmptyState
-              icon="🏃"
+              icon={Footprints}
               title="No cardio logged yet"
               description="Log your first session to start tracking"
               action={{ label: 'Log Session', onClick: () => setTab('log') }}
@@ -106,7 +107,7 @@ export default function CardioPage() {
               <div key={s.id} className="bg-bg-card rounded-card p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-h2">{ACTIVITY_ICONS[s.activityType]}</span>
+                    <ActivityIcon type={s.activityType} size={22} className="text-text flex-shrink-0" />
                     <div>
                       <p className="text-label font-medium text-text capitalize">
                         {s.runType ? `${s.runType.replace('_', ' ')} ` : ''}{s.activityType}
@@ -158,11 +159,11 @@ export default function CardioPage() {
                   className={[
                     'flex-shrink-0 px-4 py-2 rounded-full text-label font-medium border transition-colors',
                     form.activityType === type
-                      ? 'bg-accent text-accent-fg border-accent'
+                      ? 'bg-fill-strong text-fill-strong-fg border-border-strong'
                       : 'border-border text-text-secondary hover:bg-bg-element',
                   ].join(' ')}
                 >
-                  {ACTIVITY_ICONS[type]} {type}
+                  <span className="inline-flex items-center gap-1.5"><ActivityIcon type={type} size={14} />{type}</span>
                 </button>
               ))}
             </div>
@@ -195,7 +196,7 @@ export default function CardioPage() {
                     onClick={() => setForm((f) => ({ ...f, runType: type }))}
                     className={[
                       'px-3 py-1.5 rounded-full text-caption font-medium border transition-colors',
-                      form.runType === type ? 'border-accent bg-accent/10 text-accent' : 'border-border text-text-secondary',
+                      form.runType === type ? 'border-border-strong bg-text/10 text-text' : 'border-border text-text-secondary',
                     ].join(' ')}
                   >
                     {type.replace('_', ' ')}

@@ -3,6 +3,7 @@
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { useEffect, useState, type InputHTMLAttributes, type ButtonHTMLAttributes } from 'react'
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -21,7 +22,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const buttonVariantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-accent text-accent-fg hover:opacity-90 active:scale-[0.97] active:opacity-80 disabled:opacity-40 disabled:active:scale-100',
+    'bg-fill-strong text-fill-strong-fg hover:opacity-90 active:scale-[0.97] active:opacity-80 disabled:opacity-40 disabled:active:scale-100',
   secondary:
     'bg-transparent text-text border border-border-strong hover:bg-bg-hover active:bg-bg-selected active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
   ghost:
@@ -29,7 +30,7 @@ const buttonVariantClasses: Record<ButtonVariant, string> = {
   danger:
     'bg-error text-white hover:opacity-90 active:scale-[0.97] active:opacity-80 disabled:opacity-40 disabled:active:scale-100',
   outline:
-    'bg-transparent text-accent border border-accent hover:bg-accent/10 active:bg-accent/20 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
+    'bg-transparent text-text border border-border-strong hover:bg-text/10 active:bg-text/20 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100',
 }
 
 const buttonSizeClasses: Record<ButtonSize, string> = {
@@ -52,7 +53,7 @@ export function Button({
       className={[
         'inline-flex items-center justify-center font-medium cursor-pointer select-none',
         'transition-[background-color,opacity,transform] duration-150 ease-out',
-        'outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+        'outline-none focus-visible:ring-2 focus-visible:ring-text/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
         buttonVariantClasses[variant],
         buttonSizeClasses[size],
         className,
@@ -86,7 +87,7 @@ export function Input({ label, error, className = '', id, ...rest }: InputProps)
         className={[
           'w-full h-12 px-4 rounded-inner bg-bg-element border text-text text-body',
           'placeholder:text-text-tertiary',
-          'focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent',
+          'focus:outline-none focus:ring-2 focus:ring-text/50 focus:border-border-strong',
           'transition-colors',
           error
             ? 'border-error focus:ring-error/40 focus:border-error'
@@ -109,10 +110,10 @@ interface BadgeProps {
 
 const badgeColorClasses: Record<BadgeColor, string> = {
   default: 'bg-bg-element text-text-secondary',
-  accent: 'bg-accent text-accent-fg',
-  success: 'bg-success/15 text-success',
+  accent: 'bg-fill-strong text-fill-strong-fg',
+  success: 'bg-fill-strong text-fill-strong-fg',
   error: 'bg-error/15 text-error',
-  warning: 'bg-warning/15 text-warning',
+  warning: 'bg-bg-card-raised text-text',
 }
 
 export function Badge({ label, color = 'default' }: BadgeProps) {
@@ -266,7 +267,7 @@ export function Spinner({ size = 'md' }: SpinnerProps) {
       role="status"
       aria-label="Loading"
       className={[
-        'rounded-full border-border border-t-accent animate-spin',
+        'rounded-full border-border border-t-text animate-spin',
         spinnerSizeClasses[size],
       ].join(' ')}
     />
@@ -276,7 +277,7 @@ export function Spinner({ size = 'md' }: SpinnerProps) {
 // ── EmptyState ─────────────────────────────────────────────────────────────
 
 interface EmptyStateProps {
-  icon: string
+  icon: LucideIcon
   title: string
   description: string
   action?: {
@@ -285,12 +286,10 @@ interface EmptyStateProps {
   }
 }
 
-export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center text-center px-6 py-12 gap-4">
-      <span className="text-5xl select-none" role="img" aria-hidden="true">
-        {icon}
-      </span>
+      <Icon size={28} strokeWidth={1.5} className="text-text-tertiary" aria-hidden />
       <div className="flex flex-col gap-1.5">
         <h3 className="text-body font-medium text-text">{title}</h3>
         <p className="text-label text-text-secondary max-w-xs">{description}</p>

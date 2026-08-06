@@ -1,6 +1,6 @@
 ---
 name: HybridPlus
-description: A hybrid training tracker rendered as instrumentation — glass panes lit by a single blue signal on OLED black.
+description: A hybrid training tracker rendered as instrumentation — monochrome, flat, and built around one enormous numeral on OLED black.
 colors:
   arc-light: "#00ABFE"
   arc-light-deep: "#0090D8"
@@ -10,29 +10,29 @@ colors:
   ash: "#A1A1A6"
   slate-grey: "#6E6E73"
   dim-grey: "#48484A"
-  glass-fill: "rgba(255, 255, 255, 0.06)"
-  glass-fill-raised: "rgba(255, 255, 255, 0.10)"
-  glass-rim: "rgba(255, 255, 255, 0.11)"
-  complete-green: "#4ADE80"
-  caution-amber: "#FB923C"
+  fill-strong: "#FFFFFF"
+  fill-strong-fg: "#000000"
+  card-fill: "rgba(255, 255, 255, 0.07)"
+  inset-fill: "rgba(255, 255, 255, 0.045)"
+  hairline: "rgba(255, 255, 255, 0.12)"
   alert-red: "#F0453A"
-  zone-citrine: "#FDE047"
-  zone-amber: "#FB923C"
-  zone-red: "#F0453A"
-  zone-violet: "#A855F7"
-  zone-teal: "#2DD4BF"
+  data-1: "rgba(255, 255, 255, 0.92)"
+  data-2: "rgba(255, 255, 255, 0.72)"
+  data-3: "rgba(255, 255, 255, 0.54)"
+  data-4: "rgba(255, 255, 255, 0.38)"
+  data-5: "rgba(255, 255, 255, 0.24)"
 typography:
   metric:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif"
-    fontSize: "4.25rem"
+    fontSize: "6rem"
     fontWeight: 700
-    lineHeight: 1
-    letterSpacing: "-0.03em"
+    lineHeight: "5.5rem"
+    letterSpacing: "-0.04em"
   display:
-    fontSize: "2rem"
+    fontSize: "2.5rem"
     fontWeight: 700
-    lineHeight: "2.375rem"
-    letterSpacing: "-0.025em"
+    lineHeight: "2.75rem"
+    letterSpacing: "-0.035em"
   h1:
     fontSize: "1.75rem"
     fontWeight: 700
@@ -80,8 +80,8 @@ typography:
     letterSpacing: "0.02em"
 rounded:
   pill: "9999px"
-  card: "20px"
-  inner: "16px"
+  card: "24px"
+  inner: "12px"
   field: "12px"
 spacing:
   gutter: "20px"
@@ -91,22 +91,22 @@ spacing:
   section: "28px"
 components:
   button-primary:
-    backgroundColor: "{colors.arc-light}"
-    textColor: "{colors.arc-light-ink}"
+    backgroundColor: "{colors.fill-strong}"
+    textColor: "{colors.fill-strong-fg}"
     rounded: "{rounded.pill}"
     height: "48px"
     padding: "0 24px"
     typography: "{typography.body}"
   button-primary-hover:
-    backgroundColor: "{colors.arc-light-deep}"
+    backgroundColor: "rgba(255, 255, 255, 0.9)"
   button-secondary:
     backgroundColor: "transparent"
     textColor: "{colors.bright-white}"
     rounded: "{rounded.pill}"
     height: "48px"
     padding: "0 24px"
-  card-glass:
-    backgroundColor: "{colors.glass-fill}"
+  card:
+    backgroundColor: "{colors.card-fill}"
     textColor: "{colors.bright-white}"
     rounded: "{rounded.card}"
     padding: "16px"
@@ -117,16 +117,16 @@ components:
     height: "48px"
     padding: "0 16px"
   chip-segmented:
-    backgroundColor: "{colors.glass-fill}"
+    backgroundColor: "{colors.card-fill}"
     textColor: "{colors.ash}"
     rounded: "{rounded.pill}"
     padding: "6px 16px"
     typography: "{typography.caption}"
   chip-segmented-active:
-    backgroundColor: "{colors.arc-light}"
-    textColor: "{colors.arc-light-ink}"
+    backgroundColor: "{colors.fill-strong}"
+    textColor: "{colors.fill-strong-fg}"
   stat-tile:
-    backgroundColor: "{colors.glass-fill}"
+    backgroundColor: "{colors.card-fill}"
     textColor: "{colors.bright-white}"
     rounded: "{rounded.inner}"
     padding: "12px"
@@ -138,50 +138,54 @@ components:
 
 **Creative North Star: "Night Training"**
 
-The canvas is a 5am gym before the lights come up. Everything begins at true black, and the accent is the only light source in the room — glass panes catch it, bend it, and let it fall off into darkness. Depth is never drawn; it is a consequence of material sitting in front of light.
+The canvas is a 5am gym before the lights come up. Everything begins at true black, and what fills it is not light but *number* — the weight, the reps, the percentage of the week done, set at a scale that leaves no doubt what the screen is for. Training is counting, so the count is the interface.
 
-The register is premium, optical and calm. Nothing shouts. Hierarchy is carried by one enormous number, a great deal of black, and the restraint to leave everything else quiet. The system may push its material further than a utility app normally would — the glass and the atmospheric wash are deliberately expressive — but expression stops at the point it costs everyday legibility. This is used mid-set, one-handed, under fatigue, several times a week. It has to survive being boring to use.
+The register is premium, optical and calm. Nothing shouts except the figure, and it shouts by being large rather than by being coloured. Hierarchy comes from scale, tonal value and inversion — a white plane against black — and from nothing else. This is used mid-set, one-handed, under fatigue, several times a week; it has to survive being boring to use, which is why the expressive load sits on typography rather than on material.
 
-The design is emphatically digital and emphatically refined. It borrows the physics of glass, not the appearance of gym equipment.
+The design is emphatically digital and emphatically refined. It borrows the discipline of Swiss editorial typography and the flatness of a well-set timetable — not the appearance of gym equipment, and no longer the physics of glass.
 
 **Key Characteristics:**
-- True black canvas with translucent glass surfaces that lens the light behind them
-- One accent colour, used as illumination rather than decoration
-- A single dominant metric per screen, at 68px, with everything else deferring to it
+- True black canvas with flat tinted surfaces — no blur, no gradient, no glow anywhere
+- Essentially monochrome; emphasis is a white plane with black type, never a colour
+- One signal colour, spent only on live training and personal records
+- A single dominant metric per screen at 96px, set solid, with everything else deferring to it
 - Two type weights only — no intermediate hierarchy
-- Colour in data visualisation is categorical and deliberately excludes blue
-- Depth from material and blur; shadows only where something genuinely floats
+- Data separates by tonal value, never by hue
+- Icons are drawn at one stroke weight; no emoji anywhere in the interface
 
 ## Colors
 
-A monochrome field of true black and cool greys, interrupted by exactly one blue and a categorical ramp reserved for data.
+Black, white, and the greys between them. The product is essentially monochrome: emphasis is carried by **inversion** and by **scale**, never by hue. One colour survives, and it is spent on one thing.
 
-### Primary
-- **Arc Light** (`#00ABFE`): The single light source. Primary actions, the active navigation state, today's date, the selected chip, live values in a running session, and the glow behind a hero metric. It marks the one thing that matters on a screen and is worthless if spent anywhere else.
-- **Arc Light Deep** (`#0090D8`): Hover and pressed states for Arc Light surfaces only.
-- **Arc Light Ink** (`#002133`): Near-black navy for text and icons sitting *on* Arc Light. Chosen over white deliberately — white on this blue reaches only 2.5:1 and fails AA, while this clears 6.5:1.
+### Emphasis is inversion
+- **Bright White** (`#FFFFFF`) on **Void** (`#000000`), and the same pair reversed. A primary action, a selected segment, the active tab and the single highlighted card are a white plane carrying black type. This is the move the reference makes with its black pill on a white ground; on a black ground it simply runs the other way.
+- Because emphasis costs no colour, it can be spent freely and still read instantly. A screen may hold several white planes without becoming loud, where several coloured ones would fight.
+
+### The one signal
+- **Arc Light** (`#00ABFE`): reserved for **training that is happening right now**, and for a **personal record**. The rest timer's ring and a PR figure. That is the entire list. It appears nowhere else in the product — not on buttons, not on links, not on the active tab — which is exactly what makes a live session identifiable from across a gym.
+- **Arc Light Ink** (`#002133`): text and icons sitting on Arc Light, where that pairing still occurs. White on this blue reaches only 2.5:1 and fails AA; this clears 6.5:1.
 
 ### Neutral
-- **Void** (`#000000`): The page. True black, not charcoal — it is what makes the glass and the accent glow read as light.
-- **Bright White** (`#FFFFFF`): Primary text and headings.
-- **Ash** (`#A1A1A6`): Secondary text — supporting sentences, sub-labels, inactive chip text.
-- **Slate Grey** (`#6E6E73`): Tertiary text — uppercase section labels, units inside fields, captions, empty-state copy.
-- **Dim Grey** (`#48484A`): Disabled text only.
-- **Glass Fill** (`rgba(255,255,255,0.06)`): Every card and panel. Deliberately weak — the blur and the specular edge do the work; a heavier fill mutes the gradient behind and kills the material.
-- **Glass Rim** (`rgba(255,255,255,0.11)`): Hairline dividers and row separators. Not used as a card border — see Elevation & Depth.
+- **Void** (`#000000`): the page. True black, not charcoal.
+- **Bright White** (`#FFFFFF`): primary text, headings, and every focal numeral.
+- **Ash** (`#A1A1A6`): secondary text — supporting sentences, sub-labels, inactive chip text.
+- **Slate Grey** (`#6E6E73`): tertiary text — uppercase section labels, units inside fields, captions.
+- **Dim Grey** (`#48484A`): disabled text only.
+- **Card Fill** (`rgba(255,255,255,0.07)`) and **Inset Fill** (`rgba(255,255,255,0.045)`): flat tints. They are the whole of a surface's material now, so they carry more weight than the old glass fill did — the blur and specular edge that used to do that work are gone.
+- **Hairline** (`rgba(255,255,255,0.12)`): dividers, row separators, inset borders.
 
-### Tertiary
-The categorical ramp for distribution bars, zone charts and activity splits: **Citrine** (`#FDE047`), **Amber** (`#FB923C`), **Red** (`#F0453A`), **Violet** (`#A855F7`), **Teal** (`#2DD4BF`).
+### Data
+A tonal ramp, not a categorical one: white at **92% / 72% / 54% / 38% / 24%**. Series separate by value, the same way the numerals do. Calendar marks use the same ramp — strength solid, conditioning mid-tone, rest barely there.
 
-Semantic status colours are separate and non-negotiable in meaning: **Complete Green** (`#4ADE80`) for done, **Caution Amber** (`#FB923C`) for recovery warnings, **Alert Red** (`#F0453A`) for destructive actions and errors.
+**Alert Red** (`#F0453A`) is the sole exception to the monochrome rule, kept for destructive actions and errors. A delete confirmation rendered in grey is a defect, not restraint.
 
 ### Named Rules
 
-**The One Light Rule.** Arc Light is illumination, not decoration. One accented element per viewport should be able to justify itself as *the* thing the user came to do. If two elements are both blue, one of them is wrong.
+**The One Signal Rule.** Arc Light means *live* — a session in progress, or a record just broken. Spending it on a button, a link or a selected state destroys the only thing it is for. When something needs emphasis and is not live, invert it.
 
-**The No Blue In Data Rule.** The categorical ramp excludes blue entirely. A chart series must never be mistakable for the brand accent, or "this is your data" and "this is the button" collapse into the same signal.
+**The No Colour In Data Rule.** Charts, distribution bars and calendar marks carry no hue at all. A series is distinguished by tonal value; if two series are hard to tell apart, the answer is more contrast between their values or a direct label, never a colour. Colour in a chart would compete with the one signal and both would lose.
 
-**The Green Means Done Rule.** Green is semantic, never brand. It marks completion and nothing else — it survived the accent's change from green to blue precisely because its meaning is independent of identity.
+**The Emphasis Is Inversion Rule.** The loudest thing available is a white plane with black type. Reach for it before reaching for anything else — it costs no colour, survives greyscale printing, and keeps the signal colour unspent.
 
 ## Typography
 
@@ -191,8 +195,8 @@ Semantic status colours are separate and non-negotiable in meaning: **Complete G
 **Character:** Neutral, native and unmannered. The typeface is not asked to carry personality; size, weight and colour carry the hierarchy, and the restraint to use only two weights is what makes the scale read as instrumentation rather than marketing.
 
 ### Hierarchy
-- **Metric** (700, 68px, 1.0 line-height): The hero figure — week completion, session volume. One per screen, never two.
-- **Display** (700, 32px/38px): Live values during a set — the weight, reps and RPE being logged.
+- **Metric** (700, 96px, 0.92 line-height, -0.04em): The hero figure. Set solid and tracked to the craft floor, because at this size the numeral *is* the composition — this is the single move the whole world is built around.
+- **Display** (700, 40px/44px, -0.035em): Live values during a set, and the headline figure inside a full-width card.
 - **H1** (700, 28px/34px): Large in-card figures, such as a fitness card's headline number.
 - **H2** (700, 24px/30px): Screen titles and hero interpretation headings.
 - **H3** (700, 20px/26px): Sub-screen titles and distribution percentages.
@@ -218,7 +222,7 @@ Mobile-first and mobile-only in practice: a fixed `430px` maximum-width column, 
 Screens follow a consistent vertical score:
 
 1. **Hero** — contextual line, focal metric, interpretation heading, supporting sentence
-2. **Status card** — a single glass panel summarising state
+2. **Status card** — a single flat panel summarising state
 3. **Timeline or summary** — the week strip, or the week × day training grid
 4. **Sectioned content** — an uppercase tag label, then cards or rows
 5. **Primary action** — pinned above the navigation
@@ -236,7 +240,7 @@ Bottom clearance belongs to the tab shell alone (`NAV_CLEARANCE`, 80px on `main`
 
 ### Named Rules
 
-**The One Hero Rule.** Each screen earns exactly one 68px metric, at the top, over the gradient. A second competes with the first and both lose.
+**The One Hero Rule.** Each screen earns exactly one 96px metric, at the top. A second competes with the first and both lose.
 
 **The Same Door Rule.** Top inset, gutter and title role are identical on all eighteen screens. This is Operate mode and the app is opened one-handed between sets — the eye must land in the same place every time, so recognition is the affordance and variety is the defect. A screen whose content genuinely differs (the calendar's month, the home hero) still enters through the same door at the same size. Only the content below the title varies.
 
@@ -246,25 +250,20 @@ Bottom clearance belongs to the tab shell alone (`NAV_CLEARANCE`, 80px on `main`
 
 ## Elevation & Depth
 
-This system does not draw depth — it renders material. Surfaces are **liquid glass**: a weak translucent fill over a heavily blurred, saturated and brightened backdrop, so a pane behaves like a lens over the atmospheric gradient rather than a tinted rectangle. Because the effect samples what is behind it, glass is most alive in the hero region and settles into a plain translucent fill further down the page. That falloff is correct behaviour, not a defect.
+**Nothing on this canvas blurs, glows or gradients.** Surfaces are flat tinted planes. Depth is tonal value and a hairline, and that is the entire vocabulary.
 
-A lens needs something to bend. The app shell therefore carries a permanent **ambient atmosphere** — `.app-atmosphere`, two wide accent blooms at 20% and 11% opacity, pinned top-left and bottom-right of the 430px column and drawn behind every child via a negative z-index inside an isolated stacking context. It is the floor of atmosphere on all nineteen screens; the hero screens layer their own stronger, contextual `HeroGlow` above it. Without it, glass over flat black renders as grey boxes, which is precisely how most of the app read before it existed.
-
-Edges are defined optically, not with a stroke: a bright specular highlight along the lit top edge, an inner bevel shadow opposite it, and a barely-there rim to hold the silhouette against black. Cards therefore carry **no border** — `border-color` is neutralised on glass surfaces, while dividers elsewhere keep theirs.
+This replaced a liquid-glass system with an ambient accent atmosphere behind it. Both were competently built and both were removed on purpose: they were doing the job that scale and tone now do, and every one of them competed with the numerals for attention. On a screen whose whole argument is a 96px figure, a lens effect behind that figure is noise wearing craft's clothes. The reference this world was tuned against has no depth effects at all, and it does not need them.
 
 Shadows exist only where an element genuinely floats above content — the navigation pill today, and sheets, dialogs or popovers by the same logic. In-flow surfaces never cast one.
 
 ### Shadow Vocabulary
-- **Glass edge** (`inset 0 1.5px 1px -1px rgba(255,255,255,0.55)`, `inset 0 -1.5px 1px -1px rgba(0,0,0,0.35)`, `inset 0 0 0 1px rgba(255,255,255,0.05)`): The specular top highlight, inner bevel and containment rim that together replace a border on every glass surface.
-- **Float** (`0 8px 32px rgba(0,0,0,0.5)`): Separation for genuinely floating chrome. Navigation, sheets, dialogs, popovers.
+- **Float** (`0 8px 32px rgba(0,0,0,0.5)`): Separation for genuinely floating chrome. Navigation, sheets, dialogs, popovers. It is the only shadow in the system.
 
 ### Named Rules
 
-**The Material Not Shadow Rule.** Depth on an in-flow surface comes from blur, translucency and the specular edge. If a card needs a drop shadow to read, its material is wrong — fix the blur or the fill, not the elevation.
+**The Flat Canvas Rule.** No `backdrop-filter`, no gradient fill, no glow, no inset specular edge, anywhere. If a surface is not reading, raise its fill or its hairline — do not reintroduce a material. This rule exists because the system has already been round that loop once.
 
 **The Floating Exception Rule.** Only elements that genuinely sit above the content plane may cast an outer shadow. Overlapping the scroll area is the test; being visually important is not.
-
-**The Glass Is For Panels Rule.** Only top-level surfaces get the material. Anything nested inside a card is a flat Inset. Glass applied to every chip, stepper and icon circle stops being a specific effect and becomes decoration — and 120 stacked `backdrop-filter` layers is a phone-sized performance bill for the privilege.
 
 **The Three Tiers Rule.** Panel, Inset, Raised. A surface that fits none of them is a surface that has not been thought about. This system previously ran eight ad-hoc fills and eight radii, and the result was an app that felt assembled from several different products.
 
@@ -286,15 +285,15 @@ Iconography is Lucide line icons at 16–20px, plus a small set of exported SVGs
 
 ### Buttons
 - **Shape:** Fully rounded pill (`9999px`), `48px` tall at default and large sizes, `36px` small.
-- **Primary:** Arc Light fill with Arc Light Ink text (`0 24px` padding). The one primary action per screen.
+- **Primary:** White fill with black text (`0 24px` padding). The one primary action per screen. Emphasis is inversion — it never takes the signal colour.
 - **Secondary:** Transparent with a white hairline border and white text.
-- **Ghost / Outline:** Transparent; ghost fills faintly on hover, outline carries an Arc Light border and text.
+- **Ghost / Outline:** Transparent; ghost fills faintly on hover, outline carries a white hairline border and white text.
 - **Danger:** Alert Red fill with white text, for destructive actions only.
 - **States:** All variants press to `scale(0.97)` and fade slightly; hover lifts opacity to 90%. Focus is a 2px Arc Light ring at 50% with a 2px offset against the black canvas. Disabled drops to 40% opacity and suppresses the press-scale.
 
 ### Chips
-- **Style:** Segmented control chips are pills with glass fill, hairline border and Ash text.
-- **State:** The selected chip fills with Arc Light and switches to Arc Light Ink. Used for tab-like switching where the options are peers.
+- **Style:** Segmented control chips are pills with a flat card fill, hairline border and Ash text.
+- **State:** The selected chip fills white and switches to black type — the reference's black-pill-on-white, inverted for a dark ground. Used for tab-like switching where the options are peers.
 
 ### Cards / Containers
 
@@ -302,13 +301,13 @@ Three surface tiers, and nothing else. Every card in the app is one of them.
 
 | Tier | Token | Radius | Material |
 |---|---|---|---|
-| **Panel** | `bg-bg-card` (6%) | `rounded-card` — 20px | Glass. Specular edge, no border. |
-| **Inset** | `bg-bg-element` (5%) | `rounded-inner` — 12px | Flat tint + hairline border. No blur. |
-| **Raised** | `bg-bg-card-raised` (10%) | inherits | Glass. Hover and active state of a Panel. |
+| **Panel** | `bg-bg-card` (7%) | `rounded-card` — 24px | Flat tint. No border, no blur. |
+| **Inset** | `bg-bg-element` (4.5%) | `rounded-inner` — 12px | Flat tint + hairline. |
+| **Raised** | `bg-bg-card-raised` (10%) | inherits | Flat tint. Hover and active state of a Panel. |
 
-- **Panel** is a top-level surface sitting on the page, where the atmosphere shows through and the glass has something to refract.
-- **Inset** is anything living *inside* a Panel — rows, controls, form fields, small tiles. It is deliberately not glass: blurring an already-blurred backdrop reads as mush, and `backdrop-filter` on every small control is a real cost on a phone.
-- **Shadow Strategy:** None on either tier. Edges come from the specular inset set on Panels, and a hairline border on Insets.
+- **Panel** is a top-level surface sitting on the page. Its fill is the whole of its material, which is why it sits higher than the old glass fill did.
+- **Inset** is anything living *inside* a Panel — rows, controls, form fields, small tiles.
+- **Shadow Strategy:** None on either tier, ever.
 - **Internal Padding:** `16px` standard, `12px` on compact tiles.
 - **Interactive cards:** Cards that start something press to `scale(0.98)` and lighten to Raised. A card with no action never gains a hover state — the treatment is the affordance.
 
@@ -321,33 +320,38 @@ Radii come from `rounded-card` / `rounded-inner`, generated from the tokens in `
 - **Numeric entry:** Native spinner arrows are suppressed system-wide. Values are entered by typing *or* by flanking stepper pills, and the unit sits inside the field as an uppercase tag with a matching-width spacer opposite, so the number stays optically centred as digits change.
 
 ### Navigation
-- **Style:** A floating glass pill, `272px` wide, fixed above the bottom edge with `24px` clearance, overlapping content rather than sitting in flow. It is the one element permitted an outer shadow.
-- **States:** Icon-only. The active destination fills with Arc Light and its icon flips to Arc Light Ink; inactive icons are white line icons.
+- **Style:** A floating pill, `272px` wide, fixed above the bottom edge with `24px` clearance, overlapping content rather than sitting in flow. It is the one element allowed a shadow. It is the one element permitted an outer shadow.
+- **States:** Icon-only. The active destination fills white and its icon flips to dark; inactive icons are white line icons.
 
-### Signature Component — The Atmospheric Hero
-The defining pattern. A large, soft radial wash bleeds from behind the focal metric and fades into black, built from two blurred radial layers with no clipping container and no black scrim — the gradients fade to transparent over the page's own black, which is what avoids a visible banding edge.
+### Signature Component — The Focal Numeral
+The defining pattern, and the one thing to protect above everything else. A single figure at 96px, weight 700, tracked to -0.04em and set solid at 0.92 line-height, sitting near the top of the screen with nothing competing beside it. Its unit or suffix rides small and high against it — "60" with a 24px "%" at cap height — so the number keeps the full optical weight and the unit never dilutes it.
 
-Its colour is **contextual, not fixed**: it reflects the state of the metric it sits behind — Arc Light when on track, Citrine when partial, Amber when behind, Teal when there is nothing scheduled. The hero is the only place in the system where colour is atmospheric rather than functional.
+Beneath it sit an interpretation heading and one line of supporting prose, both dramatically smaller. The drop from 96px to 24px to 14px is the whole hierarchy; there is no intermediate step and no decoration between them.
+
+This replaced an atmospheric gradient hero. The wash was doing what scale does better, and it competed with the very figure it was meant to frame. If a hero looks weak, the numeral is too small or the space around it is too tight — the fix is never to put something behind it.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep exactly one 68px metric per screen, in the hero, over the gradient.
-- **Do** spend Arc Light on the single most important element in a viewport and leave the rest monochrome.
-- **Do** define card edges with the specular inset set (`inset 0 1.5px 1px -1px rgba(255,255,255,0.55)` and its pair), never a visible border.
-- **Do** keep the glass fill weak (`0.06`). If a pane looks flat, increase the blur or check what is behind it — do not thicken the fill.
+- **Do** keep exactly one 96px metric per screen, at the top, with clear space around it.
+- **Do** make things important by inverting them — a white plane with black type — before considering anything else.
+- **Do** keep Arc Light for live training and personal records only. If it is not happening right now, it is not blue.
+- **Do** separate chart series by tonal value, and label them directly.
+- **Do** draw icons from lucide at `strokeWidth={1.75}`, taking colour from their container.
 - **Do** use uppercase 11px tags at +0.02em for every section label, badge and in-field unit.
-- **Do** give every interactive element a press state (`scale(0.97)` buttons, `scale(0.98)` cards) and a visible Arc Light focus ring.
-- **Do** verify contrast when changing any colour that carries text. Arc Light takes Arc Light Ink, not white.
+- **Do** give every interactive element a press state (`scale(0.97)` buttons, `scale(0.98)` cards) and a visible white focus ring.
+- **Do** verify contrast when changing any colour that carries text.
 - **Do** design the empty state as the honest default — this product has no data to invent.
 
 ### Don't:
-- **Don't** put blue in a chart series, a distribution bar or a zone ramp.
+- **Don't** put any colour in a chart series, a distribution bar or a calendar mark.
+- **Don't** reintroduce glass, backdrop blur, gradient fills or ambient glows. The system has been round that loop and came back.
+- **Don't** use an emoji as an icon, anywhere, ever.
 - **Don't** add a drop shadow to anything that sits in the content flow.
 - **Don't** introduce a third font weight, or bold a list row, card title or exercise name.
 - **Don't** use pure charcoal in place of true black for the canvas — the material depends on it.
 - **Don't** add badges, streak confetti, trophy animation, congratulatory modals or any reward theatre.
 - **Don't** reach for dense tables, grey chrome or default chart-library styling.
-- **Don't** add neon glows, scanlines or sci-fi HUD framing — the gradient hero is the ceiling for atmospheric effect, not a floor.
+- **Don't** add neon glows, scanlines or sci-fi HUD framing. There is no atmospheric effect in this system at all.
 - **Don't** imitate physical gym materials — no rubber, chalk, knurled metal or carbon fibre textures.
 - **Don't** let expression cost everyday legibility. Any effect that makes a value harder to read mid-set, one-handed and fatigued has failed regardless of how good it looks in a screenshot.

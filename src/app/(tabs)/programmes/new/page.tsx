@@ -29,7 +29,7 @@ export default function NewProgrammePage() {
       <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Add new programme</h1>
         <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-          <X size={16} className="text-accent" />
+          <X size={16} className="text-text" />
         </button>
       </div>
 
@@ -59,7 +59,7 @@ export default function NewProgrammePage() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSubmit ? 'border border-accent bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
+          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSubmit ? 'border border-border-strong bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
         >
           Add new programme
         </button>

@@ -6,7 +6,7 @@ import { CheckCircle2 } from 'lucide-react'
 import { useSessionStore } from '@/stores/session-store'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { Button } from '@/components/ui'
-import { HeroGlow, StatCard, SectionLabel } from '@/components/dash'
+import { StatCard, SectionLabel } from '@/components/dash'
 
 function fmtVolume(kg: number) {
   return kg >= 1000 ? `${(kg / 1000).toFixed(1)}t` : `${Math.round(kg)}kg`
@@ -59,13 +59,12 @@ export default function SessionCompletePage() {
 
   return (
     <div className="relative flex flex-col h-full bg-bg overflow-hidden">
-      <HeroGlow color="#00ABFE" />
 
       <div className="relative no-scrollbar flex-1 overflow-y-auto px-5 pt-8">
         {/* ── Hero ── */}
         <div className="flex items-center gap-2">
-          <CheckCircle2 size={16} className="text-accent" />
-          <p className="text-tag uppercase tracking-[0.08em] text-accent m-0">Session complete</p>
+          <CheckCircle2 size={16} className="text-text" />
+          <p className="text-tag uppercase tracking-[0.08em] text-text m-0">Session complete</p>
         </div>
 
         <div className="mt-7 flex items-start gap-1">

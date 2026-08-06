@@ -2,19 +2,19 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { User } from 'lucide-react'
+import { Footprints, Trophy, User } from 'lucide-react'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { localDateStr } from '@/lib/date'
 import { EmptyState } from '@/components/ui'
 import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import {
-  HeroGlow, SectionLabel, StatCard, WeekGrid, SegmentedChips,
+  SectionLabel, StatCard, WeekGrid, SegmentedChips,
   DistributionSummary, Sparkline, StatusPill, ZoneRow,
   type WeekRow, type ZoneDatum,
 } from '@/components/dash'
 
-const ZONE_COLORS = ['var(--zone-1)', 'var(--zone-3)', 'var(--zone-4)', 'var(--zone-5)', 'var(--zone-2)']
+const ZONE_COLORS = ['var(--zone-1)', 'var(--zone-2)', 'var(--zone-3)', 'var(--zone-4)', 'var(--zone-5)']
 
 function fmtPace(paceSecs: number) {
   const m = Math.floor(paceSecs / 60)
@@ -195,11 +195,10 @@ export default function ProgressPage() {
 
   const volumeTrend = weekKeys.map(k => weeklyVolumes[k])
   const consistencyLabel = consecutiveWeeks >= 4 ? 'HIGH' : consecutiveWeeks >= 2 ? 'BUILDING' : 'LOW'
-  const consistencyColor = consecutiveWeeks >= 4 ? 'var(--warning)' : consecutiveWeeks >= 2 ? 'var(--accent)' : 'var(--text-tertiary)'
+  const consistencyColor = consecutiveWeeks >= 4 ? 'var(--text)' : consecutiveWeeks >= 2 ? 'var(--text-secondary)' : 'var(--text-tertiary)'
 
   return (
     <div className="relative flex flex-col h-full overflow-hidden">
-      <HeroGlow color="#00ABFE" className="opacity-40" />
 
       <div className="relative no-scrollbar flex-1 overflow-y-auto">
 
@@ -270,7 +269,7 @@ export default function ProgressPage() {
                   <div className="bg-bg-card rounded-card p-4 flex items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Weekly volume</p>
-                      <p className="text-h1 font-bold text-text tabular m-0 mt-1">
+                      <p className="text-display text-text tabular m-0 mt-1">
                         {fmtVolume(weekKeys.length ? weeklyVolumes[weekKeys[weekKeys.length - 1]] : 0)}
                       </p>
                       <div className="mt-1.5">
@@ -287,8 +286,8 @@ export default function ProgressPage() {
                   <div className="bg-bg-card rounded-card p-4 flex items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-tag uppercase tracking-[0.06em] text-text-tertiary m-0">Consistency</p>
-                      <p className="text-h1 font-bold text-text tabular m-0 mt-1">
-                        {consecutiveWeeks}<span className="text-h4 text-text-tertiary ml-1">wk</span>
+                      <p className="text-display text-text tabular m-0 mt-1">
+                        {consecutiveWeeks}<span className="text-h3 text-text-tertiary ml-1">wk</span>
                       </p>
                       <p className="text-tag text-text-tertiary m-0 mt-1.5">consecutive training weeks</p>
                     </div>
@@ -297,9 +296,9 @@ export default function ProgressPage() {
               </div>
 
               {consecutiveWeeks >= 4 && (
-                <div className="rounded-card p-4 border" style={{ backgroundColor: 'var(--warning-subtle)', borderColor: 'rgba(251,146,60,0.3)' }}>
-                  <p className="text-label font-medium m-0" style={{ color: 'var(--warning)' }}>Recovery recommended</p>
-                  <p className="text-caption text-text-secondary mt-1 m-0">
+                <div className="rounded-card p-4 bg-fill-strong">
+                  <p className="text-label font-bold m-0 text-fill-strong-fg">Recovery recommended</p>
+                  <p className="text-caption text-fill-strong-fg/70 mt-1 m-0">
                     You&apos;ve trained {consecutiveWeeks} consecutive weeks. Consider a deload this week.
                   </p>
                 </div>
@@ -326,7 +325,7 @@ export default function ProgressPage() {
                 <SectionLabel>Personal records</SectionLabel>
                 {prs.length === 0 ? (
                   <EmptyState
-                    icon="🏆"
+                    icon={Trophy}
                     title="No records yet"
                     description="Complete some workouts to start tracking your PRs."
                   />
@@ -344,7 +343,7 @@ export default function ProgressPage() {
                           <p className="text-tag text-text-tertiary m-0 mt-0.5">{fmtDate(pr.lastDate)}</p>
                         </div>
                         <p className="text-label font-medium text-text tabular text-right self-center m-0">{pr.maxWeight > 0 ? `${pr.maxWeight}` : '—'}</p>
-                        <p className="text-label font-medium text-accent tabular text-right self-center m-0">{pr.maxE1rm > 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
+                        <p className="text-label font-medium text-text tabular text-right self-center m-0">{pr.maxE1rm > 0 ? `${pr.maxE1rm.toFixed(1)}` : '—'}</p>
                       </div>
                     ))}
                   </div>
@@ -411,7 +410,7 @@ export default function ProgressPage() {
 
               {cardioSessions.length === 0 && (
                 <EmptyState
-                  icon="🏃"
+                  icon={Footprints}
                   title="No cardio sessions yet"
                   description="Log a cardio session to see your stats here."
                 />

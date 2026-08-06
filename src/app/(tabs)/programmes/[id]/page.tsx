@@ -2,7 +2,7 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ChevronRight, ChevronDown, Check, Link2, Unlink, ArrowUp, ArrowDown, Calendar, RefreshCw, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowUp, Calendar, Check, ChevronDown, ChevronRight, Link2, RefreshCw, Trash2, Unlink, X } from 'lucide-react'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useTemplateStore } from '@/stores/template-store'
@@ -10,7 +10,7 @@ import { Button, Input, Sheet } from '@/components/ui'
 import { localDateStr } from '@/lib/date'
 import type { ExerciseTemplateBlock, PhaseExerciseOverride, ActivityType, CalendarEventType, PhaseType } from '@/types'
 import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
-import { CARDIO_ICONS } from '@/lib/activity-icons'
+import { ActivityIcon } from '@/lib/activity-icons'
 
 const PHASE_TYPE_LABELS: Record<PhaseType, string> = {
   foundation: 'Foundation',
@@ -54,7 +54,7 @@ function DayToggle({ days, onToggle }: { days: number[]; onToggle: (next: number
         <button
           key={i}
           onClick={() => onToggle(days.includes(i) ? days.filter(x => x !== i) : [...days, i])}
-          className={`w-8 h-8 rounded-full text-caption font-medium flex items-center justify-center ${days.includes(i) ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text'}`}
+          className={`w-8 h-8 rounded-full text-caption font-medium flex items-center justify-center ${days.includes(i) ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text'}`}
         >
           {d}
         </button>
@@ -105,7 +105,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
     return (
       <div className="flex flex-col h-full items-center justify-center gap-4">
         <p className="text-label text-text/50">Programme not found</p>
-        <button onClick={() => router.back()} className="text-label text-accent">Go back</button>
+        <button onClick={() => router.back()} className="text-label text-text">Go back</button>
       </div>
     )
   }
@@ -368,14 +368,14 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-            <ArrowLeft size={16} className="text-accent" />
+            <ArrowLeft size={16} className="text-text" />
           </button>
           <h1 className="text-h2 font-bold leading-[30px] text-text m-0 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
             {programme.name}
           </h1>
         </div>
         <button onClick={handleDeleteProgramme} className="w-10 h-10 rounded-full bg-error flex items-center justify-center flex-shrink-0 ml-3">
-          <Trash2 size={18} className="text-accent-fg" />
+          <Trash2 size={18} className="text-fill-strong-fg" />
         </button>
       </div>
 
@@ -395,8 +395,8 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             className="absolute inset-0 opacity-0 cursor-pointer w-full"
           />
         </div>
-        <button onClick={syncToCalendar} className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-          <RefreshCw size={18} className="text-accent-fg" />
+        <button onClick={syncToCalendar} className="w-12 h-12 rounded-full bg-fill-strong flex items-center justify-center flex-shrink-0">
+          <RefreshCw size={18} className="text-fill-strong-fg" />
         </button>
       </div>
 
@@ -443,15 +443,15 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                       <span className="text-h4 font-medium leading-6 text-text">{phase.name}</span>
                       <div className="flex gap-1 flex-wrap items-center">
                         {(phase.phaseType || phase.isDeload) && (
-                          <span className={`${tag} bg-accent text-accent-fg px-3 py-1 rounded-full`}>
+                          <span className={`${tag} bg-fill-strong text-fill-strong-fg px-3 py-1 rounded-full`}>
                             {phase.phaseType ? PHASE_TYPE_LABELS[phase.phaseType] : 'Deload'}
                           </span>
                         )}
-                        <span className={`${tag} bg-bg-element text-accent px-2 py-1 rounded`}>
+                        <span className={`${tag} bg-bg-element text-text px-2 py-1 rounded`}>
                           {phase.durationWeeks} {phase.durationWeeks === 1 ? 'week' : 'weeks'}
                         </span>
                         {phase.isActive && (
-                          <span className={`${tag} bg-accent/10 text-accent px-2 py-1 rounded`}>Active</span>
+                          <span className={`${tag} bg-text/10 text-text px-2 py-1 rounded`}>Active</span>
                         )}
                       </div>
                     </div>
@@ -465,7 +465,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                       {/* Phase actions */}
                       <div className="flex gap-2 px-4 py-3 flex-wrap items-center">
                         {!phase.isActive && (
-                          <button onClick={() => setActivePhase(programme.id, phase.id)} className="text-caption text-accent border border-accent/30 rounded-full px-3 py-1">
+                          <button onClick={() => setActivePhase(programme.id, phase.id)} className="text-caption text-text border border-border-strong/30 rounded-full px-3 py-1">
                             Set active
                           </button>
                         )}
@@ -499,7 +499,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                               <div key={ct.id} className="px-4 py-3 bg-bg/40">
                                 <div className="flex items-center justify-between mb-2">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-body">{CARDIO_ICONS[ct.activityType]}</span>
+                                    <ActivityIcon type={ct.activityType} size={16} className="text-text flex-shrink-0" />
                                     <div>
                                       <p className="text-caption text-text m-0">{ct.name}</p>
                                       <p className="text-tag text-text/40 m-0 capitalize">
@@ -534,7 +534,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                     <div className="flex items-center gap-2">
                                       <p className="text-caption text-text m-0">{template.name}</p>
                                       {overriddenCount > 0 && (
-                                        <span className="text-tag px-1.5 py-0.5 rounded-full bg-accent/10 text-accent">
+                                        <span className="text-tag px-1.5 py-0.5 rounded-full bg-text/10 text-text">
                                           {overriddenCount} overridden
                                         </span>
                                       )}
@@ -553,7 +553,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                       <div className="flex-1 min-w-0">
                                         <p className="text-caption text-text m-0 overflow-hidden text-ellipsis whitespace-nowrap">{block.exerciseName}</p>
                                         {exOverride ? (
-                                          <p className="text-tag text-accent m-0 mt-0.5">
+                                          <p className="text-tag text-text m-0 mt-0.5">
                                             {[
                                               exOverride.targetSetsOverride != null && `${exOverride.targetSetsOverride} sets`,
                                               exOverride.targetRepsMinOverride != null && `${exOverride.targetRepsMinOverride} reps`,
@@ -567,7 +567,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                           </p>
                                         )}
                                       </div>
-                                      <button onClick={() => openOverrideEditor(phase.id, template.id, block.id)} className="text-caption text-accent ml-3 flex-shrink-0">
+                                      <button onClick={() => openOverrideEditor(phase.id, template.id, block.id)} className="text-caption text-text ml-3 flex-shrink-0">
                                         {exOverride ? 'Edit' : 'Override'}
                                       </button>
                                     </div>
@@ -587,7 +587,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             {/* Add new phase CTA */}
             <button
               onClick={() => router.push(`/programmes/${id}/add-phase`)}
-              className={`w-full h-12 rounded-full border border-accent bg-accent text-body font-medium leading-6 text-accent-fg ${sortedPhases.length > 0 ? 'mt-1' : ''}`}
+              className={`w-full h-12 rounded-full border border-border-strong bg-fill-strong text-body font-medium leading-6 text-fill-strong-fg ${sortedPhases.length > 0 ? 'mt-1' : ''}`}
             >
               Add new phase
             </button>
@@ -602,7 +602,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             {programme.templates.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-label text-text/40 m-0">No workouts yet</p>
-                <button onClick={() => setShowAddTemplate(true)} className="mt-3 text-label text-accent">
+                <button onClick={() => setShowAddTemplate(true)} className="mt-3 text-label text-text">
                   + Add workout
                 </button>
               </div>
@@ -639,10 +639,10 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                             return (
                               <div
                                 key={block.id}
-                                className={`grid grid-cols-[1fr_44px_44px_64px_28px_24px] gap-1.5 items-center px-4 py-1.5 border-t border-border/40 ${inSS ? 'bg-accent/5' : ''}`}
+                                className={`grid grid-cols-[1fr_44px_44px_64px_28px_24px] gap-1.5 items-center px-4 py-1.5 border-t border-border/40 ${inSS ? 'bg-text/[0.06]' : ''}`}
                               >
                                 <div className="flex items-center gap-1 min-w-0">
-                                  {label && <span className="text-tag font-mono text-accent flex-shrink-0 w-3">{label}</span>}
+                                  {label && <span className="text-tag font-mono text-text flex-shrink-0 w-3">{label}</span>}
                                   <p className="text-caption text-text m-0 overflow-hidden text-ellipsis whitespace-nowrap">{block.exerciseName}</p>
                                 </div>
                                 <input
@@ -668,19 +668,19 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                                   className="h-7 text-center text-caption text-text bg-bg-element border border-text/10 rounded-inner outline-none w-full"
                                 />
                                 <button onClick={() => removeBlock(block.id)} className="h-7 w-7 flex items-center justify-center text-text/40 text-label">
-                                  ✕
+                                  <X size={14} />
                                 </button>
                                 <button
                                   onClick={() => inSS ? handleUnlinkBlock(block.id, t.id) : setLinkingFor({ templateId: t.id, blockId: block.id })}
                                   className="h-7 w-6 flex items-center justify-center"
                                 >
-                                  {inSS ? <Unlink size={11} className="text-accent" /> : <Link2 size={11} className="text-text/30" />}
+                                  {inSS ? <Unlink size={11} className="text-text" /> : <Link2 size={11} className="text-text/30" />}
                                 </button>
                               </div>
                             )
                           })}
                           <div className="flex gap-2 px-4 py-3 border-t border-border/60">
-                            <button onClick={() => { setAddExerciseFor(t.id); setExerciseSearch('') }} className="flex-1 text-caption text-accent p-2 border border-dashed border-accent/40 rounded-inner">
+                            <button onClick={() => { setAddExerciseFor(t.id); setExerciseSearch('') }} className="flex-1 text-caption text-text p-2 border border-dashed border-border-strong/40 rounded-inner">
                               + Add exercise
                             </button>
                             <button onClick={() => { if (window.confirm('Delete this workout?')) deleteTemplate(t.id) }} className="text-caption text-error p-2">
@@ -714,12 +714,12 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             <div className="mt-2">
               <div className="flex items-center justify-between mb-3">
                 <p className="eyebrow m-0">Cardio Sessions</p>
-                <button onClick={() => setShowAddCardio(true)} className="text-caption text-accent">+ Add</button>
+                <button onClick={() => setShowAddCardio(true)} className="text-caption text-text">+ Add</button>
               </div>
               {(programme.cardioTemplates ?? []).map(ct => (
                 <div key={ct.id} className="flex items-center justify-between px-4 py-3 rounded-inner bg-bg-element mb-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-h3">{CARDIO_ICONS[ct.activityType]}</span>
+                    <ActivityIcon type={ct.activityType} size={20} className="text-text flex-shrink-0" />
                     <div>
                       <p className="text-label font-medium text-text m-0">{ct.name}</p>
                       <p className="text-caption text-text/50 m-0 capitalize">
@@ -738,8 +738,8 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                   <div className="flex gap-1.5 flex-wrap">
                     {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map(type => (
                       <button key={type} type="button" onClick={() => setCardioType(type)}
-                        className={`px-3 py-1 rounded-full text-caption ${cardioType === type ? 'bg-accent text-accent-fg' : 'bg-bg-element text-text'}`}>
-                        {CARDIO_ICONS[type]} {type}
+                        className={`px-3 py-1 rounded-full text-caption ${cardioType === type ? 'bg-fill-strong text-fill-strong-fg' : 'bg-bg-element text-text'}`}>
+                        <span className="inline-flex items-center gap-1.5"><ActivityIcon type={type} size={14} />{type}</span>
                       </button>
                     ))}
                   </div>
@@ -769,7 +769,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                 <button
                   key={type}
                   onClick={() => { setAddSessionType(type); setAddSessionId('') }}
-                  className={`flex-1 py-2 px-6 rounded-full text-label font-medium ${addSessionType === type ? 'bg-bg text-accent' : 'text-text opacity-40'}`}
+                  className={`flex-1 py-2 px-6 rounded-full text-label font-medium ${addSessionType === type ? 'bg-bg text-text' : 'text-text opacity-40'}`}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </button>
@@ -813,7 +813,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
             <p className="px-5 py-8 text-label text-text-secondary text-center">Add more exercises to this workout first</p>
           ) : (
             <div className="divide-y divide-border pb-4">
-              {source && <div className="px-5 py-3 bg-accent/5"><p className="text-caption text-text-tertiary mb-0.5">Linking</p><p className="text-label text-accent">{source.exerciseName}</p></div>}
+              {source && <div className="px-5 py-3 bg-text/[0.06]"><p className="text-caption text-text-tertiary mb-0.5">Linking</p><p className="text-label text-text">{source.exerciseName}</p></div>}
               {candidates.map(b => {
                 const existingLabel = b.supersetGroupId ? labels[b.supersetGroupId] : null
                 const alreadyLinked = source?.supersetGroupId && b.supersetGroupId === source.supersetGroupId
@@ -822,9 +822,9 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
                     onClick={() => handleLinkSuperset(linkingFor.blockId, b.id, linkingFor.templateId)} disabled={!!alreadyLinked}>
                     <div>
                       <p className="text-label text-text">{b.exerciseName}</p>
-                      {existingLabel && <p className="text-caption text-accent mt-0.5">In superset {existingLabel} — will merge</p>}
+                      {existingLabel && <p className="text-caption text-text mt-0.5">In superset {existingLabel} — will merge</p>}
                     </div>
-                    {alreadyLinked && <Check size={14} className="text-accent flex-shrink-0" />}
+                    {alreadyLinked && <Check size={14} className="text-text flex-shrink-0" />}
                   </button>
                 )
               })}
@@ -839,7 +839,7 @@ export default function ProgrammeDetailPage({ params }: { params: Promise<{ id: 
         </div>
         <div className="divide-y divide-border">
           {exerciseSearch.trim() && !filteredExercises.some(e => e.name.toLowerCase() === exerciseSearch.trim().toLowerCase()) && (
-            <button className="w-full text-left px-5 py-3.5 text-label text-accent hover:bg-bg-element flex items-center gap-2"
+            <button className="w-full text-left px-5 py-3.5 text-label text-text hover:bg-bg-element flex items-center gap-2"
               onClick={() => {
                 const name = exerciseSearch.trim()
                 if (addExerciseFor) addBlock(addExerciseFor, { id: `custom-${Date.now()}`, name })

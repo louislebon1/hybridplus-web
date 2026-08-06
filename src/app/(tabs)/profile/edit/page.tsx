@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { ArrowLeft, Scale, Trash2 } from 'lucide-react'
 import { useBodyMetricsStore } from '@/stores/body-metrics-store'
 import { Input, Button, EmptyState } from '@/components/ui'
 import { localDateStr } from '@/lib/date'
@@ -57,7 +57,7 @@ export default function EditProfilePage() {
       {/* Header */}
       <div className="flex items-center gap-3 px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center flex-shrink-0">
-          <ArrowLeft size={16} className="text-accent" />
+          <ArrowLeft size={16} className="text-text" />
         </button>
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Edit Profile</h1>
       </div>
@@ -132,8 +132,8 @@ export default function EditProfilePage() {
                   return (
                     <div key={w.id} className="flex-1 flex flex-col items-center gap-1">
                       <div className="w-full h-24 flex items-end">
-                        <div className="w-full rounded-t-sm bg-accent/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
-                          <div className="absolute bottom-0 left-0 right-0 bg-accent rounded-t-sm" style={{ height: '100%' }} />
+                        <div className="w-full rounded-t-sm bg-text/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
+                          <div className="absolute bottom-0 left-0 right-0 bg-fill-strong rounded-t-sm" style={{ height: '100%' }} />
                         </div>
                       </div>
                       <span className="text-tag text-text-tertiary tabular">{fmtDate(w.date)}</span>
@@ -167,7 +167,7 @@ export default function EditProfilePage() {
 
         {sortedLogs.length === 0 && (
           <EmptyState
-            icon="⚖️"
+            icon={Scale}
             title="No weight logged yet"
             description="Log your first entry above to start tracking."
           />

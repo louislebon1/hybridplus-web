@@ -42,16 +42,12 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           padding: '6px',
           width: '272px',
           borderRadius: '200px',
-          // Same liquid-glass material as the card surfaces.
-          background: 'var(--bg-card)',
-          WebkitBackdropFilter: 'blur(36px) saturate(180%) brightness(1.12)',
-          backdropFilter: 'blur(36px) saturate(180%) brightness(1.12)',
-          boxShadow: [
-            'inset 0 1.5px 1px -1px rgba(255, 255, 255, 0.55)',
-            'inset 0 -1.5px 1px -1px rgba(0, 0, 0, 0.35)',
-            'inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
-            '0 8px 32px rgba(0, 0, 0, 0.5)',
-          ].join(', '),
+          // Flat, like every other surface. The nav genuinely floats over the
+          // scroll area, so it is the one element in the system allowed an
+          // outer shadow — and that shadow is the whole of its separation.
+          background: '#111111',
+          border: '1px solid var(--border)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
           pointerEvents: 'auto',
         }}>
           {TABS.map(({ href, inactive, active }) => {
@@ -68,7 +64,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
                   paddingTop: '9px',
                   paddingBottom: '9px',
                   borderRadius: '200px',
-                  background: isActive ? 'var(--accent)' : 'transparent',
+                  background: isActive ? 'var(--fill-strong)' : 'transparent',
                   transition: 'background-color 150ms ease-out',
                   textDecoration: 'none',
                 }}

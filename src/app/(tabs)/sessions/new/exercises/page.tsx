@@ -61,14 +61,14 @@ export default function NewSessionExercisesPage() {
             addExercise({ id, name, muscles })
           }
         }}
-        className="w-full flex items-center justify-between px-4 py-5 border-b border-border text-left outline-none transition-colors duration-150 ease-out hover:bg-bg-hover active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50"
+        className="w-full flex items-center justify-between px-4 py-5 border-b border-border text-left outline-none transition-colors duration-150 ease-out hover:bg-bg-hover active:bg-bg-selected focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-text/60"
       >
         <span className="text-h4 font-medium leading-6 text-text max-w-[calc(100%-32px)] overflow-hidden text-ellipsis whitespace-nowrap">
           {name}
         </span>
         <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
           {added
-            ? <Check size={16} className="text-accent" />
+            ? <Check size={16} className="text-text" />
             : <Plus size={16} className="text-text/40" />
           }
         </div>
@@ -83,13 +83,13 @@ export default function NewSessionExercisesPage() {
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
-          <X size={16} className="text-accent" />
+          <X size={16} className="text-text" />
         </button>
       </div>
 
       {/* Search bar */}
       <div className="flex gap-4 px-5 pt-6 pb-3 flex-shrink-0">
-        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-inner bg-bg-element ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-accent/50">
+        <div className="flex-1 flex items-center gap-2 h-12 px-3 rounded-inner bg-bg-element ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out focus-within:ring-text/60">
           <Search size={16} className="text-text/40 flex-shrink-0" />
           <input
             placeholder="Search for exercises"
@@ -102,9 +102,9 @@ export default function NewSessionExercisesPage() {
           onClick={handleAddCustom}
           disabled={!search.trim()}
           title="Add your own exercise"
-          className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-90 disabled:opacity-40 disabled:active:scale-100 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          className="w-12 h-12 rounded-full bg-fill-strong flex items-center justify-center flex-shrink-0 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-90 disabled:opacity-40 disabled:active:scale-100 focus-visible:ring-2 focus-visible:ring-text/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
-          <Plus size={16} className="text-accent-fg" />
+          <Plus size={16} className="text-fill-strong-fg" />
         </button>
       </div>
 
@@ -132,7 +132,7 @@ export default function NewSessionExercisesPage() {
         <button
           onClick={() => router.push('/sessions/new/configure')}
           disabled={!canProceed}
-          className={`w-full h-12 rounded-full text-body font-medium ${canProceed ? 'border border-accent bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
+          className={`w-full h-12 rounded-full text-body font-medium ${canProceed ? 'border border-border-strong bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
         >
           Create session plan
         </button>

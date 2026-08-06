@@ -36,7 +36,7 @@ function NewSessionPageInner() {
       <div className="flex items-center justify-between px-5 screen-top pb-6 border-b border-border flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">New session</h1>
         <button onClick={handleClose} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
-          <X size={16} className="text-accent" />
+          <X size={16} className="text-text" />
         </button>
       </div>
 
@@ -49,7 +49,7 @@ function NewSessionPageInner() {
               <button
                 key={t}
                 onClick={() => setSessionType(t)}
-                className={`flex-1 py-2 px-6 rounded-full text-body font-medium ${active ? 'bg-bg text-accent' : 'text-text opacity-40'}`}
+                className={`flex-1 py-2 px-6 rounded-full text-body font-medium ${active ? 'bg-bg text-text' : 'text-text opacity-40'}`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
@@ -62,7 +62,7 @@ function NewSessionPageInner() {
       <div className="px-5 pt-3 flex-shrink-0">
         <button
           onClick={() => router.push(sessionType === 'cardio' ? '/sessions/new/cardio' : '/sessions/new/exercises')}
-          className="w-full h-12 rounded-full border border-accent bg-accent text-body font-medium text-accent-fg"
+          className="w-full h-12 rounded-full border border-border-strong bg-fill-strong text-body font-medium text-fill-strong-fg"
         >
           {sessionType === 'cardio' ? 'Continue' : 'Add exercises to workout'}
         </button>

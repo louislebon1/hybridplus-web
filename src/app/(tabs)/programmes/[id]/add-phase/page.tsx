@@ -46,7 +46,7 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
       <div className="flex items-center justify-between px-5 screen-top flex-shrink-0">
         <h1 className="text-h2 font-bold leading-[30px] text-text m-0">Add new phase</h1>
         <button onClick={() => router.back()} className="w-8 h-8 rounded-full bg-bg-element flex items-center justify-center">
-          <X size={16} className="text-accent" />
+          <X size={16} className="text-text" />
         </button>
       </div>
 
@@ -69,7 +69,7 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
                   key={pt.value}
                   type="button"
                   onClick={() => setPhaseType(pt.value)}
-                  className={`px-3 py-1.5 rounded-full text-caption font-medium ${active ? 'bg-accent text-accent-fg border border-accent' : 'bg-bg-element text-text border border-transparent'}`}
+                  className={`px-3 py-1.5 rounded-full text-caption font-medium ${active ? 'bg-fill-strong text-fill-strong-fg border border-border-strong' : 'bg-bg-element text-text border border-transparent'}`}
                 >
                   {pt.label}
                 </button>
@@ -98,7 +98,7 @@ export default function AddPhasePage({ params }: { params: Promise<{ id: string 
         <button
           type="submit"
           disabled={!canSubmit}
-          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSubmit ? 'border border-accent bg-accent text-accent-fg' : 'bg-text/10 text-text/40'}`}
+          className={`mt-2 w-full h-12 rounded-full text-body font-medium ${canSubmit ? 'border border-border-strong bg-fill-strong text-fill-strong-fg' : 'bg-text/10 text-text/40'}`}
         >
           Add phase
         </button>

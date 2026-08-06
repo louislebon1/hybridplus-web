@@ -11,8 +11,8 @@ import { EXERCISE_LIBRARY, MUSCLE_GROUP_LABELS } from '@/lib/exercise-library'
 import type { CalendarEventData, Programme } from '@/types'
 import { localDateStr } from '@/lib/date'
 import { estimateDuration } from '@/lib/duration'
-import { ACTIVITY_ICONS } from '@/lib/activity-icons'
-import { HeroGlow, SectionLabel } from '@/components/dash'
+import { ActivityIcon } from '@/lib/activity-icons'
+import { SectionLabel } from '@/components/dash'
 
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const CARDIO_TYPES = new Set(['run', 'swim', 'cycle', 'walk', 'row'])
@@ -68,47 +68,41 @@ function getExerciseCount(ev: CalendarEventData, programmes: Programme[]): numbe
   return getTemplate(ev, programmes)?.exerciseBlocks.length ?? null
 }
 
-/** Interpretation of the week-completion metric — copy + hero accent. */
+/** Interpretation of the week-completion metric. */
 function readWeek(pct: number | null, scheduled: number) {
   if (scheduled === 0) {
     return {
       title: 'Nothing Scheduled',
       copy: 'No sessions on your calendar this week. Add a programme or start a quick workout to begin tracking.',
-      color: '#22D3EE',
     }
   }
   if (pct === 100) {
     return {
       title: 'Week Complete',
       copy: "Every session on this week's plan is done. Strong consistency — hold this rhythm into next week.",
-      color: '#00ABFE',
     }
   }
   if ((pct ?? 0) >= 60) {
     return {
       title: 'On Track',
       copy: "You're through most of this week's plan. Keep the remaining sessions in place to finish clean.",
-      color: '#00ABFE',
     }
   }
   if ((pct ?? 0) >= 30) {
     return {
       title: 'Building Momentum',
       copy: "You're partway through the week. A couple more sessions keeps this block on schedule.",
-      color: '#FDE047',
     }
   }
   if ((pct ?? 0) > 0) {
     return {
       title: 'Just Started',
       copy: "You've opened the week. Most of the plan is still ahead — pick the next session and get moving.",
-      color: '#FB923C',
     }
   }
   return {
     title: 'Not Started',
     copy: "This week's sessions are all still open. Start with the one scheduled for today.",
-    color: '#FB923C',
   }
 }
 
@@ -188,7 +182,6 @@ export default function HomePage() {
 
   return (
     <div className="relative flex flex-col h-full overflow-hidden">
-      <HeroGlow color={read.color} />
 
       <div className="no-scrollbar relative flex-1 overflow-y-auto">
 
@@ -232,7 +225,7 @@ export default function HomePage() {
                     {weekNumber !== null && ` · Week ${weekNumber}`}
                   </p>
                 </div>
-                <span className="text-tag uppercase tracking-[0.06em] text-accent-fg bg-accent px-2.5 py-1 rounded-full flex-shrink-0">
+                <span className="text-tag uppercase tracking-[0.06em] text-fill-strong-fg bg-fill-strong px-2.5 py-1 rounded-full flex-shrink-0">
                   Active
                 </span>
               </>
@@ -241,7 +234,7 @@ export default function HomePage() {
                 <p className="text-label text-text-secondary m-0">No active programme</p>
                 <button
                   onClick={() => router.push('/programmes')}
-                  className="text-caption text-accent flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded"
+                  className="text-caption text-text flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-text/60 rounded"
                 >
                   Set up
                 </button>
@@ -265,22 +258,22 @@ export default function HomePage() {
                 <button
                   key={ds}
                   onClick={() => setSelectedDate(ds)}
-                  className="flex flex-col items-center gap-2 flex-1 outline-none rounded-inner py-1 transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-accent/50"
+                  className="flex flex-col items-center gap-2 flex-1 outline-none rounded-inner py-1 transition-colors duration-150 ease-out focus-visible:ring-2 focus-visible:ring-text/60"
                 >
                   <span className={`text-tag uppercase ${isToday || isSelected ? 'text-text' : 'text-text-tertiary'}`}>
                     {DAY_LABELS[i]}
                   </span>
                   <div className={[
                     'w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-150 ease-out',
-                    isSelected ? 'bg-accent' : isToday ? 'bg-white/10 border border-white/20' : 'bg-white/[0.04]',
+                    isSelected ? 'bg-fill-strong' : isToday ? 'bg-white/10 border border-white/20' : 'bg-white/[0.04]',
                   ].join(' ')}>
-                    <span className={`text-label font-medium tabular ${isSelected ? 'text-accent-fg' : 'text-text'}`}>
+                    <span className={`text-label font-medium tabular ${isSelected ? 'text-fill-strong-fg' : 'text-text'}`}>
                       {d.getDate()}
                     </span>
                   </div>
                   <div className="flex gap-1 h-1.5 items-center">
-                    {hasStrength && <span className="w-1.5 h-1.5 rounded-full bg-accent block" />}
-                    {hasCardio   && <span className="w-1.5 h-1.5 rounded-full bg-zone-5 block" />}
+                    {hasStrength && <span className="w-1.5 h-1.5 rounded-full bg-fill-strong block" />}
+                    {hasCardio   && <span className="w-1.5 h-1.5 rounded-full border border-text block" />}
                   </div>
                 </button>
               )
@@ -294,7 +287,7 @@ export default function HomePage() {
             action={
               <button
                 onClick={() => router.push('/calendar')}
-                className="text-caption text-accent outline-none rounded focus-visible:ring-2 focus-visible:ring-accent/50"
+                className="text-caption text-text outline-none rounded focus-visible:ring-2 focus-visible:ring-text/60"
               >
                 View schedule
               </button>
@@ -333,15 +326,14 @@ export default function HomePage() {
                     className={[
                       'bg-bg-card rounded-card px-3.5 py-3 flex items-center gap-3 w-full text-left',
                       isStartable
-                        ? 'outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-accent/50'
+                        ? 'outline-none transition-[background-color,transform] duration-150 ease-out hover:bg-bg-card-raised active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-text/60'
                         : '',
                     ].join(' ')}
                   >
                     <span
-                      className="w-10 h-10 rounded-inner flex items-center justify-center text-[18px] flex-shrink-0"
-                      style={{ backgroundColor: isStrength ? 'rgba(0,171,254,0.16)' : 'rgba(45,212,191,0.16)' }}
+                      className="w-10 h-10 rounded-inner flex items-center justify-center flex-shrink-0 bg-bg-element text-text"
                     >
-                      {ACTIVITY_ICONS[ev.eventType] ?? '📅'}
+                      <ActivityIcon type={ev.eventType} size={18} />
                     </span>
 
                     <div className="flex-1 min-w-0">
@@ -350,7 +342,7 @@ export default function HomePage() {
                     </div>
 
                     {ev.isCompleted ? (
-                      <span className="text-tag uppercase tracking-[0.06em] text-accent bg-accent/15 px-2 py-1 rounded flex-shrink-0">
+                      <span className="text-tag uppercase tracking-[0.06em] text-text bg-text/15 px-2 py-1 rounded flex-shrink-0">
                         Done
                       </span>
                     ) : isStartable ? (
@@ -370,10 +362,10 @@ export default function HomePage() {
       <div className="relative px-5 pt-3 pb-4 flex-shrink-0">
         <button
           onClick={handleCtaClick}
-          className="w-full h-13 py-3.5 bg-accent rounded-full flex items-center justify-center gap-2 px-4 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.98] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          className="w-full h-13 py-3.5 bg-fill-strong rounded-full flex items-center justify-center gap-2 px-4 outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.98] active:opacity-80 focus-visible:ring-2 focus-visible:ring-text/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
-          <Play size={18} className="text-accent-fg flex-shrink-0" fill="currentColor" />
-          <span className="text-body font-medium text-accent-fg truncate min-w-0">{ctaLabel}</span>
+          <Play size={18} className="text-fill-strong-fg flex-shrink-0" fill="currentColor" />
+          <span className="text-body font-medium text-fill-strong-fg truncate min-w-0">{ctaLabel}</span>
         </button>
       </div>
     </div>

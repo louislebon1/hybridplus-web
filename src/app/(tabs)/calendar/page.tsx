@@ -1,17 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Check } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { Button, Input, Sheet } from '@/components/ui'
 import type { CalendarEventType } from '@/types'
 import { localDateStr } from '@/lib/date'
-import { ACTIVITY_ICONS as EVENT_ICONS } from '@/lib/activity-icons'
+import { ActivityIcon } from '@/lib/activity-icons'
 
+// Tonal, not hued. The accent is reserved for live training and PRs, so a
+// month grid separates its marks by value: strength solid, conditioning
+// mid-tone, rest barely there.
 const EVENT_COLORS: Record<CalendarEventType, string> = {
-  strength: '#00ABFE', run: '#F2F2F0', swim: '#F2F2F0', cycle: '#F2F2F0',
-  walk: '#F2F2F0', row: '#F2F2F0', rest: 'rgba(242,242,240,0.3)', other: 'rgba(242,242,240,0.4)',
+  strength: 'var(--zone-1)', run: 'var(--zone-3)', swim: 'var(--zone-3)', cycle: 'var(--zone-3)',
+  walk: 'var(--zone-3)', row: 'var(--zone-3)', rest: 'var(--zone-5)', other: 'var(--zone-4)',
 }
 
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
@@ -143,7 +146,7 @@ export default function CalendarPage() {
             >
               <span className={[
                 'w-7 h-7 flex items-center justify-center rounded-full text-label transition-colors',
-                isSelected ? 'bg-accent text-accent-fg' : isToday ? 'underline text-text' : currentMonth ? 'text-text' : 'text-text-tertiary',
+                isSelected ? 'bg-fill-strong text-fill-strong-fg' : isToday ? 'underline text-text' : currentMonth ? 'text-text' : 'text-text-tertiary',
               ].join(' ')}>
                 {new Date(dateStr + 'T00:00:00').getDate()}
               </span>
@@ -167,7 +170,7 @@ export default function CalendarPage() {
           <p className="text-label text-text">{formatDayHeading(selectedDate)}</p>
           <button
             onClick={() => { setForm(EMPTY_FORM); setShowAddEvent(true) }}
-            className="flex items-center gap-1 text-accent text-label"
+            className="flex items-center gap-1 text-text text-label"
           >
             <Plus size={16} />
             ADD
@@ -182,11 +185,11 @@ export default function CalendarPage() {
               const linkedWorkout = getTemplateName(ev.workoutTemplateId)
               return (
                 <div key={ev.id} className="bg-bg-card rounded-card p-3 flex items-center gap-3">
-                  <span className="text-h3">{EVENT_ICONS[ev.eventType]}</span>
+                  <ActivityIcon type={ev.eventType} size={20} className="text-text flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-label text-text">{ev.name ?? ev.eventType}</p>
                     <p className="text-caption text-text-secondary">
-                      {linkedWorkout && <span className="text-accent">{linkedWorkout}</span>}
+                      {linkedWorkout && <span className="text-text">{linkedWorkout}</span>}
                       {linkedWorkout && ev.durationMinutes && ' · '}
                       {ev.durationMinutes && `${ev.durationMinutes} min`}
                     </p>
@@ -195,18 +198,18 @@ export default function CalendarPage() {
                     {!ev.isCompleted ? (
                       <button
                         onClick={() => completeEvent(ev.id, selectedDate)}
-                        className="text-caption text-text-tertiary hover:text-success transition-colors"
+                        className="text-caption text-text-tertiary hover:text-text transition-colors"
                       >
                         <Check size={16} />
                       </button>
                     ) : (
-                      <span className="text-success"><Check size={16} /></span>
+                      <span className="text-text"><Check size={16} /></span>
                     )}
                     <button
                       onClick={() => deleteEvent(ev.id, selectedDate)}
                       className="text-caption text-text-tertiary hover:text-error transition-colors"
                     >
-                      ✕
+                      <X size={14} />
                     </button>
                   </div>
                 </div>
@@ -231,11 +234,11 @@ export default function CalendarPage() {
                   className={[
                     'px-3 py-1.5 rounded-full text-label border transition-colors',
                     form.eventType === type
-                      ? 'border-accent bg-accent/10 text-accent'
+                      ? 'border-border-strong bg-text/10 text-text'
                       : 'border-border text-text-secondary hover:bg-bg-element',
                   ].join(' ')}
                 >
-                  {EVENT_ICONS[type]} {type}
+                  <span className="inline-flex items-center gap-1.5"><ActivityIcon type={type} size={14} />{type}</span>
                 </button>
               ))}
             </div>
@@ -259,15 +262,15 @@ export default function CalendarPage() {
                         className={[
                           'flex items-center justify-between px-4 py-3 rounded-inner border text-left transition-colors',
                           selected
-                            ? 'border-accent bg-accent/10'
+                            ? 'border-border-strong bg-text/10'
                             : 'border-border bg-bg-element hover:bg-bg-hover',
                         ].join(' ')}
                       >
                         <div>
-                          <p className={`text-label ${selected ? 'text-accent' : 'text-text'}`}>{t.name}</p>
+                          <p className={`text-label ${selected ? 'text-text' : 'text-text'}`}>{t.name}</p>
                           <p className="text-caption text-text-tertiary">{t.programmeName} · {t.exerciseCount} exercises</p>
                         </div>
-                        {selected && <Check size={16} className="text-accent flex-shrink-0" />}
+                        {selected && <Check size={16} className="text-text flex-shrink-0" />}
                       </button>
                     )
                   })}

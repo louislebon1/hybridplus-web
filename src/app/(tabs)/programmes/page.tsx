@@ -54,9 +54,9 @@ function StrengthCard({ tmpl, onEdit }: { tmpl: StrengthSessionTemplate; onEdit:
         <div className="flex flex-col gap-1">
           <span className="text-body font-medium leading-6 text-text">{tmpl.name}</span>
           <div className="flex flex-wrap gap-1">
-            <span className={`${tag} text-accent-fg bg-accent px-3 py-1 rounded-full`}>Strength</span>
+            <span className={`${tag} text-fill-strong-fg bg-fill-strong px-3 py-1 rounded-full`}>Strength</span>
             {muscles.map(m => (
-              <span key={m} className={`${tag} text-accent bg-bg-element px-2 py-1 rounded`}>{m}</span>
+              <span key={m} className={`${tag} text-text bg-bg-element px-2 py-1 rounded`}>{m}</span>
             ))}
           </div>
         </div>
@@ -91,8 +91,8 @@ function CardioTemplateCard({ t, onEdit }: { t: CardioSessionTemplate; onEdit: (
         <div className="flex flex-col gap-1">
           <span className="text-body font-medium leading-6 text-text">{t.name}</span>
           <div className="flex flex-wrap gap-1">
-            <span className={`${tag} text-accent-fg bg-text px-3 py-1 rounded-full`}>Cardio</span>
-            <span className={`${tag} text-accent bg-bg-element px-2 py-1 rounded`}>{t.activityType}</span>
+            <span className={`${tag} text-fill-strong-fg bg-fill-strong px-3 py-1 rounded-full`}>Cardio</span>
+            <span className={`${tag} text-text bg-bg-element px-2 py-1 rounded`}>{t.activityType}</span>
           </div>
         </div>
         {(t.targetDurationMinutes || t.targetDistanceKm) && (
@@ -143,10 +143,10 @@ function CtaButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center justify-center gap-2 w-full h-12 bg-accent rounded-full outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] active:opacity-80 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+      className="flex items-center justify-center gap-2 w-full h-12 bg-fill-strong rounded-full outline-none transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] active:opacity-80 focus-visible:ring-2 focus-visible:ring-text/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
     >
-      <Plus size={24} className="text-accent-fg" />
-      <span className="text-body font-medium leading-6 text-accent-fg">{label}</span>
+      <Plus size={24} className="text-fill-strong-fg" />
+      <span className="text-body font-medium leading-6 text-fill-strong-fg">{label}</span>
     </button>
   )
 }
@@ -193,7 +193,7 @@ function WorkoutsPageInner() {
               <button
                 key={t}
                 onClick={() => setMainTab(t)}
-                className={`flex-1 py-2 px-6 rounded-full text-body font-medium leading-6 ${isActive ? 'bg-bg text-accent border border-bg' : 'text-text opacity-40 border border-transparent'}`}
+                className={`flex-1 py-2 px-6 rounded-full text-body font-medium leading-6 ${isActive ? 'bg-bg text-text border border-bg' : 'text-text opacity-40 border border-transparent'}`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
@@ -229,11 +229,11 @@ function WorkoutsPageInner() {
                         )}
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        <span className={`${tag} text-accent-fg bg-accent px-3 py-1 rounded-full`}>
+                        <span className={`${tag} text-fill-strong-fg bg-fill-strong px-3 py-1 rounded-full`}>
                           {phases} phase{phases !== 1 ? 's' : ''}
                         </span>
                         {weeks > 0 && (
-                          <span className={`${tag} text-accent bg-bg-element px-2 py-1 rounded`}>
+                          <span className={`${tag} text-text bg-bg-element px-2 py-1 rounded`}>
                             {weeks} week{weeks !== 1 ? 's' : ''}
                           </span>
                         )}

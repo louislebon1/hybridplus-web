@@ -1,51 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  /* OLED-black canvas. Surfaces are frosted glass: a translucent white
-     fill that picks up whatever gradient sits behind it, plus a backdrop
-     blur applied via the .bg-bg-card utility below. */
+  /* OLED-black canvas. Surfaces are flat tinted planes — no blur, no gradient,
+     no glow. Depth comes from tonal value and the hairline alone, so the
+     numerals stay the loudest thing on every screen. */
   --bg: #000000;
-  /* Glass fill. Lighter than the Figma swatch's 12% — the backdrop blur and
-     specular edge carry the material, so the fill only needs to lift the
-     pane off black. --raised is the hover step. */
-  --bg-card: rgba(255, 255, 255, 0.06);
+  --bg-card: rgba(255, 255, 255, 0.07);
   --bg-card-raised: rgba(255, 255, 255, 0.10);
-  --bg-element: rgba(255, 255, 255, 0.05);
-  --bg-hover: rgba(255, 255, 255, 0.09);
+  --bg-element: rgba(255, 255, 255, 0.045);
+  --bg-hover: rgba(255, 255, 255, 0.08);
   --bg-selected: rgba(255, 255, 255, 0.13);
-  --bg-subtle: rgba(255, 255, 255, 0.055);
-  --border: rgba(255, 255, 255, 0.11);
+  --bg-subtle: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.12);
   --border-strong: #FFFFFF;
   --text: #FFFFFF;
   --text-secondary: #A1A1A6;
   --text-tertiary: #6E6E73;
   --text-disabled: #48484A;
+
+  /* Emphasis is inversion, not colour. The primary action, the selected
+     segment and the active tab are a white plane with black type — the same
+     move the reference makes with its black pill on white. */
+  --fill-strong: #FFFFFF;
+  --fill-strong-fg: #000000;
+
+  /* The one signal colour, and it has exactly one job: training that is
+     happening right now, and a personal record. It appears nowhere else, which
+     is what makes a live session unmistakable at a glance across the room. */
   --accent: #00ABFE;
   --accent-hover: #0090D8;
   --accent-fg: #002133;
-  /* Success stays green — it's semantic (done/complete), not brand. */
-  --success: #4ADE80;
-  --success-subtle: rgba(74, 222, 128, 0.15);
-  --warning: #FB923C;
-  --warning-subtle: rgba(251, 146, 60, 0.15);
+
+  /* Destructive only. Kept out of the monochrome rule on safety grounds — a
+     delete confirmation rendered in grey is a defect, not restraint. */
   --error: #F0453A;
   --error-subtle: rgba(240, 69, 58, 0.15);
 
-  /* Categorical ramp for distribution bars and zone charts.
-     Deliberately excludes blue so series never read as the brand accent. */
-  --zone-1: #FDE047;
-  --zone-2: #FB923C;
-  --zone-3: #F0453A;
-  --zone-4: #A855F7;
-  --zone-5: #2DD4BF;
-
+  /* Data ramp. Series are separated by tonal value, never hue, so a chart
+     reads the same way the numerals do. */
+  --zone-1: rgba(255, 255, 255, 0.92);
+  --zone-2: rgba(255, 255, 255, 0.72);
+  --zone-3: rgba(255, 255, 255, 0.54);
+  --zone-4: rgba(255, 255, 255, 0.38);
+  --zone-5: rgba(255, 255, 255, 0.24);
 }
 
 @theme inline {
   /* Declared here rather than :root so Tailwind actually generates
      `rounded-card` / `rounded-inner`. While they sat in :root they were
      unreachable from markup, and six ad-hoc radii grew in their place. */
-  --radius-card: 20px;
+  --radius-card: 24px;
   --radius-inner: 12px;
 
   --color-bg: var(--bg);
@@ -67,9 +71,9 @@
   --color-text-tertiary: var(--text-tertiary);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
-  --color-success: var(--success);
+  --color-fill-strong: var(--fill-strong);
+  --color-fill-strong-fg: var(--fill-strong-fg);
   --color-error: var(--error);
-  --color-warning: var(--warning);
   /* San Francisco via the system stack — the only licensable route to SF Pro.
      -apple-system leads so macOS/iOS get real SF with automatic optical
      sizing (Text below ~20px, Display above); the named families catch
@@ -83,15 +87,15 @@
      opening up rather than tightening. */
 
   /* Hero metric — the single strongest element on a screen. */
-  --text-metric: 4.25rem;              /* 68px */
-  --text-metric--line-height: 4.25rem; /* 1.0 — tight, per reference */
+  --text-metric: 6rem;                 /* 96px */
+  --text-metric--line-height: 5.5rem;  /* 0.92 — set solid, the way a numeral wants */
   --text-metric--font-weight: 700;
-  --text-metric--letter-spacing: -0.03em;
+  --text-metric--letter-spacing: -0.04em;
 
-  --text-display: 2rem;             /* 32px */
-  --text-display--line-height: 2.375rem;  /* 38px */
+  --text-display: 2.5rem;           /* 40px */
+  --text-display--line-height: 2.75rem;   /* 44px */
   --text-display--font-weight: 700;
-  --text-display--letter-spacing: -0.025em;
+  --text-display--letter-spacing: -0.035em;
 
   --text-h1: 1.75rem;               /* 28px */
   --text-h1--line-height: 2.125rem; /* 34px */
@@ -196,71 +200,13 @@ body {
   }
 }
 
-/* Ambient atmosphere for the whole app.
+/* Surfaces are flat.
 
-   The glass panels are lenses. Over flat black they have nothing to refract and
-   render as grey boxes, which is why every screen without a HeroGlow read flat
-   no matter how the cards were styled. This is the floor of atmosphere that
-   makes the material behave like a material, on all nineteen screens; the three
-   hero screens layer their own stronger, contextual glow on top of it.
-
-   isolation:isolate keeps the negative z-index inside this stacking context, so
-   the glows paint above the column's own background but beneath every child —
-   no wrapper element and no z-index scale needed. */
-.app-atmosphere {
-  isolation: isolate;
-}
-
-.app-atmosphere::before,
-.app-atmosphere::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  pointer-events: none;
-  border-radius: 50%;
-}
-
-.app-atmosphere::before {
-  top: -170px;
-  left: -110px;
-  width: 420px;
-  height: 420px;
-  background: radial-gradient(circle, var(--accent) 0%, transparent 68%);
-  filter: blur(90px);
-  opacity: 0.2;
-}
-
-.app-atmosphere::after {
-  bottom: -150px;
-  right: -100px;
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-  filter: blur(100px);
-  opacity: 0.11;
-}
-
-/* Liquid glass.
-   The backdrop is blurred, saturated and brightened so the pane behaves like
-   a lens over the hero gradient rather than a flat tint. There is no stroke —
-   the edge is defined the way Apple's material does it: a bright specular
-   highlight along the lit (top) edge, an inner bevel shadow opposite it, and
-   a very faint rim to keep the silhouette legible against black.
-
-   Declared outside @layer so Tailwind doesn't treat it as a conflicting
-   utility definition and drop it, and the unprefixed backdrop-filter comes
-   last because lightningcss otherwise emits only the -webkit- form. */
-.bg-bg-card,
-.bg-bg-card-raised,
-.bg-bg-subtle {
-  border-color: transparent;
-  -webkit-backdrop-filter: blur(36px) saturate(180%) brightness(1.12);
-  backdrop-filter: blur(36px) saturate(180%) brightness(1.12);
-  box-shadow:
-    inset 0 1.5px 1px -1px rgba(255, 255, 255, 0.55),
-    inset 0 -1.5px 1px -1px rgba(0, 0, 0, 0.35),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-}
+   The glass material, the specular edge and the ambient glow that used to live
+   here have all been retired. They were doing the job that scale and tone now
+   do, and every one of them competed with the numerals for attention. A card is
+   a tinted plane with a hairline; nothing on this canvas blurs, glows or
+   gradients. Depth is tonal value, full stop. */
 
 /* Numeric fields are driven by steppers and direct entry; the native spinner
    arrows add visual noise and are tap-targets too small to be useful. */
