@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ChevronLeft, ChevronRight, CircleCheck, Dumbbell, Minus, Plus, X } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, CircleCheck, Dumbbell, Minus, Plus, Repeat, Trash2, X } from 'lucide-react'
 import { useSessionStore, formatDuration, getElapsedSeconds, getRestRemaining, getActiveSet } from '@/stores/session-store'
 import { useProgrammeStore } from '@/stores/programme-store'
 import { useCardioStore } from '@/stores/cardio-store'
 import { useCalendarStore } from '@/stores/calendar-store'
 import { useSessionHistoryStore } from '@/stores/session-history-store'
 import { Button, Input, Sheet, EmptyState } from '@/components/ui'
+import { Pager, Page, Rail, RailAction, Caption, SnapHint, LoadField } from '@/components/feed'
 import type { ActivityType, RunSessionType, CompletedSet } from '@/types'
 import { localDateStr } from '@/lib/date'
 import { EXERCISE_LIBRARY_SORTED } from '@/lib/exercise-library'
@@ -46,25 +47,35 @@ function ValueRow({
   onBlur: () => void
 }) {
   return (
-    <div>
-      <button onClick={onDec} aria-label={`Decrease ${label}`}>
+    <div className="flex items-center gap-3">
+      <button
+        onClick={onDec}
+        aria-label={`Decrease ${label}`}
+        className="w-12 h-12 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer transition-transform duration-150 ease-out active:scale-90"
+      >
         <Minus size={16} />
       </button>
 
-      <div>
-        <span aria-hidden />
-        <input type="number"
+      <div className="flex-1 min-w-0 h-16 rounded-card matt flex items-baseline justify-center gap-2 px-3 focus-within:border-scrim/45">
+        <input
+          type="number"
           inputMode="decimal"
           aria-label={label}
           value={display}
           placeholder={placeholder}
           onChange={e => onChange(e.target.value)}
           onFocus={onFocus}
-          onBlur={onBlur} />
-        <span>{unit}</span>
+          onBlur={onBlur}
+          className="display text-figure tabular w-0 flex-1 min-w-0 text-right bg-transparent border-0 outline-none text-scrim placeholder:text-fog"
+        />
+        <span className="meta flex-shrink-0">{unit}</span>
       </div>
 
-      <button onClick={onInc} aria-label={`Increase ${label}`}>
+      <button
+        onClick={onInc}
+        aria-label={`Increase ${label}`}
+        className="w-12 h-12 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer transition-transform duration-150 ease-out active:scale-90"
+      >
         <Plus size={16} />
       </button>
     </div>
@@ -99,15 +110,17 @@ function fmtLastTime(set: CompletedSet): string {
 function RestRing({ pct, label, sublabel }: { pct: number; label: string; sublabel: string }) {
   const offset = REST_RING_CIRCUMFERENCE * (1 - Math.min(1, Math.max(0, pct)))
   return (
-    <div>
-      <svg width={220} height={220} viewBox="0 0 220 220">
-        <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="rgba(242,242,240,0.12)" strokeWidth={12} />
-        <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="var(--accent)" strokeWidth={12}
-          strokeDasharray={REST_RING_CIRCUMFERENCE} strokeDashoffset={offset} strokeLinecap="round" />
+    <div className="relative w-[240px] h-[240px] flex items-center justify-center flex-shrink-0">
+      <svg width={240} height={240} viewBox="0 0 220 220" className="absolute inset-0 -rotate-90">
+        <circle cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="var(--color-steel)" strokeWidth={10} />
+        <circle
+          cx={110} cy={110} r={REST_RING_RADIUS} fill="none" stroke="var(--color-scrim)" strokeWidth={10}
+          strokeDasharray={REST_RING_CIRCUMFERENCE} strokeDashoffset={offset} strokeLinecap="round"
+        />
       </svg>
-      <div>
-        <p>{label}</p>
-        <p>{sublabel}</p>
+      <div className="flex flex-col items-center">
+        <p className="display text-hero tabular m-0 leading-none">{label}</p>
+        <p className="meta mt-2">{sublabel}</p>
       </div>
     </div>
   )
@@ -227,26 +240,48 @@ export default function SessionPage() {
   if (!activeSession) {
     return (
       <>
-      <div>
-        <div>
-          <button onClick={() => router.back()}>
-            <ArrowLeft size={16} />
-          </button>
-          <h1>Start Workout</h1>
-        </div>
+      <Pager>
 
-        <div>
-          {/* Quick start */}
-          <button onClick={() => startSession(null, 'Quick Workout')}>
-            <p>Quick Start</p>
-            <p>Start an empty session — add exercises as you go</p>
-          </button>
+        {/* ── Quick start: the hero item ─────────────────────────────────── */}
+        <Page>
+          <header className="flex items-center gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+            <button
+              onClick={() => router.back()}
+              aria-label="Back"
+              className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim cursor-pointer"
+            >
+              <ArrowLeft size={16} />
+            </button>
+            <span className="meta">Start workout</span>
+          </header>
 
-          {/* Today's scheduled sessions */}
-          {(todayStrengthIds.size> 0 || todayCardioEvents.length> 0) && (
-            <div>
-              <p>Today</p>
-              <div>
+          <Caption>
+            <p className="meta">Empty session</p>
+            <h1 className="display text-display m-0 mt-3">Quick Start</h1>
+            <p className="text-label text-stone m-0 mt-2 max-w-[42ch]">
+              Start with nothing on the board and add exercises as you go.
+            </p>
+            <button
+              onClick={() => startSession(null, 'Quick Workout')}
+              className="mt-5 h-14 px-7 rounded-pill bg-scrim text-void inline-flex items-center gap-2.5 border-0 cursor-pointer transition-transform duration-150 ease-out active:scale-[0.97]"
+            >
+              <Plus size={18} />
+              <span className="display text-figure">Start empty</span>
+            </button>
+          </Caption>
+
+          <SnapHint />
+        </Page>
+
+        {/* ── Today ──────────────────────────────────────────────────────── */}
+        {(todayStrengthIds.size > 0 || todayCardioEvents.length > 0) && (
+          <Page>
+            <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">On the plan</span>
+            </header>
+            <Caption>
+              <h2 className="display text-display m-0">Today</h2>
+              <div className="flex flex-col gap-2 mt-4">
                 {allTemplates
                   .filter(t => todayStrengthIds.has(t.id))
                   .map((t) => {
@@ -254,74 +289,116 @@ export default function SessionPage() {
                     const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                     const activePhase = store.getActivePhase(t.programmeId)
                     return (
-                      <button key={t.id} onClick={() => ref && startSession(ref)}>
-                        <div>
-                          <span>Strength</span>
-                          {activePhase && <span>{activePhase.name}</span>}
-                        </div>
-                        <span>{t.name}</span>
+                      <button
+                        key={t.id}
+                        onClick={() => ref && startSession(ref)}
+                        className="matt rounded-card px-4 py-3.5 flex items-center justify-between gap-3 text-left cursor-pointer transition-transform duration-150 ease-out active:scale-[0.99]"
+                      >
+                        <span className="min-w-0">
+                          <span className="meta block">Strength{activePhase ? ' · ' + activePhase.name : ''}</span>
+                          <span className="display text-figure block mt-1 truncate">{t.name}</span>
+                        </span>
+                        <ChevronRight size={18} className="text-fog flex-shrink-0" />
                       </button>
                     )
                   })}
                 {todayCardioEvents.map(ev => (
-                  <button key={ev.id} onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })}>
-                    <span>{ev.eventType}</span>
-                    <span>{ev.name ?? ev.eventType}</span>
+                  <button
+                    key={ev.id}
+                    onClick={() => openCardioLog({ activityType: ev.eventType as ActivityType })}
+                    className="matt rounded-card px-4 py-3.5 flex items-center justify-between gap-3 text-left cursor-pointer transition-transform duration-150 ease-out active:scale-[0.99]"
+                  >
+                    <span className="min-w-0">
+                      <span className="meta block">{ev.eventType}</span>
+                      <span className="display text-figure block mt-1 truncate">{ev.name ?? ev.eventType}</span>
+                    </span>
+                    <ChevronRight size={18} className="text-fog flex-shrink-0" />
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            </Caption>
+            <SnapHint />
+          </Page>
+        )}
 
-          {allTemplates.length> 0 && (
-            <div>
-              <p>From programme</p>
-              <div>
+        {/* ── From programme ─────────────────────────────────────────────── */}
+        {allTemplates.length > 0 && (
+          <Page>
+            <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+              <span className="meta">Saved</span>
+            </header>
+            <Caption>
+              <h2 className="display text-display m-0">From programme</h2>
+              <div className="flex flex-col gap-2 mt-4 max-h-[42vh] overflow-y-auto">
                 {allTemplates.map((t) => {
                   const store = useProgrammeStore.getState()
                   const ref = store.getTemplateRefWithOverrides(t.id, t.programmeId)
                   const activePhase = store.getActivePhase(t.programmeId)
-                  const isToday = todayStrengthIds.has(t.id)
                   return (
-                    <button key={t.id} onClick={() => ref && startSession(ref)}>
-                      <div>
-                        <span>Strength</span>
-                        {activePhase && <span>{activePhase.name}</span>}
-                      </div>
-                      <span>{t.name}</span>
+                    <button
+                      key={t.id}
+                      onClick={() => ref && startSession(ref)}
+                      className="matt rounded-card px-4 py-3.5 flex items-center justify-between gap-3 text-left cursor-pointer transition-transform duration-150 ease-out active:scale-[0.99]"
+                    >
+                      <span className="min-w-0">
+                        <span className="meta block">Strength{activePhase ? ' · ' + activePhase.name : ''}</span>
+                        <span className="display text-figure block mt-1 truncate">{t.name}</span>
+                      </span>
+                      <ChevronRight size={18} className="text-fog flex-shrink-0" />
                     </button>
                   )
                 })}
               </div>
-            </div>
-          )}
+            </Caption>
+            <SnapHint />
+          </Page>
+        )}
 
-          {/* Cardio */}
-          <div>
-            <p>Log cardio</p>
-            <div>
-              {allCardioTemplates.length> 0 && allCardioTemplates.map((ct) => (
-                <button key={ct.id} onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })}>
-                  <div>
-                    <span>{ct.activityType}</span>
-                    {ct.targetDurationMinutes && <span>{ct.targetDurationMinutes}M</span>}
-                  </div>
-                  <span>{ct.name}</span>
-                </button>
-              ))}
-              <div>
-                {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map((type) => (
-                  <button key={type}
-                    onClick={() => openCardioLog({ activityType: type })}>
-                    <ActivityIcon type={type} size={20} />
-                    <span>{type}</span>
+        {/* ── Cardio ─────────────────────────────────────────────────────── */}
+        <Page>
+          <header className="px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+            <span className="meta">After the fact</span>
+          </header>
+          <Caption>
+            <h2 className="display text-display m-0">Log cardio</h2>
+
+            {allCardioTemplates.length > 0 && (
+              <div className="flex flex-col gap-2 mt-4">
+                {allCardioTemplates.map((ct) => (
+                  <button
+                    key={ct.id}
+                    onClick={() => openCardioLog({ activityType: ct.activityType, minutes: ct.targetDurationMinutes, km: ct.targetDistanceKm })}
+                    className="matt rounded-card px-4 py-3.5 flex items-center justify-between gap-3 text-left cursor-pointer transition-transform duration-150 ease-out active:scale-[0.99]"
+                  >
+                    <span className="min-w-0">
+                      <span className="meta block">
+                        {ct.activityType}
+                        {ct.targetDurationMinutes ? ' · ' + ct.targetDurationMinutes + ' min' : ''}
+                      </span>
+                      <span className="display text-figure block mt-1 truncate">{ct.name}</span>
+                    </span>
+                    <ChevronRight size={18} className="text-fog flex-shrink-0" />
                   </button>
                 ))}
               </div>
+            )}
+
+            <div className="grid grid-cols-5 gap-2 mt-4">
+              {(['run', 'swim', 'cycle', 'walk', 'row'] as ActivityType[]).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => openCardioLog({ activityType: type })}
+                  className="matt rounded-card py-3 flex flex-col items-center gap-2 text-scrim cursor-pointer transition-transform duration-150 ease-out active:scale-[0.96]"
+                >
+                  <ActivityIcon type={type} size={20} />
+                  <span className="meta">{type}</span>
+                </button>
+              ))}
             </div>
-          </div>
-        </div>
-      </div>
+          </Caption>
+        </Page>
+
+      </Pager>
 
       {/* Log cardio sheet */}
       <Sheet visible={showLogCardio} onClose={() => setShowLogCardio(false)} title="Log Cardio">
@@ -458,163 +535,190 @@ export default function SessionPage() {
   }
 
   return (
-    <div>
-      {/* Header */}
-      <div>
-        <div>
+    <Page field={currentBlock ? <LoadField values={currentBlock.sets.map(st => (st.weightValue ?? 0) * (st.reps ?? 0))} /> : undefined}>
+
+      {/* Header: the session, its clock, and the way out */}
+      <header className="flex items-center gap-3 px-5 pt-[calc(env(safe-area-inset-top,0px)+20px)]">
+        <div className="flex-1 min-w-0">
           {editingName ? (
-            <input autoFocus
+            <input
+              autoFocus
               defaultValue={activeSession.name}
               onBlur={(e) => { setSessionName(e.target.value); setEditingName(false) }}
-              onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()} />
+              onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()}
+              className="display text-title bg-transparent border-0 border-b border-scrim/40 outline-none text-scrim w-full"
+            />
           ) : (
-            <button onClick={() => setEditingName(true)}>
+            <button
+              onClick={() => setEditingName(true)}
+              className="display text-title text-scrim bg-transparent border-0 p-0 text-left truncate block max-w-full cursor-pointer"
+            >
               {activeSession.name}
             </button>
           )}
-          <button onClick={() => { if (window.confirm('Abandon this session? Progress will be lost.')) { abandonSession(); router.back() } }}>
-            <X size={16} />
-          </button>
+          <p className="meta tabular mt-1">{formatDuration(elapsed)}</p>
         </div>
-        <p>{formatDuration(elapsed)}</p>
-      </div>
+        <button
+          onClick={() => { if (window.confirm('Abandon this session? Progress will be lost.')) { abandonSession(); router.back() } }}
+          aria-label="Abandon session"
+          className="w-10 h-10 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer"
+        >
+          <X size={16} />
+        </button>
+      </header>
 
       {restTimer.isActive ? (
-        /* ── Resting ── */
-        <>
-          <div>
-            <RestRing pct={restTimer.durationSeconds ? restRemaining / restTimer.durationSeconds : 0}
-              label={formatDuration(restRemaining)}
-              sublabel="Resting" />
-            <Button variant="primary" onClick={() => addRestTime(15)}>
-              <Plus size={16} /> Add 15 seconds
+        /* ── Resting: the clock owns the frame ── */
+        <div className="flex-1 flex flex-col items-center justify-center gap-7 px-5 pb-28">
+          <RestRing
+            pct={restTimer.durationSeconds ? restRemaining / restTimer.durationSeconds : 0}
+            label={formatDuration(restRemaining)}
+            sublabel="Resting"
+          />
+          {nextBlock && (
+            <div className="text-center">
+              <p className="meta">Next</p>
+              <p className="display text-title m-0 mt-1">{nextBlock.exerciseName}</p>
+            </div>
+          )}
+          <div className="flex gap-2.5">
+            <Button variant="secondary" size="sm" onClick={() => addRestTime(15)}>
+              <Plus size={15} /> 15s
             </Button>
-            {nextBlock && (
-              <div>
-                <p>Next exercise</p>
-                <p>{nextBlock.exerciseName}</p>
-              </div>
-            )}
-          </div>
-          <div>
-            <Button size="lg"  onClick={dismissRestTimer}>
-              Skip rest <ChevronRight size={16} />
+            <Button variant="primary" size="sm" onClick={dismissRestTimer}>
+              Skip rest <ChevronRight size={15} />
             </Button>
           </div>
-        </>
+        </div>
       ) : currentBlock && currentSet ? (
-        /* ── Logging a set ── */
+        /* ── Logging: one exercise owns the frame ── */
         <>
-          <div>
-            <div>
-              <Button variant="secondary"  onClick={() => setShowSwapExercise(true)}>Swap exercise</Button>
-            </div>
+          <Rail>
+            <RailAction
+              icon={<Plus size={22} />}
+              label="Add set"
+              count="Add"
+              onClick={() => addSet(currentBlock.id)}
+            />
+            <RailAction
+              icon={<Repeat size={22} />}
+              label="Swap exercise"
+              count="Swap"
+              onClick={() => setShowSwapExercise(true)}
+            />
+            <RailAction
+              icon={<Trash2 size={22} />}
+              label="Delete set"
+              count="Delete"
+              disabled={currentBlock.sets.length <= 1}
+              onClick={() => removeSet(currentBlock.id, currentSet.id)}
+            />
+          </Rail>
 
-            <div>
-              <p>{currentBlock.exerciseName}</p>
-              {currentSet.setType === 'warm_up' ? (
-                <span>
-                  Warm-up · Set {setPosition + 1} / {currentBlock.sets.length}
-                </span>
-              ) : (
-                <p>
-                  Set {setPosition + 1} / {currentBlock.sets.length}
-                </p>
-              )}
-              {lastTimeSet && (
-                <p>
-                  Last time: {fmtLastTime(lastTimeSet)}
-                </p>
-              )}
-            </div>
+          <Caption>
+            <p className="meta">
+              {currentSet.setType === 'warm_up' ? 'Warm-up · ' : ''}
+              Set {setPosition + 1} / {currentBlock.sets.length}
+            </p>
 
-            <div>
-              <ValueRow label="Weight" unit="kg"
+            <h1 className="display text-display m-0 mt-2">{currentBlock.exerciseName}</h1>
+
+            {lastTimeSet && (
+              <p className="meta mt-2">Last time · {fmtLastTime(lastTimeSet)}</p>
+            )}
+
+            <div className="flex flex-col gap-2.5 mt-5">
+              <ValueRow
+                label="Weight" unit="kg"
                 display={editingField === 'weight' ? editingValue : String(weightValue)}
                 onDec={() => stepWeight(-2.5)}
                 onInc={() => stepWeight(2.5)}
                 onChange={raw => editField('weight', raw)}
                 onFocus={() => beginEdit('weight', String(weightValue))}
-                onBlur={endEdit} />
-              <ValueRow label="Reps" unit="reps"
+                onBlur={endEdit}
+              />
+              <ValueRow
+                label="Reps" unit="reps"
                 display={editingField === 'reps' ? editingValue : String(repsValue)}
                 onDec={() => stepReps(-1)}
                 onInc={() => stepReps(1)}
                 onChange={raw => editField('reps', raw)}
                 onFocus={() => beginEdit('reps', String(repsValue))}
-                onBlur={endEdit} />
-              <ValueRow label="RPE" unit="rpe" placeholder="—"
+                onBlur={endEdit}
+              />
+              <ValueRow
+                label="RPE" unit="rpe" placeholder="—"
                 display={editingField === 'rpe' ? editingValue : (rpeValue !== null ? String(rpeValue) : '')}
                 onDec={() => stepRpe(-0.5)}
                 onInc={() => stepRpe(0.5)}
                 onChange={raw => editField('rpe', raw)}
                 onFocus={() => beginEdit('rpe', rpeValue !== null ? String(rpeValue) : '')}
-                onBlur={endEdit} />
+                onBlur={endEdit}
+              />
             </div>
-          </div>
 
-          <div>
-            <Button size="lg"  onClick={handleLogSet}>Log set</Button>
-            <div>
-              <Button variant="secondary" size="lg"  onClick={() => addSet(currentBlock.id)}>
-                <Plus size={16} /> Add set
-              </Button>
-              <Button variant="secondary"
-                size="lg"
-                
-                disabled={currentBlock.sets.length <= 1}
-                onClick={() => removeSet(currentBlock.id, currentSet.id)}>
-                Delete set
-              </Button>
+            <div className="flex items-center gap-2.5 mt-5">
+              <button
+                onClick={() => prevBlock && setActiveBlock(prevBlock.id)}
+                disabled={!prevBlock}
+                aria-label="Previous exercise"
+                className="w-14 h-14 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer disabled:opacity-30 disabled:cursor-default"
+              >
+                <ChevronLeft size={18} />
+              </button>
+
+              <button
+                onClick={handleLogSet}
+                className="flex-1 h-14 rounded-pill bg-scrim text-void inline-flex items-center justify-center border-0 cursor-pointer transition-transform duration-150 ease-out active:scale-[0.97]"
+              >
+                <span className="display text-figure">Log set</span>
+              </button>
+
+              <button
+                onClick={() => (nextBlock ? setActiveBlock(nextBlock.id) : handleFinish())}
+                aria-label={nextBlock ? 'Next exercise' : 'Finish workout'}
+                className="w-14 h-14 rounded-pill matt flex items-center justify-center text-scrim flex-shrink-0 cursor-pointer"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
-          </div>
 
-          {/* Prev / next exercise nav */}
-          <div>
-            <button onClick={() => prevBlock && setActiveBlock(prevBlock.id)}
-              disabled={!prevBlock}>
-              <ChevronLeft size={18} />
-            </button>
-            {nextBlock ? (
-              <button onClick={() => setActiveBlock(nextBlock.id)}>
-                <span>{nextBlock.exerciseName}</span>
-                <ChevronRight size={20} />
-              </button>
-            ) : (
-              <button onClick={handleFinish}>
-                <span>Finish workout</span>
-                <ChevronRight size={20} />
-              </button>
-            )}
-          </div>
+            <p className="meta mt-3">
+              {nextBlock ? 'Next · ' + nextBlock.exerciseName : 'Last exercise · finish when done'}
+            </p>
+          </Caption>
         </>
-      ) : sortedBlocks.length> 0 ? (
+      ) : sortedBlocks.length > 0 ? (
         /* ── Every set logged ── */
-        <div>
-          <EmptyState icon={CircleCheck}
+        <Caption>
+          <EmptyState
+            icon={CircleCheck}
             title="All sets logged"
             description="Nice work — ready to wrap up?"
-            action={{ label: 'Finish workout', onClick: handleFinish }} />
-        </div>
+            action={{ label: 'Finish workout', onClick: handleFinish }}
+          />
+        </Caption>
       ) : (
         /* ── No exercises yet ── */
-        <div>
-          <EmptyState icon={Dumbbell}
-            title="No exercises added yet"
+        <Caption>
+          <EmptyState
+            icon={Dumbbell}
+            title="No exercises yet"
             description="Add your first exercise to build this workout."
-            action={{ label: 'Add exercise', onClick: () => { setExerciseSearch(''); setShowAddExercise(true) } }} />
-        </div>
+            action={{ label: 'Add exercise', onClick: () => { setExerciseSearch(''); setShowAddExercise(true) } }}
+          />
+        </Caption>
       )}
 
       {/* Swap exercise sheet */}
       <Sheet visible={showSwapExercise} onClose={() => setShowSwapExercise(false)} title="Swap Exercise">
-        <div>
+        <div className="pb-3">
           <Input placeholder="Search exercises…" value={exerciseSearch} onChange={(e) => setExerciseSearch(e.target.value)} autoFocus />
         </div>
-        <div>
+        <div className="flex flex-col max-h-[52vh] overflow-y-auto">
           {filteredLibrary.slice(0, 50).map((ex) => (
             <button key={ex.id}
-              
+              className="text-left text-body text-scrim py-3.5 border-b border-scrim/8 bg-transparent cursor-pointer w-full"
               onClick={() => {
                 if (currentBlock) substituteExercise(currentBlock.id, { id: ex.id, name: ex.name, category: ex.category, equipment: ex.equipment, primaryMuscles: ex.primaryMuscles })
                 setShowSwapExercise(false)
@@ -627,16 +731,16 @@ export default function SessionPage() {
 
       {/* Exercise search sheet (empty-session flow) */}
       <Sheet visible={showAddExercise} onClose={() => setShowAddExercise(false)} title="Add Exercise">
-        <div>
+        <div className="pb-3">
           <Input placeholder="Search exercises…"
             value={exerciseSearch}
             onChange={(e) => setExerciseSearch(e.target.value)}
             autoFocus />
         </div>
-        <div>
+        <div className="flex flex-col max-h-[52vh] overflow-y-auto">
           {filteredLibrary.slice(0, 50).map((ex) => (
             <button key={ex.id}
-              
+              className="text-left text-body text-scrim py-3.5 border-b border-scrim/8 bg-transparent cursor-pointer w-full"
               onClick={() => {
                 addExerciseBlock({ id: ex.id, name: ex.name, category: ex.category, equipment: ex.equipment, primaryMuscles: ex.primaryMuscles })
                 setShowAddExercise(false)
@@ -646,6 +750,6 @@ export default function SessionPage() {
           ))}
         </div>
       </Sheet>
-    </div>
+    </Page>
   )
 }
